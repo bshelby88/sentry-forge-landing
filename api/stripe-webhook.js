@@ -207,10 +207,13 @@ export default async function handler(req, res) {
 
   try {
     await Promise.all([
+      // Customer-facing email — temporarily routed to founder inbox until
+      // a domain is verified in Resend. Founder forwards to `email` manually.
+      // Subject prefix [FORWARD TO …] makes the routing obvious in inbox.
       sendResendEmail({
         apiKey: resendKey,
-        to: email,
-        subject: `Sentry Forge — your case is open (${tier})`,
+        to: FOUNDER_EMAIL,
+        subject: `[FORWARD TO ${email}] Sentry Forge — your case is open (${tier})`,
         text: buildCustomerEmail({ tier, email }),
         replyTo: FOUNDER_EMAIL,
       }),
