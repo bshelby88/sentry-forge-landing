@@ -29,7 +29,8 @@ The API route only runs on Vercel — locally the form will return 404.
 
 | Var | Purpose |
 |---|---|
-| `RESEND_API_KEY` | Resend API key (re-use vault-pro / sentry-pro key) |
+| `RESEND_API_KEY` | Resend API key (waitlist + Stripe webhook emails) |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_***` from Stripe dashboard webhook endpoint |
 
 ## Deploy
 
