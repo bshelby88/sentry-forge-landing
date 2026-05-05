@@ -37,13 +37,12 @@ The API route only runs on Vercel — locally the form will return 404.
 vercel --prod
 ```
 
-## Stripe links (placeholders — replace after creating)
+## Stripe (live, account `acct_1TQdvoLYILfmbp2u`)
 
-- Founding $49: `https://buy.stripe.com/REPLACE_FOUNDING`
-- One Case $99: `https://buy.stripe.com/REPLACE_ONECASE`
-
-Update both `<a href>` placeholders in `index.html` and the buttons in
-`case-001/index.html` after Stripe setup.
+| Product | Price | Stripe ID | Payment link |
+|---|---|---|---|
+| Sentry Forge — One Case | $99 | `prod_USSfIfOqde9WJZ` / `price_1TTXkcLYILfmbp2uIXkUSxCC` | https://buy.stripe.com/6oU5kEcqoeosapG2VBfjG01 |
+| Sentry Forge — Founding 100 | $49 | `prod_USSfi26Dx2sRtn` / `price_1TTXkgLYILfmbp2uIX9KxTqy` | https://buy.stripe.com/7sY9AU3TS4NS8hy2VBfjG02 |
 
 ## Files
 
