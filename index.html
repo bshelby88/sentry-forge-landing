@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Sentry Forge — agentic AI for consumer-debt defense</title>
+<meta name="description" content="I can't afford an Attorney, but I can afford Agentic AI. Sentry Forge forges your debt-dispute case in under an hour. Wrongful collections, illegal evictions, duplicate fees, time-barred zombie debt. $99/case." />
+<meta name="theme-color" content="#1a1d24" />
+<link rel="canonical" href="https://sentry-forge-landing.vercel.app/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Sentry Forge — I can't afford an Attorney, but I can afford Agentic AI" />
+<meta property="og:description" content="Agentic AI builds your debt-dispute case in under an hour. $99/case. First 100 founders $49." />
+<meta property="og:url" content="https://sentry-forge-landing.vercel.app/" />
+<meta property="og:image" content="https://sentry-forge-landing.vercel.app/og.png" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Sentry Forge — agentic AI for consumer-debt defense" />
+<meta name="twitter:description" content="I can't afford an Attorney, but I can afford Agentic AI. $99/case." />
+<meta name="twitter:image" content="https://sentry-forge-landing.vercel.app/og.png" />
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --steel-950: oklch(13% 0.01 250);
+    --steel-900: oklch(18% 0.01 250);
+    --steel-800: oklch(24% 0.01 250);
+    --steel-700: oklch(32% 0.01 250);
+    --steel-500: oklch(54% 0.008 250);
+    --steel-300: oklch(78% 0.005 250);
+    --steel-100: oklch(94% 0.003 250);
+
+    --ember: oklch(72% 0.18 50);
+    --ember-bright: oklch(82% 0.20 60);
+    --ember-glow: oklch(72% 0.18 50 / 0.4);
+
+    --alarm: oklch(62% 0.22 25);
+    --gilt: oklch(78% 0.13 90);
+    --verdict: oklch(70% 0.16 145);
+
+    --display: 'Space Grotesk', system-ui, sans-serif;
+    --body: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+
+    --hairline: 1px solid oklch(38% 0.01 250 / 0.6);
+    --hairline-bright: 1px solid oklch(50% 0.02 250);
+
+    --space-section: clamp(4rem, 3rem + 5vw, 9rem);
+    --space-block: clamp(1.5rem, 1rem + 2vw, 3rem);
+
+    --text-hero: clamp(2.5rem, 1.4rem + 4.4vw, 5.5rem);
+    --text-section: clamp(1.75rem, 1.2rem + 1.8vw, 2.8rem);
+    --text-card: clamp(1.05rem, 0.95rem + 0.4vw, 1.25rem);
+    --text-base: clamp(1rem, 0.95rem + 0.2vw, 1.0625rem);
+    --text-mono: clamp(0.78rem, 0.74rem + 0.2vw, 0.875rem);
+
+    --duration-fast: 160ms;
+    --duration-normal: 320ms;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--body);
+    background: var(--steel-900);
+    color: var(--steel-300);
+    font-size: var(--text-base);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 2px,
+      oklch(100% 0 0 / 0.012) 2px,
+      oklch(100% 0 0 / 0.012) 3px
+    );
+    z-index: 1;
+  }
+
+  main { position: relative; z-index: 2; }
+  a { color: var(--ember); text-decoration: none; }
+  a:hover { color: var(--ember-bright); }
+
+  ::selection { background: var(--ember); color: var(--steel-950); }
+
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 clamp(1.25rem, 1rem + 1vw, 2rem);
+  }
+
+  /* ──────────────── NAV ──────────────── */
+  nav {
+    position: sticky;
+    top: 0;
+    background: oklch(13% 0.01 250 / 0.86);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: var(--hairline);
+    z-index: 50;
+  }
+  nav .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.85rem;
+    padding-bottom: 0.85rem;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--display);
+    font-weight: 700;
+    color: var(--steel-100);
+    letter-spacing: 0.02em;
+    font-size: 1.05rem;
+  }
+  .brand-mark {
+    width: 22px; height: 22px;
+    background: linear-gradient(135deg, var(--ember) 0%, var(--alarm) 100%);
+    clip-path: polygon(50% 0, 100% 35%, 82% 100%, 18% 100%, 0 35%);
+    box-shadow: 0 0 20px var(--ember-glow);
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-size: 0.875rem;
+  }
+  .nav-links a { color: var(--steel-300); }
+  .nav-links a:hover { color: var(--ember); }
+  .nav-cta {
+    background: var(--ember);
+    color: var(--steel-950) !important;
+    padding: 0.45rem 0.95rem;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+  .nav-cta:hover {
+    background: var(--ember-bright);
+    box-shadow: 0 0 24px var(--ember-glow);
+    transform: translateY(-1px);
+  }
+  @media (max-width: 640px) {
+    .nav-links a:not(.nav-cta) { display: none; }
+  }
+
+  /* ──────────────── HERO ──────────────── */
+  .hero {
+    padding-top: clamp(3rem, 2rem + 4vw, 6rem);
+    padding-bottom: var(--space-section);
+    position: relative;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 38%;
+    width: 540px;
+    height: 540px;
+    background: radial-gradient(circle, var(--ember-glow) 0%, transparent 60%);
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.55;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: clamp(2rem, 2vw + 1rem, 4rem);
+    align-items: center;
+  }
+  @media (max-width: 920px) { .hero-grid { grid-template-columns: 1fr; } }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--ember);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    width: 28px; height: 1px;
+    background: var(--ember);
+  }
+  h1.hero-headline {
+    font-family: var(--display);
+    font-size: var(--text-hero);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.5rem;
+    color: var(--steel-100);
+    font-weight: 600;
+    text-wrap: balance;
+  }
+  h1.hero-headline em {
+    font-style: normal;
+    color: var(--ember);
+    font-weight: 700;
+  }
+  .hero-sub {
+    font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.2rem);
+    line-height: 1.5;
+    color: var(--steel-300);
+    margin: 0 0 2rem;
+    max-width: 560px;
+  }
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-bottom: 2.25rem;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.85rem 1.4rem;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 4px;
+    transition: all var(--duration-fast) var(--ease-out);
+    border: 1px solid transparent;
+    cursor: pointer;
+    background: none;
+  }
+  .btn-primary {
+    background: var(--ember);
+    color: var(--steel-950);
+    box-shadow: 0 0 0 var(--ember-glow);
+  }
+  .btn-primary:hover {
+    background: var(--ember-bright);
+    box-shadow: 0 0 32px var(--ember-glow);
+    transform: translateY(-1px);
+  }
+  .btn-ghost {
+    color: var(--steel-100);
+    border-color: var(--steel-700);
+  }
+  .btn-ghost:hover {
+    border-color: var(--ember);
+    color: var(--ember);
+  }
+  .btn-arrow {
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+  .btn:hover .btn-arrow { transform: translateX(3px); }
+
+  .hero-pricepitch {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--steel-500);
+    padding-top: 1.5rem;
+    border-top: var(--hairline);
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+  }
+  .hero-pricepitch s { color: var(--steel-500); text-decoration-color: var(--alarm); }
+  .hero-pricepitch strong { color: var(--gilt); font-weight: 600; }
+  .hero-pricepitch .arrow { color: var(--ember); font-weight: 700; }
+
+  /* ──────── HERO TERMINAL PANEL ──────── */
+  .terminal {
+    background: var(--steel-950);
+    border: var(--hairline-bright);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px oklch(50% 0.02 250 / 0.4),
+      0 30px 80px -20px oklch(0% 0 0 / 0.5),
+      0 0 60px oklch(72% 0.18 50 / 0.08);
+    font-family: var(--mono);
+    font-size: var(--text-mono);
+    color: var(--steel-300);
+    line-height: 1.6;
+  }
+  .terminal-bar {
+    background: var(--steel-800);
+    padding: 0.5rem 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--steel-500);
+    border-bottom: var(--hairline);
+    letter-spacing: 0.06em;
+  }
+  .terminal-bar .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; background: var(--steel-700); }
+  .terminal-bar .dot.live { background: var(--verdict); box-shadow: 0 0 8px var(--verdict); }
+  .terminal-bar .badge {
+    background: var(--ember);
+    color: var(--steel-950);
+    padding: 1px 7px;
+    border-radius: 2px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+  .terminal-body {
+    padding: 1.1rem 1.25rem 1.4rem;
+    background:
+      linear-gradient(180deg, transparent 0%, oklch(72% 0.18 50 / 0.02) 100%),
+      var(--steel-950);
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .terminal-body .prompt { color: var(--ember); }
+  .terminal-body .arrow-r { color: var(--steel-500); }
+  .terminal-body .ok { color: var(--verdict); }
+  .terminal-body .warn { color: var(--ember-bright); }
+  .terminal-body .crit { color: var(--alarm); }
+  .terminal-body .dim { color: var(--steel-500); }
+  .terminal-body .num { color: var(--gilt); font-weight: 500; }
+
+  /* ──────────────── SECTION HEADERS ──────────────── */
+  section { padding: var(--space-section) 0; border-top: var(--hairline); }
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--ember);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 0 0 1.25rem;
+  }
+  h2 {
+    font-family: var(--display);
+    font-size: var(--text-section);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    color: var(--steel-100);
+    font-weight: 600;
+    margin: 0 0 1.5rem;
+    text-wrap: balance;
+    max-width: 38ch;
+  }
+  h2 em { font-style: normal; color: var(--ember); }
+  .section-lede {
+    font-size: 1.1rem;
+    color: var(--steel-300);
+    max-width: 60ch;
+    margin: 0 0 var(--space-block);
+  }
+
+  /* ──────────────── WEDGE BENTO ──────────────── */
+  .wedge-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1px;
+    background: oklch(38% 0.01 250 / 0.6);
+    border: var(--hairline);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .wedge-card {
+    background: var(--steel-900);
+    padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+    transition: background var(--duration-fast) var(--ease-out);
+  }
+  .wedge-card:hover {
+    background: var(--steel-800);
+  }
+  .wedge-card.lead {
+    grid-column: 1; grid-row: 1 / span 2;
+    border-right: 1px solid oklch(38% 0.01 250 / 0.6);
+  }
+  .wedge-stat {
+    font-family: var(--mono);
+    font-size: clamp(2rem, 1rem + 3.5vw, 3.4rem);
+    font-weight: 700;
+    color: var(--ember);
+    line-height: 1;
+    margin-bottom: 0.85rem;
+    letter-spacing: -0.02em;
+  }
+  .wedge-card.lead .wedge-stat { font-size: clamp(2.6rem, 1rem + 5vw, 4.8rem); }
+  .wedge-label {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--steel-500);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.55rem;
+  }
+  .wedge-text { color: var(--steel-300); font-size: 0.98rem; line-height: 1.5; }
+
+  @media (max-width: 768px) {
+    .wedge-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+    .wedge-card.lead { grid-column: 1; grid-row: auto; border-right: none; }
+  }
+
+  /* ──────────────── HOW IT WORKS ──────────────── */
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+  @media (max-width: 920px) { .how-grid { grid-template-columns: 1fr; } }
+  .how-card {
+    background: var(--steel-950);
+    border: var(--hairline);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+  }
+  .how-card:hover {
+    border-color: var(--ember);
+    transform: translateY(-2px);
+  }
+  .how-step {
+    background: var(--steel-800);
+    padding: 0.5rem 0.95rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ember);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-bottom: var(--hairline);
+  }
+  .how-card pre {
+    margin: 0;
+    padding: 1.1rem 1.25rem;
+    font-family: var(--mono);
+    font-size: var(--text-mono);
+    color: var(--steel-300);
+    background: var(--steel-950);
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .how-card pre .prompt { color: var(--ember); }
+  .how-card pre .ok { color: var(--verdict); }
+  .how-card pre .arrow-r { color: var(--steel-500); }
+  .how-card-text {
+    padding: 1.1rem 1.25rem 1.5rem;
+    font-size: 0.98rem;
+    color: var(--steel-300);
+    border-top: var(--hairline);
+  }
+
+  /* ──────────────── CASE-001 RECEIPT ──────────────── */
+  .case-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 1.25rem;
+  }
+  @media (max-width: 920px) { .case-grid { grid-template-columns: 1fr; } }
+  .case-panel {
+    background: var(--steel-950);
+    border: var(--hairline);
+    border-radius: 6px;
+    padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+  }
+  .case-panel.primary { border-color: var(--ember); box-shadow: 0 0 24px oklch(72% 0.18 50 / 0.06); }
+  .case-row { display: flex; flex-direction: column; gap: 1.25rem; }
+  .case-stat-block {
+    border-bottom: var(--hairline);
+    padding-bottom: 1.1rem;
+  }
+  .case-stat-block:last-child { border-bottom: none; padding-bottom: 0; }
+  .case-stat-label {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    color: var(--steel-500);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.45rem;
+  }
+  .case-stat-value {
+    font-family: var(--mono);
+    font-size: clamp(1.5rem, 1rem + 1.4vw, 2.2rem);
+    font-weight: 700;
+    color: var(--steel-100);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .case-stat-value.ember { color: var(--ember); }
+  .case-stat-value.gilt { color: var(--gilt); }
+  .case-stat-value.verdict { color: var(--verdict); }
+  .case-stat-sub { font-family: var(--mono); font-size: 0.78rem; color: var(--steel-500); margin-top: 0.4rem; }
+
+  .case-leverage {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .case-leverage li {
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    color: var(--steel-300);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+  .case-leverage li::before {
+    content: '✓';
+    color: var(--verdict);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .case-cta-row {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* ──────────────── PACK GRID ──────────────── */
+  .pack-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: oklch(38% 0.01 250 / 0.6);
+    border: var(--hairline);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  @media (max-width: 920px) { .pack-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .pack-grid { grid-template-columns: 1fr; } }
+  .pack-card {
+    background: var(--steel-900);
+    padding: 1.5rem 1.4rem;
+    transition: background var(--duration-fast) var(--ease-out);
+  }
+  .pack-card:hover { background: var(--steel-800); }
+  .pack-num {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    color: var(--ember);
+    letter-spacing: 0.12em;
+    margin-bottom: 0.6rem;
+  }
+  .pack-title {
+    font-family: var(--display);
+    font-weight: 600;
+    color: var(--steel-100);
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.25;
+  }
+  .pack-desc { font-size: 0.9rem; color: var(--steel-300); line-height: 1.45; }
+  .pack-size { font-family: var(--mono); font-size: 0.72rem; color: var(--steel-500); margin-top: 0.85rem; }
+
+  /* ──────────────── PRICING ──────────────── */
+  .price-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+  @media (max-width: 720px) { .price-grid { grid-template-columns: 1fr; } }
+  .price-card {
+    background: var(--steel-950);
+    border: var(--hairline);
+    border-radius: 6px;
+    padding: clamp(1.75rem, 1rem + 2vw, 2.75rem);
+    display: flex;
+    flex-direction: column;
+  }
+  .price-card.featured {
+    border-color: var(--ember);
+    background: linear-gradient(180deg, oklch(72% 0.18 50 / 0.04) 0%, var(--steel-950) 100%);
+    position: relative;
+  }
+  .price-card.featured::before {
+    content: 'FOUNDING 100';
+    position: absolute;
+    top: -10px;
+    left: 1.5rem;
+    background: var(--ember);
+    color: var(--steel-950);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 2px;
+    letter-spacing: 0.14em;
+  }
+  .price-tier {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--steel-500);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .price-amount {
+    font-family: var(--display);
+    font-size: clamp(2.5rem, 1rem + 4vw, 3.8rem);
+    font-weight: 700;
+    color: var(--steel-100);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.02em;
+  }
+  .price-card.featured .price-amount { color: var(--ember); }
+  .price-amount-unit { font-family: var(--mono); font-size: 0.95rem; color: var(--steel-500); margin-bottom: 1.25rem; }
+  .price-list { list-style: none; padding: 0; margin: 0 0 2rem; display: flex; flex-direction: column; gap: 0.6rem; flex-grow: 1; }
+  .price-list li { font-size: 0.95rem; color: var(--steel-300); display: flex; gap: 0.55rem; }
+  .price-list li::before { content: '+'; color: var(--ember); font-weight: 700; }
+
+  .price-disclaimer {
+    text-align: center;
+    color: var(--steel-500);
+    font-size: 0.92rem;
+    margin-top: 2rem;
+    font-style: italic;
+  }
+
+  /* ──────────────── DISCLAIMER ──────────────── */
+  .disclaimer {
+    background: var(--steel-950);
+    border: var(--hairline);
+    border-left: 3px solid var(--ember);
+    border-radius: 4px;
+    padding: clamp(1.5rem, 1rem + 1.5vw, 2rem);
+    font-family: var(--mono);
+    font-size: 0.92rem;
+    color: var(--steel-300);
+    line-height: 1.65;
+  }
+  .disclaimer strong { color: var(--steel-100); font-weight: 600; }
+
+  /* ──────────────── FAQ ──────────────── */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  details.faq {
+    background: var(--steel-950);
+    border: var(--hairline);
+    border-radius: 4px;
+    padding: 1.1rem 1.4rem;
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+  details.faq[open] { border-color: var(--ember); }
+  details.faq summary {
+    font-family: var(--display);
+    font-weight: 600;
+    color: var(--steel-100);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.02rem;
+  }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary::after {
+    content: '+';
+    color: var(--ember);
+    font-size: 1.4rem;
+    line-height: 1;
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+  details.faq[open] summary::after { transform: rotate(45deg); }
+  details.faq .faq-body {
+    padding-top: 1rem;
+    color: var(--steel-300);
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+
+  /* ──────────────── WAITLIST ──────────────── */
+  .waitlist {
+    background: var(--steel-950);
+    border: 1px solid var(--ember);
+    border-radius: 6px;
+    padding: clamp(2rem, 1rem + 2.5vw, 3.5rem);
+    text-align: center;
+    box-shadow: 0 0 60px oklch(72% 0.18 50 / 0.07);
+  }
+  .waitlist h2 {
+    text-align: center;
+    margin: 0 auto 1rem;
+    max-width: none;
+  }
+  .waitlist-sub { color: var(--steel-300); margin-bottom: 2rem; max-width: 50ch; margin-left: auto; margin-right: auto; }
+  .waitlist-form {
+    display: flex;
+    gap: 0.6rem;
+    max-width: 480px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .waitlist-form input[type="email"] {
+    flex: 1 1 240px;
+    padding: 0.85rem 1rem;
+    background: var(--steel-900);
+    border: 1px solid var(--steel-700);
+    border-radius: 4px;
+    color: var(--steel-100);
+    font-family: var(--mono);
+    font-size: 0.95rem;
+  }
+  .waitlist-form input[type="email"]:focus {
+    outline: none;
+    border-color: var(--ember);
+    box-shadow: 0 0 0 3px oklch(72% 0.18 50 / 0.2);
+  }
+  .waitlist-form input[type="email"]::placeholder { color: var(--steel-500); }
+  .waitlist-status {
+    margin-top: 1rem;
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    color: var(--steel-500);
+    min-height: 1.2em;
+  }
+  .waitlist-status.ok { color: var(--verdict); }
+  .waitlist-status.err { color: var(--alarm); }
+
+  .waitlist-trust { margin-top: 1.5rem; font-family: var(--mono); font-size: 0.78rem; color: var(--steel-500); letter-spacing: 0.1em; }
+
+  /* ──────────────── FOOTER ──────────────── */
+  footer {
+    border-top: var(--hairline);
+    padding: 2.5rem 0 3.5rem;
+    color: var(--steel-500);
+    font-size: 0.85rem;
+  }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 1.25rem; justify-content: space-between; align-items: center; }
+  footer .brand { font-size: 0.95rem; }
+  footer .foot-meta { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.06em; }
+
+  /* ──────────────── REDUCED MOTION ──────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    .btn:hover, .how-card:hover, .nav-cta:hover { transform: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="/" class="brand">
+      <span class="brand-mark"></span>
+      SENTRY FORGE
+    </a>
+    <div class="nav-links">
+      <a href="#how">how</a>
+      <a href="#case-001">case&nbsp;001</a>
+      <a href="#pricing">pricing</a>
+      <a href="#waitlist" class="nav-cta">Forge My Case →</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ──────────────── HERO ──────────────── -->
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+
+    <div>
+      <div class="hero-eyebrow">Sentry Forge · v0 · founder dogfood</div>
+      <h1 class="hero-headline">
+        I can&rsquo;t afford an Attorney,<br>
+        but I can afford <em>Agentic AI.</em>
+      </h1>
+      <p class="hero-sub">
+        Sentry Forge forges your debt-dispute case in under an hour.
+        Wrongful collections. Illegal evictions. Duplicate fees. Zombie debt
+        past its statute. We hammer the paperwork. You sign and send.
+      </p>
+
+      <div class="hero-ctas">
+        <a href="#waitlist" class="btn btn-primary">Forge My Case <span class="btn-arrow">→</span></a>
+        <a href="#case-001" class="btn btn-ghost">See a real case</a>
+      </div>
+
+      <div class="hero-pricepitch">
+        <s>$300/hr counsel</s>
+        <span class="arrow">→</span>
+        <strong>$0/mo · $99/case</strong>
+        <span style="opacity:0.7;">· first 100 founders $49</span>
+      </div>
+    </div>
+
+    <div class="terminal" aria-label="Sentry Forge case analysis output">
+      <div class="terminal-bar">
+        <span><span class="dot live"></span>case-001 · 2026-05-04</span>
+        <span class="badge">FORGED</span>
+      </div>
+      <div class="terminal-body"><span class="prompt">$</span> sentry-forge analyze ./creditor_letter.pdf
+
+  <span class="arrow-r">→</span> parsed itemization ledger ......... <span class="ok">14 pages</span>
+  <span class="arrow-r">→</span> cross-checked lease  .............. <span class="ok">1 contract</span>
+  <span class="arrow-r">→</span> fee duplication scan .............. <span class="warn">⚠ <span class="num">$4,180</span> doubled</span>
+  <span class="arrow-r">→</span> state SOL clock ................... <span class="warn">⚠ expired 2023-02-14</span>
+  <span class="arrow-r">→</span> self-help eviction check .......... <span class="crit">⚠ no judgment</span>
+  <span class="arrow-r">→</span> reg-F itemization defects ......... <span class="warn">⚠ missing ref date</span>
+  <span class="arrow-r">→</span> mitigation evidence ............... <span class="warn">⚠ none provided</span>
+
+  <span class="dim">output:</span>
+    01_letter_collector.md           [<span class="ok"> ready </span>]
+    02_letter_original_creditor.md   [<span class="ok"> ready </span>]
+    03_cfpb_complaint_collector.md   [<span class="ok"> ready </span>]
+    04_cfpb_complaint_creditor.md    [<span class="ok"> ready </span>]
+    05_bureau_disputes.md            [<span class="ok"> ready </span>]
+    06_court_records_search.md       [<span class="ok"> ready </span>]
+    07_action_checklist.md           [<span class="ok"> ready </span>]
+    08_evidence_inventory.md         [<span class="ok"> ready </span>]
+
+  <span class="dim">case forged in</span> <span class="num">14m 22s</span><span class="dim">.
+  estimated counsel cost avoided:</span> <span class="num">$1,800+</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ──────────────── WEDGE ──────────────── -->
+<section id="wedge">
+  <div class="wrap">
+    <div class="section-eyebrow">The leverage</div>
+    <h2>The collector hopes you panic.<br><em>We hope you read the ledger.</em></h2>
+    <p class="section-lede">Most collection accounts are broken on paper before the first phone call. Sentry Forge finds the breaks.</p>
+
+    <div class="wedge-grid">
+      <div class="wedge-card lead">
+        <div class="wedge-label">Time-barred debt</div>
+        <div class="wedge-stat">3&ndash;7 yrs</div>
+        <p class="wedge-text">Most state statutes of limitation expire long before collectors stop calling. The debt may still exist, but the lawsuit is impossible. Sentry Forge knows the SOL clock for every state and every contract type.</p>
+      </div>
+      <div class="wedge-card">
+        <div class="wedge-label">Duplicate fees</div>
+        <div class="wedge-stat">40%+</div>
+        <p class="wedge-text">Of itemizations contain charges the original contract forbids stacking.</p>
+      </div>
+      <div class="wedge-card">
+        <div class="wedge-label">Reg F defects</div>
+        <div class="wedge-stat">§1006.34</div>
+        <p class="wedge-text">Missing reference dates, broken validation notices, FCRA furnisher mistakes. Each = leverage.</p>
+      </div>
+      <div class="wedge-card">
+        <div class="wedge-label">Self-help eviction</div>
+        <div class="wedge-stat">illegal</div>
+        <p class="wedge-text">In every state, your landlord can&rsquo;t change the locks without a judgment. Many do anyway.</p>
+      </div>
+      <div class="wedge-card">
+        <div class="wedge-label">Mitigation duty</div>
+        <div class="wedge-stat">required</div>
+        <p class="wedge-text">Landlords must re-rent, lenders must minimize loss. No evidence = no enforceable claim.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────── HOW ──────────────── -->
+<section id="how">
+  <div class="wrap">
+    <div class="section-eyebrow">How it works</div>
+    <h2>Three steps. <em>Under an hour.</em></h2>
+    <p class="section-lede">Drop the letter. Forge the case. Sign and send.</p>
+
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-step">01 · intake</div>
+<pre><span class="prompt">$</span> sentry-forge new
+  paste collector letter ........ <span class="ok">✓</span>
+  attach itemization (pdf) ...... <span class="ok">✓</span>
+  attach original contract ...... <span class="ok">✓</span>
+  describe what happened ........ <span class="ok">✓</span>
+
+  <span class="arrow-r">ready to analyze.</span></pre>
+        <div class="how-card-text">Drop your collector letter and the itemization. If you have the original contract, attach it. Tell us what actually happened in your own words. That&rsquo;s the whole intake.</div>
+      </div>
+
+      <div class="how-card">
+        <div class="how-step">02 · analyze</div>
+<pre><span class="prompt">$</span> sentry-forge analyze
+  <span class="arrow-r">→</span> fee scan
+  <span class="arrow-r">→</span> SOL clock by state
+  <span class="arrow-r">→</span> reg-F compliance check
+  <span class="arrow-r">→</span> state eviction law
+  <span class="arrow-r">→</span> wage-garnishment law
+  <span class="arrow-r">→</span> mitigation + depreciation
+  <span class="arrow-r">→</span> FCRA furnisher defects
+  <span class="arrow-r">→</span> identity-theft markers</pre>
+        <div class="how-card-text">We hammer the document against state and federal consumer-debt law. Every defect becomes a leverage point. No legal-jargon dump &mdash; just the ones that matter to your case.</div>
+      </div>
+
+      <div class="how-card">
+        <div class="how-step">03 · forge</div>
+<pre><span class="prompt">$</span> sentry-forge build
+  <span class="ok">✓</span> collector dispute letter
+  <span class="ok">✓</span> original creditor demand
+  <span class="ok">✓</span> CFPB complaints
+  <span class="ok">✓</span> state AG complaint
+  <span class="ok">✓</span> bureau dispute language
+  <span class="ok">✓</span> court records search
+  <span class="ok">✓</span> action checklist
+  <span class="ok">✓</span> evidence inventory</pre>
+        <div class="how-card-text">You get the full pack. Print, sign, send. Mail tracking and confirmations come back to you. We track outcomes for 90 days.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────── CASE 001 ──────────────── -->
+<section id="case-001">
+  <div class="wrap">
+    <div class="section-eyebrow">Customer #1</div>
+    <h2>Customer #1 was the founder.<br><em>Here&rsquo;s the receipt.</em></h2>
+    <p class="section-lede">$6,970.31 collection account from a Louisiana apartment. Lockout without judgment. Duplicate termination fees. Statute of limitations expired three years ago. Sentry Forge built the entire dispute pack in 14 minutes.</p>
+
+    <div class="case-grid">
+      <div class="case-panel primary">
+        <div class="case-row">
+          <div class="case-stat-block">
+            <div class="case-stat-label">alleged balance</div>
+            <div class="case-stat-value gilt">$6,970.31</div>
+            <div class="case-stat-sub">Synergetic Communication, Inc. · Houston, TX</div>
+          </div>
+          <div class="case-stat-block">
+            <div class="case-stat-label">disputed in pack</div>
+            <div class="case-stat-value ember">$6,970.31 · 100%</div>
+            <div class="case-stat-sub">every line item challenged on multiple grounds</div>
+          </div>
+          <div class="case-stat-block">
+            <div class="case-stat-label">counsel cost avoided</div>
+            <div class="case-stat-value verdict">$1,800+ <span style="font-size:0.7em;color:var(--steel-500);">est.</span></div>
+            <div class="case-stat-sub">based on 6 hrs @ $300/hr typical Louisiana consumer-defense rate</div>
+          </div>
+          <div class="case-stat-block">
+            <div class="case-stat-label">time to forge pack</div>
+            <div class="case-stat-value">14m 22s</div>
+            <div class="case-stat-sub">intake + analysis + 8 deliverables</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="case-panel">
+        <div class="case-stat-block">
+          <div class="case-stat-label">leverage points found</div>
+          <div class="case-stat-value" style="font-size:1.5rem; color:var(--steel-100);">5 grounds for deletion</div>
+        </div>
+        <ul class="case-leverage" style="margin-top:1.25rem;">
+          <li>Self-help eviction · no judgment on record (LA CCP 4701)</li>
+          <li>SOL prescribed 2023-02-14 (LA CC 3494)</li>
+          <li>Duplicate $2,090 termination fees (lease &ldquo;in lieu of&rdquo; clause)</li>
+          <li>No mitigation evidence in itemization</li>
+          <li>Reg F §1006.34(b)(3) reference-date defect</li>
+        </ul>
+        <div class="case-cta-row">
+          <a href="/case-001" class="btn btn-ghost">Read the full case <span class="btn-arrow">→</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────── PACK ──────────────── -->
+<section id="pack">
+  <div class="wrap">
+    <div class="section-eyebrow">In the pack</div>
+    <h2>Eight deliverables. <em>Your case file.</em></h2>
+    <p class="section-lede">Everything print-ready. Plain markdown so you can edit before you sign.</p>
+
+    <div class="pack-grid">
+      <div class="pack-card">
+        <div class="pack-num">01</div>
+        <div class="pack-title">Letter to collector</div>
+        <div class="pack-desc">FDCPA + Reg F dispute, validation demand, ready-to-mail certified format.</div>
+        <div class="pack-size">~6 KB</div>
+      </div>
+      <div class="pack-card">
+        <div class="pack-num">02</div>
+        <div class="pack-title">Letter to original creditor</div>
+        <div class="pack-desc">Wrongful-act demand, deletion + refund + withdrawal-from-collection.</div>
+        <div class="pack-size">~5 KB</div>
+      </div>
+      <div class="pack-card">
+        <div class="pack-num">03</div>
+        <div class="pack-title">CFPB complaint · collector</div>
+        <div class="pack-desc">Narrative + desired resolution + attachment list.</div>
+        <div class="pack-size">~5 KB</div>
+      </div>
+      <div class="pack-card">
+        <div class="pack-num">04</div>
+        <div class="pack-title">CFPB + state AG · creditor</div>
+        <div class="pack-desc">Parallel federal and state filings with state-specific cite anchors.</div>
+        <div class="pack-size">~5 KB</div>
+      </div>
+      <div class="pack-card">
+        <div class="pack-num">05</div>
+        <div class="pack-title">Bureau disputes</div>
+        <div class="pack-desc">Equifax · Experian · TransUnion language, online + certified mail backup.</div>
+        <div class="pack-size">~5 KB</div>
+      </div>
+      <div class="pack-card">
+        <div class="pack-num">06</div>
+        <div class="pack-title">Court records search</div>
+        <div class="pack-desc">State + parish/county-specific procedure to confirm no judgment exists.</div>
+        <div class="pack-size">~4 KB</div>
+      </div>
+      <div class="pack-card">
+        <div class="pack-num">07</div>
+        <div class="pack-title">Action checklist</div>
+        <div class="pack-desc">2-day send sequence, USPS certified guide, $25–60 OOP cost summary.</div>
+        <div class="pack-size">~5 KB</div>
+      </div>
+      <div class="pack-card">
+        <div class="pack-num">08</div>
+        <div class="pack-title">Evidence inventory</div>
+        <div class="pack-desc">What to gather, what to preserve, sworn-affidavit template.</div>
+        <div class="pack-size">~5 KB</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────── PRICING ──────────────── -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="section-eyebrow">Pricing</div>
+    <h2>One price. <em>One case.</em></h2>
+    <p class="section-lede">No subscription. No per-letter upsell. No retainer. You pay nothing if we can&rsquo;t find at least three leverage points in your account.</p>
+
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-tier">One Case</div>
+        <div class="price-amount">$99</div>
+        <div class="price-amount-unit">flat &middot; one debt &middot; full pack</div>
+        <ul class="price-list">
+          <li>All 8 case-file deliverables</li>
+          <li>State-specific SOL + statute analysis</li>
+          <li>Bureau dispute language for all 3 reports</li>
+          <li>CFPB + state AG complaint drafts</li>
+          <li>90-day outcome tracking + escalation letters</li>
+          <li>Refund if &lt;3 leverage points found</li>
+        </ul>
+        <a href="https://buy.stripe.com/REPLACE_ONECASE" class="btn btn-ghost" target="_blank" rel="noopener">Forge My Case <span class="btn-arrow">→</span></a>
+      </div>
+
+      <div class="price-card featured">
+        <div class="price-tier">Founding 100</div>
+        <div class="price-amount">$49</div>
+        <div class="price-amount-unit">first 100 customers &middot; lifetime rate</div>
+        <ul class="price-list">
+          <li>Everything in One Case</li>
+          <li>$49 grandfathered on every future case &mdash; forever</li>
+          <li>Direct line to founder for case strategy</li>
+          <li>Help shape v1 features &middot; case-type roadmap input</li>
+          <li>Listed on the wall (optional, by first name only)</li>
+          <li>Refund + waitlist priority if &lt;3 leverage points</li>
+        </ul>
+        <a href="https://buy.stripe.com/REPLACE_FOUNDING" class="btn btn-primary" target="_blank" rel="noopener">Claim Founding Spot <span class="btn-arrow">→</span></a>
+      </div>
+    </div>
+
+    <p class="price-disclaimer">Read it before you send it. Send it when you mean it.</p>
+  </div>
+</section>
+
+<!-- ──────────────── DISCLAIMER ──────────────── -->
+<section id="not-a-firm">
+  <div class="wrap">
+    <div class="section-eyebrow">Honest positioning</div>
+    <h2>We&rsquo;re not a law firm.<br><em>Here&rsquo;s what we are.</em></h2>
+
+    <div class="disclaimer">
+      We don&rsquo;t represent you. We don&rsquo;t appear in court. We&rsquo;re an analyst and a draftsman with consumer-debt law loaded in memory.<br><br>
+      Everything we forge is <strong>yours</strong> &mdash; your name, your signature, your decision.<br><br>
+      If your case escalates to a lawsuit, get a licensed attorney in your state. <strong>We&rsquo;ll hand them a clean file.</strong>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────── FAQ ──────────────── -->
+<section id="faq">
+  <div class="wrap">
+    <div class="section-eyebrow">Questions</div>
+    <h2>Sharp answers. <em>No dodges.</em></h2>
+
+    <div class="faq-list" style="margin-top:2rem;">
+      <details class="faq">
+        <summary>Will this hurt my credit more?</summary>
+        <div class="faq-body">
+          No. Disputing a tradeline cannot lower your score. It can only stay the same, get marked &ldquo;disputed,&rdquo; or get deleted.
+        </div>
+      </details>
+      <details class="faq">
+        <summary>Is the debt really gone if you delete the tradeline?</summary>
+        <div class="faq-body">
+          The tradeline coming off your report is one outcome. The underlying debt may still legally exist (until SOL or settlement). Sentry Forge attacks both fronts: tradeline deletion AND enforceability defenses.
+        </div>
+      </details>
+      <details class="faq">
+        <summary>What if I actually owe the money?</summary>
+        <div class="faq-body">
+          We tell you. We won&rsquo;t help you fight a clean debt with no defects. We will help you negotiate it down with documented leverage &mdash; settlement at 20-40&cent; on the dollar is common when the SOL is close or itemization is weak.
+        </div>
+      </details>
+      <details class="faq">
+        <summary>What states do you cover?</summary>
+        <div class="faq-body">
+          All 50, with state-specific SOL, eviction, and consumer-protection layered in. Louisiana, Texas, Florida, California, and New York have the most case law loaded today.
+        </div>
+      </details>
+      <details class="faq">
+        <summary>What if the collector ignores me?</summary>
+        <div class="faq-body">
+          Their silence is the violation. That&rsquo;s why the FDCPA exists. We escalate to CFPB, state AG, and the credit bureaus in parallel &mdash; silence kills their tradeline.
+        </div>
+      </details>
+      <details class="faq">
+        <summary>What if I get sued?</summary>
+        <div class="faq-body">
+          First, run the SOL check &mdash; most &ldquo;lawsuit threats&rdquo; are bluff on time-barred debt. Second, your full pack hands an attorney a 60% finished defense. Third, we maintain a referral list of consumer-defense attorneys who take FDCPA cases on contingency.
+        </div>
+      </details>
+      <details class="faq">
+        <summary>Is this legal advice?</summary>
+        <div class="faq-body">
+          No. Sentry Forge is consumer education and document drafting. We do not establish an attorney-client relationship. For litigation, get a licensed attorney in your state.
+        </div>
+      </details>
+      <details class="faq">
+        <summary>Who built this?</summary>
+        <div class="faq-body">
+          Bryant Shelby. Customer #1 was me &mdash; a $6,970.31 wrongful-eviction collection account I disputed with the same agentic AI you&rsquo;ll use. <a href="#case-001">See the receipt.</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────── WAITLIST ──────────────── -->
+<section id="waitlist">
+  <div class="wrap">
+    <div class="waitlist">
+      <h2 style="max-width:none;">Still hand-tuning the engine.</h2>
+      <p class="waitlist-sub">Drop your email. We&rsquo;re forging cases for the first 100 founders before opening to the public.</p>
+
+      <form class="waitlist-form" id="waitlist-form" novalidate>
+        <input type="email" name="email" id="waitlist-email" placeholder="you@example.com" required autocomplete="email" />
+        <button type="submit" class="btn btn-primary" id="waitlist-submit">Join Waitlist <span class="btn-arrow">→</span></button>
+      </form>
+      <div class="waitlist-status" id="waitlist-status" role="status" aria-live="polite"></div>
+
+      <div class="waitlist-trust">no spam · one email when we open · that&rsquo;s it</div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      SENTRY FORGE
+    </div>
+    <div class="foot-meta">agentic ai for consumer-debt defense · built by <a href="https://twitter.com/jadedfocus" rel="noopener">@jadedfocus</a></div>
+    <div class="foot-meta">not a law firm · no attorney-client relationship</div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var form = document.getElementById('waitlist-form');
+    var emailEl = document.getElementById('waitlist-email');
+    var status = document.getElementById('waitlist-status');
+    var btn = document.getElementById('waitlist-submit');
+    if (!form) return;
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var email = (emailEl.value || '').trim();
+      status.className = 'waitlist-status';
+      if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        status.textContent = 'enter a valid email.';
+        status.className = 'waitlist-status err';
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'forging…';
+      try {
+        var r = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, source: 'landing' }),
+        });
+        if (r.ok) {
+          var d = await r.json().catch(function(){ return {}; });
+          status.textContent = (d && d.message) || 'on the waitlist.';
+          status.className = 'waitlist-status ok';
+          emailEl.value = '';
+        } else {
+          status.textContent = 'something broke. try again or email forge@sentryforge.app';
+          status.className = 'waitlist-status err';
+        }
+      } catch (err) {
+        status.textContent = 'network error. try again.';
+        status.className = 'waitlist-status err';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Join Waitlist <span class="btn-arrow">→</span>';
+      }
+    });
+  })();
+</script>
+
+<script defer src="/_vercel/insights/script.js"></script>
+
+</body>
+</html>
