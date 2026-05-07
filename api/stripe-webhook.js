@@ -28,8 +28,8 @@ export const config = {
 // Map Stripe product IDs → tier label for email copy.
 // Update if products change.
 const PRODUCT_TIER = {
-  prod_USSfIfOqde9WJZ: { label: 'One Case', price: 9900 },
-  prod_USSfi26Dx2sRtn: { label: 'Founding 100', price: 4900 },
+  prod_USSfIfOqde9WJZ: { label: 'One Case', price: 7900 },
+  prod_USSfi26Dx2sRtn: { label: 'Founding 100', price: 2900 },
 };
 
 const FOUNDER_EMAIL = 'jadedfocus@gmail.com';
@@ -200,8 +200,8 @@ export default async function handler(req, res) {
   // requires an extra API expand. Fall back to amount-based tier inference.
   const amount = session.amount_total || 0;
   let tier = 'One Case';
-  if (amount === 4900) tier = 'Founding 100';
-  if (amount === 9900) tier = 'One Case';
+  if (amount === 2900) tier = 'Founding 100';
+  if (amount === 7900) tier = 'One Case';
 
   const sessionId = session.id || 'unknown';
 
