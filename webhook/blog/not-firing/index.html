@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Stripe Webhook Didn't Fire — Debugging Checklist (2026)</title>
+<meta name="description" content="Customer paid but your webhook never ran. The 7 reasons it failed silently in production, in the order to check. Plus the dashboard fields that tell you definitively whether Stripe attempted delivery." />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="canonical" href="https://sentryforge.app/webhook/blog/not-firing/" />
+
+<meta property="og:image" content="https://sentryforge.app/og.png" />
+<meta name="twitter:image" content="https://sentryforge.app/og.png" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Stripe Webhook Didn't Fire — 7-Step Debugging Checklist" />
+<meta property="og:description" content="Customer paid but no webhook event arrived. The 7 silent failure modes in priority order, plus exact dashboard checks." />
+<meta property="og:url" content="https://sentryforge.app/webhook/blog/not-firing/" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Stripe Webhook Didn't Fire — 7-Step Checklist" />
+<meta name="twitter:description" content="Customer paid, no webhook, panicking. Here's what to check, in order." />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Stripe Webhook Didn't Fire — Debugging Checklist (2026)",
+  "datePublished": "2026-05-08",
+  "dateModified": "2026-05-08",
+  "author": { "@type": "Person", "name": "Bryant Shelby", "url": "https://x.com/jadedfocus" },
+  "description": "Seven-step debugging checklist for the panic case when a Stripe checkout completes but no webhook event reaches your handler.",
+  "mainEntityOfPage": "https://sentryforge.app/webhook/blog/not-firing/",
+  "publisher": { "@type": "Organization", "name": "Sentry Forge", "url": "https://sentryforge.app" }
+}
+</script>
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root { --bg: #0b0d12; --bg-card: #161a24; --bg-elev: #11141c; --line: #1f2532; --text: #d6dae3; --text-dim: #8a92a4; --text-bright: #f0f2f7; --accent: #5cd8a8; --warn: #ffb454; --danger: #ff6b6b; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 740px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--line); padding: 16px 0; background: rgba(11,13,18,0.85); backdrop-filter: blur(8px); }
+  .nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-bright); font-size: 14px; }
+  .brand .dot { color: var(--accent); }
+  .nav-cta { background: var(--accent); color: var(--bg); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+  article { padding: 60px 0 80px; }
+  article time { color: var(--text-dim); font-size: 14px; font-family: 'JetBrains Mono', monospace; }
+  h1 { font-size: clamp(28px, 4vw, 38px); color: var(--text-bright); letter-spacing: -0.02em; margin: 12px 0 22px; line-height: 1.18; }
+  .lede { font-size: 19px; color: var(--text); margin-bottom: 32px; }
+  h2 { font-size: 22px; color: var(--text-bright); margin: 36px 0 12px; letter-spacing: -0.01em; }
+  h3 { font-size: 17px; color: var(--text-bright); margin: 22px 0 8px; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+  p { margin: 0 0 18px; }
+  ul, ol { padding-left: 24px; }
+  li { margin: 8px 0; }
+  code { font-family: 'JetBrains Mono', monospace; background: var(--bg-card); color: var(--accent); padding: 2px 7px; border-radius: 4px; font-size: 13.5px; }
+  pre { background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.65; color: var(--text); margin: 16px 0 24px; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  .callout { background: var(--bg-elev); border-left: 3px solid var(--accent); border-radius: 4px; padding: 16px 20px; margin: 20px 0; font-size: 15px; }
+  .callout strong { color: var(--accent); }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.warn strong { color: var(--warn); }
+  .step { background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px; padding: 20px 24px; margin: 16px 0; }
+  .step-num { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; }
+  .step h3 { margin: 6px 0 10px; }
+  .cta-box { background: linear-gradient(140deg, rgba(92,216,168,0.08), rgba(92,216,168,0.02)); border: 1px solid rgba(92,216,168,0.25); border-radius: 12px; padding: 24px 28px; margin: 36px 0; }
+  .cta-box h3 { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 17px; margin: 0 0 8px; color: var(--text-bright); }
+  .cta-box p { font-size: 15px; margin: 0 0 14px; color: var(--text-dim); }
+  .cta-box .btn { display: inline-block; background: var(--accent); color: var(--bg); padding: 10px 18px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+  footer { border-top: 1px solid var(--line); padding: 32px 0; color: var(--text-dim); font-size: 14px; }
+  footer a { color: var(--text-dim); text-decoration: underline; }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand">webhook<span class="dot">.</span>forge / blog</span>
+    <a class="nav-cta" href="/webhook/health-check/">Get monitoring — $29/mo →</a>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+    <time datetime="2026-05-08">May 8, 2026 · 6 min read</time>
+    <h1>Stripe Webhook Didn't Fire — Debugging Checklist (2026)</h1>
+
+    <p class="lede">Customer paid. Stripe Dashboard shows the charge succeeded. Your handler never ran. No row in the database, no email sent, no log line. Below: the seven silent failure modes ranked by frequency, plus the exact Stripe Dashboard fields that tell you definitively whether Stripe even attempted delivery.</p>
+
+    <div class="callout warn">
+      <strong>Before you debug:</strong> open https://dashboard.stripe.com/workbench/webhooks → click your endpoint → look at the latest event row. If it says <code>Pending</code>, Stripe is queued but hasn't delivered yet (rare, but happens during incidents). If it says <code>Succeeded</code> with <code>200</code>, the event reached your handler — your bug is downstream of the webhook (database write, email send, etc). If it says <code>Failed</code>, you have the actual error code in the response body.
+    </div>
+
+    <h2>The 7 reasons your webhook didn't fire</h2>
+
+    <div class="step">
+      <div class="step-num">REASON 01 — most common</div>
+      <h3>Endpoint registered for test mode, charge happened in live mode</h3>
+      <p>Stripe has two completely separate webhook endpoint configurations: test mode and live mode. The Dashboard top-right "View test data" toggle determines which set you see. If you registered your endpoint while toggled to test mode, your live-mode charges have nothing to deliver to.</p>
+      <p><strong>Check:</strong> Dashboard → toggle to live mode → Developers → Webhooks. If your endpoint isn't listed, that's the bug.</p>
+      <p><strong>Fix:</strong> click <strong>Add endpoint</strong> while in live mode. Use the same URL. Update <code>STRIPE_WEBHOOK_SECRET</code> in your env vars to the new endpoint's signing secret (live mode has a different secret from test).</p>
+    </div>
+
+    <div class="step">
+      <div class="step-num">REASON 02</div>
+      <h3>Endpoint exists but no event types selected</h3>
+      <p>When you register an endpoint, Stripe asks which event types to send. If you forgot to check <code>checkout.session.completed</code> (or whichever event your handler expects), the endpoint exists but your specific event silently won't deliver.</p>
+      <p><strong>Check:</strong> Dashboard → Webhooks → click endpoint → "Events to send" list.</p>
+      <p><strong>Fix:</strong> click <strong>Update endpoint</strong> → add the missing event type. Default to "Send all events" while debugging — you can filter later.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-num">REASON 03</div>
+      <h3>Endpoint URL is wrong</h3>
+      <p>Typo in the URL when registering. Common mistakes: <code>https://sentryforge.app/webhook</code> vs <code>https://sentryforge.app/api/stripe-webhook</code> vs <code>https://www.sentryforge.app/api/stripe-webhook</code>. Stripe attempts delivery to the URL you gave it; if that path doesn't exist on your origin, your handler never runs.</p>
+      <p><strong>Check:</strong> Dashboard → Webhooks → click endpoint → "URL" field. Curl that URL: <code>curl -I https://your-url-here/path</code>. If it 404s or redirects to a static page, that's the bug.</p>
+      <p><strong>Fix:</strong> click <strong>Update endpoint</strong> → fix the URL. Stripe will retry pending events automatically once the URL works.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-num">REASON 04</div>
+      <h3>Origin is blocking Stripe's IP range</h3>
+      <p>If you put Cloudflare, Akamai, AWS WAF, or any firewall in front of your endpoint with strict bot-protection rules, Stripe's delivery requests can get blocked. Stripe will retry the request and log it as failed in Dashboard, but your origin never sees the request.</p>
+      <p><strong>Check:</strong> Dashboard → Webhooks → click endpoint → "Recent deliveries" panel. If you see entries with <code>Failed</code> status and a 403/503 response code, your CDN or WAF is the gatekeeper.</p>
+      <p><strong>Fix:</strong> allowlist Stripe's webhook IPs in your firewall (<a href="https://stripe.com/docs/ips">stripe.com/docs/ips</a>). Or, easier: use Stripe's signed webhook secret as auth and turn off IP-based blocking for the webhook path.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-num">REASON 05</div>
+      <h3>Handler responds 4xx/5xx and Stripe gave up</h3>
+      <p>Stripe retries failed deliveries on a schedule (immediately, then 5min, 1hr, 4hr, 12hr, 24hr, then drops). After 3 days of failures, Stripe stops trying. If your endpoint was broken for a week then fixed, anything older than 3 days is gone — Stripe won't replay it.</p>
+      <p><strong>Check:</strong> Dashboard → Webhooks → click endpoint → "Recent deliveries" → look for events older than 3 days with <code>Failed</code> status.</p>
+      <p><strong>Fix:</strong> manually replay each failed event using Dashboard → click event → "Resend." Or write a one-shot backfill that pages through <code>events.list</code> and re-emits each through your handler. See <a href="/webhook/blog/idempotency/">our idempotency post</a> for safe re-emission patterns.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-num">REASON 06</div>
+      <h3>Endpoint disabled because of repeated failures</h3>
+      <p>If your endpoint failed 100% of deliveries for 24+ hours, Stripe automatically disables it to stop the retry storm. Status changes from <code>enabled</code> to <code>disabled</code>. Future events go nowhere.</p>
+      <p><strong>Check:</strong> Dashboard → Webhooks → endpoint status pill. If it says <code>Disabled</code>, this is your bug.</p>
+      <p><strong>Fix:</strong> click <strong>Enable</strong>. Then audit the deliveries that failed during the dead window — those events will need manual replay (see Reason 05).</p>
+    </div>
+
+    <div class="step">
+      <div class="step-num">REASON 07</div>
+      <h3>You're listening on the wrong endpoint object</h3>
+      <p>Connect platforms have two webhook setups: account-level (events about <em>your</em> account) and Connect-level (events about your connected accounts' charges). If you only registered an account-level endpoint, you'll never see <code>charge.succeeded</code> for charges happening on connected accounts.</p>
+      <p><strong>Check:</strong> Dashboard → Webhooks → look for "Connect endpoints" tab. If empty and you're a Connect platform, that's the gap.</p>
+      <p><strong>Fix:</strong> register a Connect endpoint. Use the same URL but you'll need to differentiate inside your handler with the <code>account</code> field on the event payload.</p>
+    </div>
+
+    <h2>The dashboard field that solves this in 30 seconds</h2>
+
+    <p>Most teams skip the obvious first move: open the event in Stripe Dashboard and look at <strong>Webhook attempts</strong>. That panel shows:</p>
+
+    <ul>
+      <li>Whether Stripe queued a delivery at all</li>
+      <li>Which endpoint(s) it attempted</li>
+      <li>HTTP status returned by your origin</li>
+      <li>Response body Stripe got back</li>
+      <li>Number of retries + next retry time</li>
+    </ul>
+
+    <p>If "Webhook attempts" is empty, your endpoint isn't registered for the right mode/event/account combination (Reasons 1, 2, 7). If it shows attempts with HTTP 200, your handler ran and the bug is downstream. If it shows attempts with 4xx/5xx, the response body usually contains the actual error message your code logged.</p>
+
+    <p><strong>Direct link template:</strong> <code>https://dashboard.stripe.com/events/&lt;evt_xxx&gt;</code> — paste the event ID from the charge to land directly on the diagnostic panel.</p>
+
+    <h2>What to do after you find the cause</h2>
+
+    <ol>
+      <li>Fix the root cause (re-register endpoint, allow IP, etc).</li>
+      <li>Replay the failed events using Dashboard → "Resend" on each one.</li>
+      <li>Set up monitoring so this doesn't surprise you again — see the next section.</li>
+    </ol>
+
+    <div class="cta-box">
+      <h3>Stop finding out from customers</h3>
+      <p>Webhook Health Check pings your endpoint every 5 minutes and emails you within 60s if it returns non-2xx. $29/mo. The simplest possible monitor — designed specifically for indie hackers running one Stripe endpoint who don't want to learn Hookdeck's $39/mo dashboard or pay Svix $490.</p>
+      <a class="btn" href="/webhook/health-check/">See the offer →</a>
+    </div>
+
+    <h2>If you want to skip the debugging</h2>
+
+    <p>Sentry Forge ships your Stripe webhook with all 7 of these failure modes pre-handled — endpoint registered for the right mode, all event types selected, HMAC verification, 3-day retry-replay queue, and Stripe-IP allowlist documented in the deploy guide. $199 flat, 24-hour delivery.</p>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="/webhook/blog/stripe-400/">Why your Stripe webhook returns 400 in production</a></li>
+      <li><a href="/webhook/blog/idempotency/">Stripe webhook idempotency patterns</a></li>
+      <li><a href="/webhook/blog/retry-behavior/">Stripe webhook retry behavior</a></li>
+      <li><a href="/webhook/blog/secret-rotation/">Rotate Stripe webhook secrets without downtime</a></li>
+      <li><a href="/webhook/diagnostic/">Free webhook signature diagnostic</a></li>
+      <li><a href="/webhook/health-check/">Webhook uptime monitoring — $29/mo</a></li>
+      <li><a href="/webhook/compare/">Sentry Forge vs Hookdeck vs Svix</a></li>
+    </ul>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    Written by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="/webhook/">$199 setup</a> · <a href="/webhook/health-check/">$29/mo monitoring</a> · <a href="/webhook/blog/">all posts</a><br/>
+    <a href="/about/">About</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a>
+  </div>
+</footer>
+
+</body>
+</html>
