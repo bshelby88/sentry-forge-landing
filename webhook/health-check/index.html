@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Stripe Webhook Health Check — $29/mo monitoring for indie hackers</title>
+<meta name="description" content="Cron-based monitor pings your Stripe webhook endpoint every 5 minutes. Email alert the moment it returns non-2xx or stops responding. $29/mo. The gap between Hookdeck ($39) and Svix Pro ($490)." />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="canonical" href="https://sentry-forge-landing.vercel.app/webhook/health-check/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Stripe Webhook Health Check — $29/mo" />
+<meta property="og:description" content="5-minute cron pings on your Stripe webhook. Email the moment it breaks. Built for indie hackers who can't justify Hookdeck's $39 entry tier." />
+<meta property="og:url" content="https://sentry-forge-landing.vercel.app/webhook/health-check/" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Stripe Webhook Health Check — $29/mo" />
+<meta name="twitter:description" content="Cron-based Stripe webhook monitoring with email alerts. $29/mo, built for indie hackers." />
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-elev: #11141c;
+    --bg-card: #161a24;
+    --line: #1f2532;
+    --text: #d6dae3;
+    --text-dim: #8a92a4;
+    --text-bright: #f0f2f7;
+    --accent: #5cd8a8;
+    --accent-dim: #2f7559;
+    --warn: #ffb454;
+    --danger: #ff6b6b;
+
+    --display: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent); text-decoration: underline; }
+
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--line);
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    background: rgba(11, 13, 18, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .brand {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--text-bright);
+    font-size: 14px;
+    letter-spacing: -0.02em;
+  }
+  .brand .dot { color: var(--accent); }
+  .brand .slash { color: var(--text-dim); margin: 0 6px; font-weight: 400; }
+  .brand .seg { color: var(--accent); }
+  .nav-cta {
+    background: var(--accent);
+    color: var(--bg);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav-cta:hover { background: #4dc095; text-decoration: none; }
+
+  /* HERO */
+  .hero {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(60% 80% at 85% 0%, rgba(92, 216, 168, 0.06), transparent 70%),
+      radial-gradient(40% 60% at 0% 100%, rgba(92, 216, 168, 0.04), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .hero .wrap { position: relative; z-index: 1; }
+  .badge {
+    display: inline-block;
+    background: rgba(92, 216, 168, 0.1);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    border: 1px solid var(--accent-dim);
+  }
+  h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1.08;
+    margin: 0 0 20px;
+    color: var(--text-bright);
+    letter-spacing: -0.025em;
+    font-weight: 700;
+  }
+  h1 .accent { color: var(--accent); }
+  .lede {
+    font-size: 19px;
+    color: var(--text-dim);
+    max-width: 640px;
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+  .cta-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .btn {
+    display: inline-block;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    transition: transform 0.1s, background 0.15s;
+  }
+  .btn:hover { transform: translateY(-1px); text-decoration: none; }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .btn-primary:hover { background: #4dc095; }
+  .btn-secondary {
+    color: var(--text);
+    border: 1px solid var(--line);
+    background: transparent;
+  }
+  .btn-secondary:hover { border-color: var(--text-dim); color: var(--text-bright); }
+  .price-note {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-left: 8px;
+  }
+
+  /* COMPARE STRIP — sets the "$29 fills the gap" anchor right under the hero */
+  .compare {
+    margin-top: 36px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg-card);
+  }
+  .compare > div {
+    padding: 18px 20px;
+    border-right: 1px solid var(--line);
+  }
+  .compare > div:last-child { border-right: none; }
+  .compare .tier-name {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .compare .tier-price {
+    font-family: var(--mono);
+    font-size: 22px;
+    color: var(--text-bright);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .compare .tier-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+  .compare .ours {
+    background: rgba(92, 216, 168, 0.08);
+  }
+  .compare .ours .tier-name { color: var(--accent); }
+  .compare .ours .tier-price { color: var(--accent); }
+  @media (max-width: 640px) {
+    .compare { grid-template-columns: 1fr; }
+    .compare > div { border-right: none; border-bottom: 1px solid var(--line); }
+    .compare > div:last-child { border-bottom: none; }
+  }
+
+  /* SECTIONS */
+  section { padding: 60px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+  h2 {
+    font-size: 28px;
+    margin: 0 0 16px;
+    color: var(--text-bright);
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: 18px;
+    margin: 0 0 8px;
+    color: var(--text-bright);
+    font-family: var(--mono);
+    font-weight: 500;
+  }
+  p { margin: 0 0 16px; max-width: 720px; }
+
+  /* MONITOR CARD — editorial proof block */
+  .monitor {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 28px;
+    margin: 28px 0;
+    font-family: var(--mono);
+    font-size: 14px;
+    overflow-x: auto;
+  }
+  .monitor-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .pulse {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--accent);
+  }
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(92, 216, 168, 0.6);
+    animation: pulse 2s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(92, 216, 168, 0.55); }
+    70% { box-shadow: 0 0 0 10px rgba(92, 216, 168, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(92, 216, 168, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pulse-dot { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+  .monitor-line {
+    display: grid;
+    grid-template-columns: 90px 1fr 60px;
+    gap: 12px;
+    align-items: baseline;
+    padding: 4px 0;
+  }
+  .monitor-line + .monitor-line { border-top: 1px dashed rgba(31, 37, 50, 0.6); }
+  .monitor-status-200 { color: var(--accent); font-weight: 700; text-align: right; }
+  .monitor-status-500 { color: var(--danger); font-weight: 700; text-align: right; }
+  .monitor-status-timeout { color: var(--warn); font-weight: 700; text-align: right; }
+  .monitor-time { color: var(--text-dim); font-size: 12px; }
+  .monitor-method { color: var(--text); }
+  .monitor-method .dim { color: var(--text-dim); }
+  .alert-banner {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 107, 107, 0.4);
+    background: rgba(255, 107, 107, 0.08);
+    border-radius: 8px;
+    color: var(--danger);
+    font-family: var(--display);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .alert-banner strong { color: var(--text-bright); font-weight: 600; }
+
+  /* DOES / DOES-NOT split */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  @media (max-width: 720px) { .split { grid-template-columns: 1fr; } }
+  .split-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .split-card.does { border-color: var(--accent-dim); }
+  .split-card.does-not { border-color: rgba(255, 107, 107, 0.25); }
+  .split-card h3 {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .split-card.does h3::before {
+    content: "✓";
+    color: var(--accent);
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .split-card.does-not h3::before {
+    content: "✕";
+    color: var(--danger);
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .split-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .split-card li {
+    padding: 10px 0;
+    color: var(--text);
+    font-size: 14.5px;
+    line-height: 1.5;
+    border-top: 1px solid var(--line);
+  }
+  .split-card li:first-child { border-top: none; padding-top: 0; }
+  .split-card li code {
+    color: var(--accent);
+    font-size: 13px;
+  }
+  .split-card.does-not li { color: var(--text-dim); }
+  .split-card.does-not li strong { color: var(--text); font-weight: 500; }
+
+  /* PRICING */
+  .price-card {
+    background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--accent-dim);
+    border-radius: 16px;
+    padding: 36px;
+    max-width: 480px;
+    margin: 24px 0;
+    position: relative;
+  }
+  .price-card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(180deg, rgba(92, 216, 168, 0.5), transparent 60%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+  .price-tier {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .price-amount {
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .price-amount .currency { font-size: 28px; vertical-align: super; }
+  .price-amount .period { font-size: 16px; color: var(--text-dim); font-weight: 400; }
+  .price-sub {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .price-list {
+    list-style: none;
+    padding: 0;
+    margin: 24px 0 28px;
+  }
+  .price-list li {
+    padding: 8px 0;
+    color: var(--text);
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .price-list li::before {
+    content: "→";
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* FAQ */
+  details {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 8px;
+  }
+  details[open] { border-color: var(--accent-dim); }
+  summary {
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-bright);
+    font-size: 15px;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: "+ ";
+    color: var(--accent);
+    font-family: var(--mono);
+    font-weight: 700;
+  }
+  details[open] summary::before { content: "− "; }
+  details > p:first-of-type { margin-top: 12px; }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 0 60px;
+    color: var(--text-dim);
+    font-size: 13px;
+    border-top: 1px solid var(--line);
+  }
+  footer a { color: var(--text-dim); text-decoration: underline; }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="/webhook/" style="text-decoration:none;" aria-label="webhook.forge home">
+      <span class="brand">webhook<span class="dot">.</span>forge<span class="slash">/</span><span class="seg">health-check</span></span>
+    </a>
+    <a class="nav-cta" href="https://buy.stripe.com/REPLACE_AFTER_STRIPE_SETUP">Subscribe — $29/mo</a>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="badge">CRON-BASED MONITORING · 5-MIN INTERVAL</span>
+    <h1>Stripe webhook monitoring for indie hackers <span class="accent">— $29/mo.</span></h1>
+    <p class="lede">A cron job pings your live Stripe webhook endpoint every 5 minutes. The instant it returns non-2xx or stops responding, you get an email. No dashboards to log into. No retry storms to ignore. Just the alert that matters.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://buy.stripe.com/REPLACE_AFTER_STRIPE_SETUP">Start monitoring — $29/mo</a>
+      <a class="btn btn-secondary" href="#what-it-monitors">What it watches ↓</a>
+      <span class="price-note">Cancel any time. No annual lock-in.</span>
+    </div>
+
+    <div class="compare" aria-label="Pricing context vs Hookdeck and Svix Pro">
+      <div>
+        <div class="tier-name">Hookdeck</div>
+        <div class="tier-price">$39/mo</div>
+        <div class="tier-desc">Full relay + replay. Overkill if you just need to know it's up.</div>
+      </div>
+      <div class="ours">
+        <div class="tier-name">webhook.forge / health-check</div>
+        <div class="tier-price">$29/mo</div>
+        <div class="tier-desc">Pure uptime + signature health. Email when it breaks. Nothing else.</div>
+      </div>
+      <div>
+        <div class="tier-name">Svix Pro</div>
+        <div class="tier-price">$490/mo</div>
+        <div class="tier-desc">Enterprise-grade event platform. Wrong tier for a solo project.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="what-it-monitors">
+  <div class="wrap">
+    <h2>A 5-minute heartbeat on the only endpoint that matters</h2>
+    <p>Your Stripe webhook is the seam between Stripe charging the customer and your app actually delivering the thing. When it breaks at 2 AM on a Saturday, the silent failure mode is: customer paid, you never knew, refund email arrives Monday. This kills it.</p>
+
+    <div class="monitor" aria-label="Live monitor sample log">
+      <div class="monitor-head">
+        <span>Monitor · /api/stripe-webhook</span>
+        <span class="pulse"><span class="pulse-dot" aria-hidden="true"></span>watching</span>
+      </div>
+      <div class="monitor-line"><span class="monitor-time">12:00:02</span><span class="monitor-method">POST <span class="dim">/api/stripe-webhook</span></span><span class="monitor-status-200">200</span></div>
+      <div class="monitor-line"><span class="monitor-time">12:05:01</span><span class="monitor-method">POST <span class="dim">/api/stripe-webhook</span></span><span class="monitor-status-200">200</span></div>
+      <div class="monitor-line"><span class="monitor-time">12:10:03</span><span class="monitor-method">POST <span class="dim">/api/stripe-webhook</span></span><span class="monitor-status-200">200</span></div>
+      <div class="monitor-line"><span class="monitor-time">12:15:02</span><span class="monitor-method">POST <span class="dim">/api/stripe-webhook</span></span><span class="monitor-status-500">500</span></div>
+      <div class="monitor-line"><span class="monitor-time">12:20:00</span><span class="monitor-method">POST <span class="dim">/api/stripe-webhook</span></span><span class="monitor-status-timeout">t/o</span></div>
+      <div class="alert-banner">
+        <strong>Alert sent →</strong> jadedfocus@gmail.com · "Webhook returned 500 at 12:15:02 UTC, then timed out at 12:20:00. Endpoint may be down. Check Vercel logs."
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="split-card does">
+        <h3>What it monitors</h3>
+        <ul>
+          <li><strong>Endpoint reachability</strong> — every 5 minutes, a synthetic <code>POST</code> with a Stripe-shaped test payload.</li>
+          <li><strong>Signature verification health</strong> — sends a properly-signed test event so a broken <code>STRIPE_WEBHOOK_SECRET</code> shows up as 400, not silent prod drift.</li>
+          <li><strong>Stripe webhook delivery success rate</strong> — daily polled summary from Stripe's <code>events</code> API, flagged if your live success rate dips below 95%.</li>
+          <li><strong>Response time outliers</strong> — flags p95 latency over 3s before Stripe starts treating you as flaky.</li>
+          <li><strong>SSL + DNS validity</strong> — cert expiring in &lt;14 days, or DNS no longer resolving, fires immediately.</li>
+        </ul>
+      </div>
+      <div class="split-card does-not">
+        <h3>What it does NOT do</h3>
+        <ul>
+          <li><strong>Not a logging service.</strong> Use Vercel logs, Axiom, or Logtail for full event payload history.</li>
+          <li><strong>Not a debugger.</strong> No request inspector, no replay UI, no diff viewer. That's <a href="https://hookdeck.com">Hookdeck</a> at $39/mo and up.</li>
+          <li><strong>Not a relay.</strong> Stripe still talks directly to your endpoint. We watch from the outside; we don't sit in the middle.</li>
+          <li><strong>Not an event platform.</strong> No fan-out, no transformation, no SDK to install. That's <a href="https://www.svix.com">Svix</a> at $490/mo.</li>
+          <li><strong>Not a status page.</strong> Email-only alerts, on purpose. One inbox, one signal.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="font-size: 14px; color: var(--text-dim); margin-top: 20px;">→ Already broken right now? Try the <a href="/webhook/diagnostic/">free signature diagnostic</a> first.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Pricing</h2>
+    <div class="price-card">
+      <div class="price-tier">Health Check · Monthly</div>
+      <div class="price-sub">Single Stripe webhook endpoint. Email alerts. Cancel any time.</div>
+      <div class="price-amount"><span class="currency">$</span>29<span class="period"> / month</span></div>
+      <ul class="price-list">
+        <li>5-minute synthetic ping on your Stripe webhook URL</li>
+        <li>Signed test events to verify <code>STRIPE_WEBHOOK_SECRET</code> is current</li>
+        <li>Daily Stripe delivery success-rate digest</li>
+        <li>Email alerts on non-2xx, timeout, SSL expiry, DNS failure</li>
+        <li>p95 latency outlier detection</li>
+        <li>One endpoint included. Add more at $9/each.</li>
+        <li>Cancel any time, prorated to the day</li>
+      </ul>
+      <a class="btn btn-primary" href="https://buy.stripe.com/REPLACE_AFTER_STRIPE_SETUP">Subscribe — $29/mo</a>
+    </div>
+    <p style="font-size: 13px; color: var(--text-dim); max-width: 480px;">Need the webhook itself built first? See the one-time <a href="/webhook/">$199 build service</a>. The two pair naturally — ship the webhook, then put a heartbeat on it.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>FAQ</h2>
+
+    <details>
+      <summary>How is this different from Hookdeck or Svix?</summary>
+      <p>Hookdeck and Svix sit <em>between</em> Stripe and your app. They relay, retry, transform, and replay events. Powerful, and worth the money if you need it. This service does not sit in the middle of anything — Stripe still POSTs directly to your endpoint. We just ping that endpoint every 5 minutes from the outside and email you when it stops responding correctly. Different job, different price.</p>
+    </details>
+
+    <details>
+      <summary>Won't your synthetic pings show up as failed events in my Stripe dashboard?</summary>
+      <p>No. The pings are signed with a separate test header set, and your handler can ignore them in one line: <code>if (req.headers['x-forge-healthcheck']) return res.status(200).end()</code>. We give you the snippet on signup. Your Stripe events page stays clean.</p>
+    </details>
+
+    <details>
+      <summary>What email provider do you alert through?</summary>
+      <p>Resend by default, with SPF/DKIM aligned on a <code>forge.</code> subdomain so alerts don't end up in spam. If you have a strong preference for Postmark or SES we can route through yours instead at no extra cost.</p>
+    </details>
+
+    <details>
+      <summary>What happens if my endpoint is down for hours?</summary>
+      <p>One alert on the first failure, one alert on recovery. We do not page you every 5 minutes during an outage — that trains you to ignore the alerts. If the endpoint is still down 4 hours later you get a second "still down" reminder. That's it.</p>
+    </details>
+
+    <details>
+      <summary>Can I monitor multiple endpoints?</summary>
+      <p>The base $29/mo covers one endpoint. Each additional endpoint is $9/mo flat (staging, second product, separate Stripe account, etc.). No tier ladder, no per-event metering.</p>
+    </details>
+
+    <details>
+      <summary>Refund policy?</summary>
+      <p>Monthly subscription, cancel any time, prorated to the day. If a missed alert during your subscription window cost you a real customer issue and we can confirm the gap, the month is on us.</p>
+    </details>
+
+    <details>
+      <summary>How do I start?</summary>
+      <p>Subscribe at the link above. You'll get an email within an hour with the intake: webhook URL, your Stripe restricted API key (read-only, events scope), preferred alert email. The first heartbeat fires within 15 minutes of intake completion.</p>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    Built and run by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="https://sentry-forge-landing.vercel.app/">Sentry Forge home</a> · <a href="/webhook/">webhook.forge</a> · <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a><br/>
+    $29/mo, monthly recurring · Cancel any time · One Stripe webhook endpoint included.<br/>
+    <a href="/about/">About</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a>
+  </div>
+</footer>
+
+</body>
+</html>
