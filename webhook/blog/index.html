@@ -138,6 +138,17 @@
     <h1>Webhook Blog</h1>
     <p class="lede">Practical writeups on Stripe webhook implementation, distilled from a working production pipeline. New posts as new traps surface.</p>
 
+    <a class="post" href="/webhook/blog/idempotency/">
+      <div class="post-meta">
+        <span>2026-05-08</span>
+        <span class="post-tag">IDEMPOTENCY</span>
+        <span>~7 min</span>
+      </div>
+      <h2>Stripe Webhook Idempotency: How to Handle Duplicate Events Without Double-Charging</h2>
+      <p>Stripe delivers the same event multiple times. Without idempotency, you double-charge customers, send duplicate emails, corrupt your database. Atomic claim-check pattern with code for KV, Postgres, and high-stakes two-phase commits.</p>
+      <span class="post-arrow">read →</span>
+    </a>
+
     <a class="post" href="/webhook/blog/retry-behavior/">
       <div class="post-meta">
         <span>2026-05-08</span>

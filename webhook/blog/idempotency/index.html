@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Stripe Webhook Idempotency: How to Handle Duplicate Events Without Double-Charging</title>
+<meta name="description" content="Stripe can deliver the same webhook event multiple times. Without idempotency, you double-charge customers, send duplicate emails, or corrupt your database. The exact patterns to make webhook handlers safely re-runnable, with code." />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="canonical" href="https://sentry-forge-landing.vercel.app/webhook/blog/idempotency/" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Stripe Webhook Idempotency: Handle Duplicate Events Safely" />
+<meta property="og:description" content="Patterns for safely re-runnable webhook handlers. Event-ID dedup, atomic claim-check, and side-effect ordering." />
+<meta property="og:url" content="https://sentry-forge-landing.vercel.app/webhook/blog/idempotency/" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Stripe Webhook Idempotency: How to Handle Duplicate Events Without Double-Charging",
+  "datePublished": "2026-05-08",
+  "dateModified": "2026-05-08",
+  "author": { "@type": "Person", "name": "Bryant Shelby", "url": "https://x.com/jadedfocus" },
+  "description": "Patterns and code for safely idempotent Stripe webhook handlers.",
+  "mainEntityOfPage": "https://sentry-forge-landing.vercel.app/webhook/blog/idempotency/"
+}
+</script>
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root { --bg: #0b0d12; --bg-card: #161a24; --bg-elev: #11141c; --line: #1f2532; --text: #d6dae3; --text-dim: #8a92a4; --text-bright: #f0f2f7; --accent: #5cd8a8; --warn: #ffb454; --danger: #ff6b6b; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 740px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--line); padding: 16px 0; background: rgba(11,13,18,0.85); backdrop-filter: blur(8px); }
+  .nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-bright); font-size: 14px; }
+  .brand .dot { color: var(--accent); }
+  .nav-cta { background: var(--accent); color: var(--bg); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+  article { padding: 60px 0 80px; }
+  article time { color: var(--text-dim); font-size: 14px; font-family: 'JetBrains Mono', monospace; }
+  h1 { font-size: clamp(28px, 4vw, 38px); color: var(--text-bright); letter-spacing: -0.02em; margin: 12px 0 22px; line-height: 1.18; }
+  .lede { font-size: 19px; color: var(--text); margin-bottom: 32px; }
+  h2 { font-size: 26px; color: var(--text-bright); margin: 44px 0 14px; letter-spacing: -0.01em; }
+  h3 { font-size: 18px; color: var(--text-bright); margin: 24px 0 8px; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+  p { margin: 0 0 18px; }
+  ul, ol { padding-left: 24px; }
+  li { margin: 8px 0; }
+  code { font-family: 'JetBrains Mono', monospace; background: var(--bg-card); color: var(--accent); padding: 2px 7px; border-radius: 4px; font-size: 13.5px; }
+  pre { background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.65; color: var(--text); margin: 16px 0 24px; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  .callout { background: var(--bg-elev); border-left: 3px solid var(--accent); border-radius: 4px; padding: 16px 20px; margin: 20px 0; font-size: 15px; }
+  .callout strong { color: var(--accent); }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.warn strong { color: var(--warn); }
+  .cta-card { background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-elev) 100%); border: 1px solid var(--accent); border-radius: 12px; padding: 28px; margin: 36px 0; text-align: center; }
+  .cta-card h3 { font-family: inherit; font-size: 20px; color: var(--text-bright); margin: 0 0 8px; }
+  .cta-card p { color: var(--text-dim); font-size: 15px; margin: 0 0 20px; }
+  .btn { display: inline-block; background: var(--accent); color: var(--bg); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 16px; text-decoration: none; }
+  .btn:hover { background: #4dc095; text-decoration: none; }
+  footer { padding: 32px 0 60px; color: var(--text-dim); font-size: 13px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand">webhook<span class="dot">.</span>forge</span>
+    <a class="nav-cta" href="/webhook/">$199 setup ↗</a>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+    <time datetime="2026-05-08">2026-05-08 · ~7 min read</time>
+    <h1>Stripe Webhook Idempotency: How to Handle Duplicate Events Without Double-Charging</h1>
+
+    <p class="lede">Stripe will deliver the same webhook event multiple times. Sometimes within the same minute (network retries on a slow first response), sometimes hours apart (failed deliveries that succeed on retry). Without idempotency in your handler, you double-charge, double-email, or corrupt your database. Below: the exact patterns that make webhook handlers safely re-runnable, with working code for the common stacks.</p>
+
+    <h2>Why duplicates happen</h2>
+
+    <p>Three common causes:</p>
+
+    <ol>
+      <li><strong>Network slowness.</strong> Your handler took 28 seconds to respond. Stripe gave up at 30 and retried. Your handler finished anyway, and the second delivery arrives 5 minutes later — same event, second invocation.</li>
+      <li><strong>Failed delivery, retry succeeds.</strong> First delivery 5xx'd because your downstream timed out. Stripe retries 5 minutes later. Same event, fresh invocation.</li>
+      <li><strong>Stale-event retry storm.</strong> Your secret was wrong all week; events 400'd. Bryant fixed the secret. Stripe drains its retry queue — every old event re-delivers in succession.</li>
+    </ol>
+
+    <p>In all three cases, the event payload is identical. Stripe's <code>event.id</code> is the same. Your handler must recognize the duplicate and skip the side effects, or it does the work twice.</p>
+
+    <div class="callout warn">
+      <strong>Worst case scenario:</strong> handler invokes <code>charge.create</code> twice on a duplicate event because you confused webhook events with API mutations. Customer sees two charges. Customer files chargeback. Customer never trusts you again. <strong>Idempotency is not optional.</strong>
+    </div>
+
+    <h2>The dedup-key pattern</h2>
+
+    <p>Standard pattern: store every <code>event.id</code> you've successfully processed. On every invocation, check whether the event ID already exists. If yes, return 200 and skip the work. If no, process and then store.</p>
+
+    <p>Two ways to do the check, with different failure modes.</p>
+
+    <h3>Pattern A — Check then set (BAD on its own)</h3>
+
+    <pre><code>// Simple but has a race condition
+const seen = await kv.get(`stripe:event:${event.id}`);
+if (seen) {
+  return res.status(200).json({ received: true, dedup: true });
+}
+
+await processEvent(event);  // do the side effects
+await kv.set(`stripe:event:${event.id}`, true, { ex: 86400 * 7 });
+return res.status(200).json({ received: true });</code></pre>
+
+    <p>Why it's broken: if Stripe delivers the same event twice in fast succession (e.g. network hiccup → instant retry), both invocations hit <code>kv.get</code> before either calls <code>kv.set</code>. Both see <code>seen = false</code>. Both process. You charged twice.</p>
+
+    <h3>Pattern B — Set first, atomic claim (GOOD)</h3>
+
+    <pre><code>// Atomic "set if not exists" — only one invocation wins
+const claimed = await kv.set(
+  `stripe:event:${event.id}`,
+  'processing',
+  { nx: true, ex: 86400 * 7 }  // nx = only set if not exists
+);
+
+if (!claimed) {
+  return res.status(200).json({ received: true, dedup: true });
+}
+
+try {
+  await processEvent(event);
+  await kv.set(`stripe:event:${event.id}`, 'done', { ex: 86400 * 7 });
+} catch (e) {
+  // Release the claim so a retry can re-process
+  await kv.del(`stripe:event:${event.id}`);
+  console.error('event processing failed', e);
+  return res.status(200).json({ received: true, error: String(e) });
+}
+
+return res.status(200).json({ received: true });</code></pre>
+
+    <p>The <code>nx</code> flag (or equivalent: SQL <code>INSERT ... ON CONFLICT DO NOTHING</code>) is atomic at the KV/database level. Only the first invocation sets the key; the second sees it already exists and bails immediately.</p>
+
+    <p>The release-on-failure pattern (<code>kv.del</code> in the catch block) is intentional: if your processing fails, you want a future retry to re-attempt. Without the delete, the key stays and the retry skips with "dedup."</p>
+
+    <h2>Pattern C — Two-phase commit (BEST for high-stakes)</h2>
+
+    <p>For webhooks where double-processing is catastrophic (financial transactions, irreversible state changes), use a two-phase pattern: claim first, do work, mark done.</p>
+
+    <pre><code>// Phase 1: claim
+const claimed = await db.query(
+  `INSERT INTO webhook_events (event_id, status, claimed_at)
+   VALUES ($1, 'processing', NOW())
+   ON CONFLICT (event_id) DO NOTHING
+   RETURNING event_id`,
+  [event.id]
+);
+
+if (claimed.rows.length === 0) {
+  // Already claimed (or done). Look up status.
+  const existing = await db.query(
+    `SELECT status FROM webhook_events WHERE event_id = $1`,
+    [event.id]
+  );
+  // If status is 'processing' but claimed_at is older than 30s, it's
+  // a stuck claim — release and let this invocation re-claim.
+  // Skip the safety code here for brevity; assume done.
+  return res.status(200).json({ received: true, dedup: true });
+}
+
+// Phase 2: do work
+try {
+  await processEvent(event);
+
+  // Phase 3: mark done
+  await db.query(
+    `UPDATE webhook_events SET status = 'done', completed_at = NOW()
+     WHERE event_id = $1`,
+    [event.id]
+  );
+} catch (e) {
+  await db.query(
+    `UPDATE webhook_events SET status = 'failed', error = $2
+     WHERE event_id = $1`,
+    [event.id, String(e)]
+  );
+  return res.status(200).json({ received: true, error: String(e) });
+}
+
+return res.status(200).json({ received: true });</code></pre>
+
+    <p>Status transitions: <code>processing → done</code> on success; <code>processing → failed</code> on error. A retry of a "failed" event can be configured to re-claim and re-attempt; a retry of a "done" event always skips.</p>
+
+    <h2>Storage tier choices</h2>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
+      <tr style="border-bottom: 1px solid var(--line);">
+        <th style="text-align: left; padding: 8px 12px; color: var(--text-bright);">Volume</th>
+        <th style="text-align: left; padding: 8px 12px; color: var(--text-bright);">Storage</th>
+        <th style="text-align: left; padding: 8px 12px; color: var(--text-bright);">Why</th>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--line);">
+        <td style="padding: 8px 12px;">&lt; 100 events/day</td>
+        <td style="padding: 8px 12px;"><code>fs.writeFile</code> on Vercel KV / Upstash</td>
+        <td style="padding: 8px 12px;">Free tier covers it; latency is irrelevant</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--line);">
+        <td style="padding: 8px 12px;">100-10k events/day</td>
+        <td style="padding: 8px 12px;">Upstash Redis or Vercel KV</td>
+        <td style="padding: 8px 12px;">Fast, cheap, atomic SETNX</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--line);">
+        <td style="padding: 8px 12px;">10k-1M events/day</td>
+        <td style="padding: 8px 12px;">Postgres unique-constraint table or DynamoDB</td>
+        <td style="padding: 8px 12px;">Persistence + ACID guarantees + analytics potential</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px 12px;">1M+ events/day</td>
+        <td style="padding: 8px 12px;">Hire a DevOps engineer</td>
+        <td style="padding: 8px 12px;">Patterns past this point need real ops + monitoring</td>
+      </tr>
+    </table>
+
+    <h2>What about non-Stripe idempotency keys?</h2>
+
+    <p>Stripe's API also supports passing an <code>Idempotency-Key</code> header on outbound API calls (e.g. when you call <code>stripe.charges.create</code> or <code>stripe.refunds.create</code>). This is different from webhook event IDs — it's for your client requests, not Stripe's webhook deliveries.</p>
+
+    <p>Use both. Webhook idempotency on inbound events; <code>Idempotency-Key</code> on outbound mutations. They're complementary.</p>
+
+    <pre><code>// Outbound — pass an idempotency key
+await stripe.charges.create(
+  { amount: 100, currency: 'usd', source: 'tok_visa' },
+  { idempotencyKey: `charge-${userId}-${Date.now()}` }
+);</code></pre>
+
+    <p>If your retry logic re-runs <code>stripe.charges.create</code> with the same key within 24 hours, Stripe returns the original response without charging twice.</p>
+
+    <h2>The "what if dedup KV is down" question</h2>
+
+    <p>If your dedup storage (KV / DB) is unavailable, you have a choice:</p>
+
+    <ul>
+      <li><strong>Fail closed</strong> (return 500 to Stripe). Stripe retries; you delay processing until storage is back. Risk: long Stripe outage = lots of retries = error noise. Acceptable for high-stakes flows.</li>
+      <li><strong>Fail open</strong> (process without dedup). Risk: duplicate processing. Acceptable for idempotent side effects (e.g. "send welcome email" — at worst, customer gets two welcome emails).</li>
+    </ul>
+
+    <p>Pick the one that matches the consequence of duplicate processing for your specific event handler. <code>checkout.session.completed → send_email</code> can fail open. <code>checkout.session.completed → charge_user_account</code> must fail closed.</p>
+
+    <h2>Summary checklist</h2>
+
+    <ul>
+      <li>[ ] Use atomic "set if not exists" (Redis SETNX, DB UNIQUE constraint with ON CONFLICT) — never check-then-set</li>
+      <li>[ ] Key on <code>event.id</code>, not on a derived field (customer ID, amount, timestamp)</li>
+      <li>[ ] TTL the dedup key for at least 7 days (Stripe retries up to 3 days, then sends fresh attempts)</li>
+      <li>[ ] Release the key on processing failure, so retries can re-attempt</li>
+      <li>[ ] For high-stakes flows, use the three-state status (processing / done / failed) with stuck-claim recovery</li>
+      <li>[ ] Pair webhook idempotency with outbound <code>Idempotency-Key</code> header on Stripe API mutations</li>
+      <li>[ ] Decide fail-open vs fail-closed for your dedup storage outage scenario</li>
+    </ul>
+
+    <div class="cta-card">
+      <h3>Want this implemented in your repo without writing it yourself?</h3>
+      <p>$199 flat (first 3 clients, then $399). Includes idempotency, sig verification, customer + founder email, atomic dedup with your storage of choice.</p>
+      <a class="btn" href="/webhook/">See the offer →</a>
+    </div>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="/webhook/blog/stripe-400/">Why your Stripe webhook returns 400 in production</a></li>
+      <li><a href="/webhook/blog/multiple-events/">Why Stripe fires 6+ events per checkout</a></li>
+      <li><a href="/webhook/blog/retry-behavior/">Stripe webhook retry behavior</a></li>
+      <li><a href="/webhook/diagnostic/">Free webhook signature diagnostic</a></li>
+      <li><a href="/webhook/calculator/">Webhook + email cost calculator</a></li>
+    </ul>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    Written by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="/webhook/blog/">all posts</a> · <a href="/webhook/">offer</a><br/>
+    <a href="/about/">About</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a>
+  </div>
+</footer>
+
+</body>
+</html>
