@@ -30,6 +30,8 @@ export const config = {
 const PRODUCT_TIER = {
   prod_USSfIfOqde9WJZ: { label: 'One Case', price: 7900 },
   prod_USSfi26Dx2sRtn: { label: 'Founding 100', price: 2900 },
+  prod_UTa9dqJ4oenN6L: { label: 'Webhook Service', price: 19900 },
+  prod_UTa9lDfncXGlPK: { label: 'Dispute Letter', price: 4900 },
 };
 
 const FOUNDER_EMAIL = 'jadedfocus@gmail.com';
@@ -202,6 +204,8 @@ export default async function handler(req, res) {
   let tier = 'One Case';
   if (amount === 2900) tier = 'Founding 100';
   if (amount === 7900) tier = 'One Case';
+  if (amount === 19900) tier = 'Webhook Service';
+  if (amount === 4900) tier = 'Dispute Letter';
 
   const sessionId = session.id || 'unknown';
 
