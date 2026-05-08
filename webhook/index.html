@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Stripe Webhook + Resend Email Pipeline — 24h, $199 (first 3 clients)</title>
+<meta name="description" content="Production Stripe webhook with HMAC sig verification + Resend email automation. One file in your Next.js / Node app. Deployed and verified in 24h. $199 flat, first 3 clients only." />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="canonical" href="https://sentry-forge-landing.vercel.app/webhook/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Stripe Webhook + Resend Email Pipeline — 24h, $199" />
+<meta property="og:description" content="Production-ready Stripe webhook with sig verification, customer + founder emails, and Vercel deploy. Live in 24h. First 3 clients only." />
+<meta property="og:url" content="https://sentry-forge-landing.vercel.app/webhook/" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Stripe Webhook + Resend Email Pipeline — 24h, $199" />
+<meta name="twitter:description" content="Production-ready Stripe webhook + Resend automation. Live in 24h. $199 flat." />
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-elev: #11141c;
+    --bg-card: #161a24;
+    --line: #1f2532;
+    --text: #d6dae3;
+    --text-dim: #8a92a4;
+    --text-bright: #f0f2f7;
+    --accent: #5cd8a8;
+    --accent-dim: #2f7559;
+    --warn: #ffb454;
+    --danger: #ff6b6b;
+
+    --display: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent); text-decoration: underline; }
+
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--line);
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    background: rgba(11, 13, 18, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .brand {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--text-bright);
+    font-size: 14px;
+    letter-spacing: -0.02em;
+  }
+  .brand .dot { color: var(--accent); }
+  .nav-cta {
+    background: var(--accent);
+    color: var(--bg);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  .nav-cta:hover { background: #4dc095; text-decoration: none; }
+
+  /* HERO */
+  .hero {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--line);
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(92, 216, 168, 0.1);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    border: 1px solid var(--accent-dim);
+  }
+  h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1.1;
+    margin: 0 0 20px;
+    color: var(--text-bright);
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+  h1 .accent { color: var(--accent); }
+  .lede {
+    font-size: 19px;
+    color: var(--text-dim);
+    max-width: 640px;
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+  .cta-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .btn {
+    display: inline-block;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    transition: transform 0.1s, background 0.15s;
+  }
+  .btn:hover { transform: translateY(-1px); text-decoration: none; }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .btn-primary:hover { background: #4dc095; }
+  .btn-secondary {
+    color: var(--text);
+    border: 1px solid var(--line);
+    background: transparent;
+  }
+  .btn-secondary:hover { border-color: var(--text-dim); color: var(--text-bright); }
+  .price-note {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-left: 8px;
+  }
+
+  /* SECTIONS */
+  section { padding: 60px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+  h2 {
+    font-size: 28px;
+    margin: 0 0 16px;
+    color: var(--text-bright);
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: 18px;
+    margin: 0 0 8px;
+    color: var(--text-bright);
+    font-family: var(--mono);
+    font-weight: 500;
+  }
+  p { margin: 0 0 16px; max-width: 720px; }
+
+  /* PROOF CARD */
+  .proof {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 28px;
+    margin: 28px 0;
+    font-family: var(--mono);
+    font-size: 14px;
+    overflow-x: auto;
+  }
+  .proof-line {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .proof-status-200 { color: var(--accent); font-weight: 700; }
+  .proof-status-400 { color: var(--warn); }
+  .proof-time { color: var(--text-dim); font-size: 12px; }
+  .proof-method { color: var(--text); }
+  .proof-caption {
+    margin-top: 16px;
+    font-family: var(--display);
+    font-size: 13px;
+    color: var(--text-dim);
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+  }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .card-num {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+  .card-body { color: var(--text-dim); font-size: 14px; line-height: 1.5; }
+
+  /* CODE */
+  pre {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  code { font-family: var(--mono); color: var(--accent); }
+  pre code { color: inherit; }
+
+  /* PRICING */
+  .price-card {
+    background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--accent-dim);
+    border-radius: 16px;
+    padding: 36px;
+    max-width: 480px;
+    margin: 24px 0;
+  }
+  .price-tier {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .price-amount {
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .price-amount .currency { font-size: 28px; vertical-align: super; }
+  .price-amount .period { font-size: 16px; color: var(--text-dim); font-weight: 400; }
+  .price-strike {
+    color: var(--text-dim);
+    text-decoration: line-through;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .price-list {
+    list-style: none;
+    padding: 0;
+    margin: 24px 0 28px;
+  }
+  .price-list li {
+    padding: 8px 0;
+    color: var(--text);
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .price-list li::before {
+    content: "→";
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* FAQ */
+  details {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 8px;
+  }
+  details[open] { border-color: var(--accent-dim); }
+  summary {
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-bright);
+    font-size: 15px;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: "+ ";
+    color: var(--accent);
+    font-family: var(--mono);
+    font-weight: 700;
+  }
+  details[open] summary::before { content: "− "; }
+  details > p:first-of-type { margin-top: 12px; }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 0 60px;
+    color: var(--text-dim);
+    font-size: 13px;
+    border-top: 1px solid var(--line);
+  }
+  footer a { color: var(--text-dim); text-decoration: underline; }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand">webhook<span class="dot">.</span>forge</span>
+    <a class="nav-cta" href="https://buy.stripe.com/dRm7sM9ec9480P6fInfjG06">Buy — $199</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="badge">FIRST 3 CLIENTS — $199 (THEN $399)</span>
+    <h1>Stripe webhook + Resend email pipeline. <span class="accent">Live in 24h.</span></h1>
+    <p class="lede">Production HMAC sig verification, replay-attack guard, customer + founder emails, Vercel deploy, 7-day support. One file in your repo. Zero half-finished docs you have to debug at 1 AM.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://buy.stripe.com/dRm7sM9ec9480P6fInfjG06">Buy now — $199</a>
+      <a class="btn btn-secondary" href="#how-it-works">How it works ↓</a>
+      <span class="price-note">Refundable if I don't ship in 24h.</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Verified live the same night I built it</h2>
+    <p>First real $29 checkout fired six webhook events. All six returned 200 OK in under one second. Customer + founder confirmation emails delivered via Resend.</p>
+
+    <div class="proof" aria-label="Vercel runtime logs excerpt">
+      <div class="proof-line"><span class="proof-time">19:29:14.98</span><span class="proof-method">POST /api/stripe-webhook</span><span class="proof-status-200">200</span></div>
+      <div class="proof-line"><span class="proof-time">19:29:12.10</span><span class="proof-method">POST /api/stripe-webhook</span><span class="proof-status-200">200</span></div>
+      <div class="proof-line"><span class="proof-time">19:29:12.03</span><span class="proof-method">POST /api/stripe-webhook</span><span class="proof-status-200">200</span></div>
+      <div class="proof-line"><span class="proof-time">19:29:11.95</span><span class="proof-method">POST /api/stripe-webhook</span><span class="proof-status-200">200</span></div>
+      <div class="proof-line"><span class="proof-time">19:29:11.89</span><span class="proof-method">POST /api/stripe-webhook</span><span class="proof-status-200">200</span></div>
+      <div class="proof-line"><span class="proof-time">19:29:11.85</span><span class="proof-method">POST /api/stripe-webhook</span><span class="proof-status-200">200</span></div>
+      <div class="proof-caption">Six event-types per checkout (`checkout.session.completed`, `payment_intent.succeeded`, `charge.succeeded`, etc.) — handler returns 200 for all and dispatches email on the one it cares about. Zero retries, zero hammering, zero email drops.</div>
+    </div>
+
+    <p>Working source: <a href="https://github.com/bshelby88/sentry-forge-landing/blob/master/api/stripe-webhook.js">github.com/bshelby88/sentry-forge-landing/api/stripe-webhook.js</a> — fork it free, or pay me $199 to fit it to your stack.</p>
+  </div>
+</section>
+
+<section id="how-it-works">
+  <div class="wrap">
+    <h2>What ships in 24 hours</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="card-num">01</div>
+        <h3>Sig verification</h3>
+        <div class="card-body">HMAC-SHA256 against the raw body bytes (not the JSON-parsed body — Vercel's default body parser breaks Stripe sig if you let it run). 5-minute timestamp tolerance window blocks replay attacks. <code>crypto.timingSafeEqual()</code> for the constant-time compare.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">02</div>
+        <h3>Tier mapping</h3>
+        <div class="card-body">Map your Stripe product IDs and amounts to email copy variants. Buyer of your $29 plan gets one onboarding email; buyer of your $299 plan gets the higher-touch one. Edit the map in one place.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">03</div>
+        <h3>Customer email</h3>
+        <div class="card-body">"Your case is open" / "Welcome" / whatever copy you want, dispatched immediately on <code>checkout.session.completed</code>. Resend by default. Postmark / SendGrid swap is one function call.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">04</div>
+        <h3>Founder email</h3>
+        <div class="card-body">[FORGE PAID] notification to your inbox with tier, amount, customer email, Stripe session ID, and the next-action runbook. Reply-to set to the customer so reply works one-tap.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">05</div>
+        <h3>Always-200 contract</h3>
+        <div class="card-body">Webhook returns 200 even if downstream email/DB fails. Stripe stops retrying, your error log stays clean, and the failure handling lives in your error monitor — not in Stripe's retry storm.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">06</div>
+        <h3>Vercel deploy</h3>
+        <div class="card-body">Pushed to your main, env vars wired in Vercel project settings, Stripe endpoint registered with the right secret. I do the deploy. You get the green "Ready" status.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">07</div>
+        <h3>Live verification</h3>
+        <div class="card-body">$1 test charge, refunded after. You watch the webhook fire 200, you watch the emails land. Done in front of you, not "should work, lemme know."</div>
+      </div>
+      <div class="card">
+        <div class="card-num">08</div>
+        <h3>7-day support</h3>
+        <div class="card-body">If a Stripe event fails sig verification or an email doesn't fire in the first week, I fix it. Bug in my code is on me.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Pricing</h2>
+    <div class="price-card">
+      <div class="price-tier">First 3 Clients · Then $399</div>
+      <div class="price-strike">Regular: $399</div>
+      <div class="price-amount"><span class="currency">$</span>199<span class="period"> · one-time</span></div>
+      <ul class="price-list">
+        <li>One file in your repo (`api/stripe-webhook.js` or `.ts`)</li>
+        <li>HMAC sig verification + replay guard</li>
+        <li>Tier mapping for multiple Stripe products</li>
+        <li>Customer + founder email automation (Resend)</li>
+        <li>Vercel deploy + env-var wire-up</li>
+        <li>Live $1 test verification (refunded)</li>
+        <li>7-day support window</li>
+        <li>24-hour turnaround from intake</li>
+        <li>Refundable if I miss the 24h window</li>
+      </ul>
+      <a class="btn btn-primary" href="https://buy.stripe.com/dRm7sM9ec9480P6fInfjG06">Buy — $199</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>FAQ</h2>
+
+    <details>
+      <summary>What stack do you support?</summary>
+      <p>Default: Next.js API routes on Vercel. Other combos I've done or can do same-day: Express on Render, Hono on Cloudflare Workers, SvelteKit endpoints, Remix actions. If you're on something exotic, send me the framework and I'll tell you in 30 minutes whether it's a fit.</p>
+    </details>
+
+    <details>
+      <summary>Can I just fork your free code?</summary>
+      <p>Yes — <a href="https://github.com/bshelby88/sentry-forge-landing/blob/master/api/stripe-webhook.js">here</a>. The $199 buys you the time to fit it to your repo, your env vars, your tier map, your email copy, and to verify it end-to-end with a real charge in front of you.</p>
+    </details>
+
+    <details>
+      <summary>What if it breaks after the 7 days?</summary>
+      <p>If it's a bug in the code I shipped, I fix it free, no time limit. If it's a new feature you want (new tier, new event type, new email provider), that's a follow-on engagement at hourly rate (I'll tell you up front).</p>
+    </details>
+
+    <details>
+      <summary>Why so cheap?</summary>
+      <p>I shipped my own pipeline last night, the code is fresh, and I want three testimonials more than I want $400. After the third client it's $399. Same code, same scope, same support window — just less aggressive pricing while I'm building the case studies.</p>
+    </details>
+
+    <details>
+      <summary>Refund?</summary>
+      <p>If I miss the 24-hour delivery window from receipt of your intake brief, I refund. If your Stripe events aren't hitting 200 by the end of the 7-day support window because of my code, I refund. Beyond that, this is a fixed-scope service and the standard "delivered as agreed" rules apply.</p>
+    </details>
+
+    <details>
+      <summary>How do we start?</summary>
+      <p>Buy at the link above. Stripe webhook fires (yes, my own webhook), I email you within 1 hour with the intake brief: framework, host, repo access, Stripe webhook secret, Resend API key, your tier copy. 24 hours later you have a working pipeline with a verified live test charge.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Built and verified by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="https://sentry-forge-landing.vercel.app/">Sentry Forge home</a> · <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a> · (504) 201-4195<br/>
+    First 3 clients $199 · After that $399 · Refundable if I miss the 24h window.
+  </div>
+</footer>
+
+</body>
+</html>
