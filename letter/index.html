@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Custom Dispute Letter — 24h Turnaround — $49</title>
+<meta name="description" content="One certified-mail-ready debt dispute letter, written for your specific situation. Collector, original creditor, or credit bureau. FCRA / FDCPA compliant. PDF + DOCX in 24h. Not legal advice." />
+<meta name="theme-color" content="#1a1410" />
+<link rel="canonical" href="https://sentry-forge-landing.vercel.app/letter/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Custom Dispute Letter — 24h Turnaround — $49" />
+<meta property="og:description" content="One certified-mail-ready dispute letter for your specific debt-collection or credit-reporting situation. FCRA / FDCPA compliant. PDF + DOCX in 24 hours." />
+<meta property="og:url" content="https://sentry-forge-landing.vercel.app/letter/" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Custom Dispute Letter — $49 — 24h Turnaround" />
+<meta name="twitter:description" content="Certified-mail-ready dispute letter for collectors, creditors, or credit bureaus. PDF + DOCX in 24h." />
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #1a1410;
+    --bg-elev: #221a14;
+    --bg-card: #2a201a;
+    --line: #3d2f24;
+    --text: #ddd1c4;
+    --text-dim: #a89682;
+    --text-bright: #f5ede0;
+    --accent: #e8a558;
+    --accent-bright: #ffc278;
+    --accent-dim: #6f4f29;
+    --warn: #ff7a4d;
+
+    --display: 'Space Grotesk', system-ui, sans-serif;
+    --body: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent-bright); text-decoration: underline; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+
+  header {
+    border-bottom: 1px solid var(--line);
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    background: rgba(26, 20, 16, 0.92);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand {
+    font-family: var(--display);
+    font-weight: 700;
+    color: var(--text-bright);
+    font-size: 16px;
+    letter-spacing: -0.01em;
+  }
+  .brand .dot { color: var(--accent); }
+  .nav-cta {
+    background: var(--accent);
+    color: var(--bg);
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  .nav-cta:hover { background: var(--accent-bright); text-decoration: none; }
+
+  .hero {
+    padding: 70px 0 50px;
+    border-bottom: 1px solid var(--line);
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(232, 165, 88, 0.12);
+    color: var(--accent);
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 18px;
+    border: 1px solid var(--accent-dim);
+    letter-spacing: 0.04em;
+  }
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(34px, 5vw, 54px);
+    line-height: 1.08;
+    margin: 0 0 18px;
+    color: var(--text-bright);
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+  h1 .accent { color: var(--accent); }
+  .lede {
+    font-size: 19px;
+    color: var(--text-dim);
+    max-width: 660px;
+    margin-bottom: 30px;
+    line-height: 1.55;
+  }
+  .cta-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .btn {
+    display: inline-block;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    transition: transform 0.1s, background 0.15s;
+    font-family: var(--body);
+  }
+  .btn:hover { transform: translateY(-1px); text-decoration: none; }
+  .btn-primary { background: var(--accent); color: var(--bg); }
+  .btn-primary:hover { background: var(--accent-bright); }
+  .btn-secondary {
+    color: var(--text);
+    border: 1px solid var(--line);
+    background: transparent;
+  }
+  .btn-secondary:hover { border-color: var(--text-dim); color: var(--text-bright); }
+  .price-note {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-left: 8px;
+  }
+
+  section { padding: 60px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+  h2 {
+    font-family: var(--display);
+    font-size: 30px;
+    margin: 0 0 18px;
+    color: var(--text-bright);
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: 17px;
+    margin: 0 0 8px;
+    color: var(--text-bright);
+    font-family: var(--display);
+    font-weight: 600;
+  }
+  p { margin: 0 0 16px; max-width: 720px; }
+  code {
+    font-family: var(--mono);
+    background: var(--bg-card);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 13.5px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 22px 24px;
+  }
+  .card-num {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+  .card-body { color: var(--text-dim); font-size: 14.5px; line-height: 1.55; }
+
+  .target-row {
+    display: grid;
+    grid-template-columns: 1.2fr 2fr;
+    gap: 24px;
+    margin: 16px 0;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: start;
+  }
+  .target-row:last-of-type { border-bottom: none; }
+  .target-name {
+    font-family: var(--display);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 17px;
+  }
+  .target-desc {
+    color: var(--text-dim);
+    font-size: 14.5px;
+  }
+
+  .price-card {
+    background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 36px;
+    max-width: 480px;
+    margin: 24px 0;
+  }
+  .price-tier {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .price-amount {
+    font-family: var(--display);
+    font-size: 60px;
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .price-amount .currency { font-size: 30px; vertical-align: super; }
+  .price-amount .period { font-size: 16px; color: var(--text-dim); font-weight: 400; }
+  .price-list { list-style: none; padding: 0; margin: 24px 0 28px; }
+  .price-list li {
+    padding: 8px 0;
+    color: var(--text);
+    font-size: 14.5px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .price-list li::before {
+    content: "→";
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .disclaimer {
+    background: var(--bg-elev);
+    border-left: 3px solid var(--warn);
+    border-radius: 4px;
+    padding: 18px 22px;
+    margin: 28px 0;
+    font-size: 14.5px;
+    color: var(--text);
+  }
+  .disclaimer strong { color: var(--warn); }
+
+  details {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 8px;
+  }
+  details[open] { border-color: var(--accent); }
+  summary {
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-bright);
+    font-size: 15px;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: "+ ";
+    color: var(--accent);
+    font-family: var(--mono);
+    font-weight: 700;
+  }
+  details[open] summary::before { content: "− "; }
+  details > p:first-of-type { margin-top: 12px; }
+
+  footer {
+    padding: 32px 0 56px;
+    color: var(--text-dim);
+    font-size: 13px;
+    border-top: 1px solid var(--line);
+  }
+  footer a { color: var(--text-dim); text-decoration: underline; }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand">letter<span class="dot">.</span>forge</span>
+    <a class="nav-cta" href="https://buy.stripe.com/28E3cw1LKa8c2Xeao3fjG07">Buy — $49</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="badge">$49 · 24-HOUR TURNAROUND · CERTIFIED-MAIL READY</span>
+    <h1>One custom dispute letter, written for <span class="accent">your exact situation.</span></h1>
+    <p class="lede">Collector, original creditor, or credit bureau — pick the target, send me the facts, get a print-ready PDF + editable DOCX in 24 hours. FCRA / FDCPA compliant. Not legal advice; closer to a 60% finished defense.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://buy.stripe.com/28E3cw1LKa8c2Xeao3fjG07">Buy now — $49</a>
+      <a class="btn btn-secondary" href="#how-it-works">How it works ↓</a>
+      <span class="price-note">Refundable if I miss the 24h.</span>
+    </div>
+  </div>
+</section>
+
+<section id="how-it-works">
+  <div class="wrap">
+    <h2>Pick your target</h2>
+    <p>Each target type has a different letter structure, citation framework, and mailing protocol. Tell me which one you need and I write to that statute.</p>
+
+    <div class="target-row">
+      <div class="target-name">Debt collector<br/><span style="font-size: 12px; font-family: var(--mono); color: var(--text-dim); font-weight: 400;">FDCPA § 1692g + Reg F</span></div>
+      <div class="target-desc">Validation demand. Forces the collector to prove the debt is yours, the amount is right, and they have the right to collect. Pauses collection while they validate. If they ignore it, sets up FDCPA litigation hooks.</div>
+    </div>
+
+    <div class="target-row">
+      <div class="target-name">Original creditor<br/><span style="font-size: 12px; font-family: var(--mono); color: var(--text-dim); font-weight: 400;">State + contract law</span></div>
+      <div class="target-desc">Wrongful-collection demand. For when the underlying debt itself is bogus — wrongful eviction, duplicate fees, fees in violation of the contract's own terms, or charges after a prior material breach by the creditor.</div>
+    </div>
+
+    <div class="target-row">
+      <div class="target-name">Credit bureau<br/><span style="font-size: 12px; font-family: var(--mono); color: var(--text-dim); font-weight: 400;">FCRA § 611(a) and § 611(a)(3)(A)</span></div>
+      <div class="target-desc">Dispute language for Equifax / Experian / TransUnion. Includes the standard online dispute text AND the certified-mail re-dispute template you need when a bureau rejects your first dispute as "limited information."</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What you send me, what you get back</h2>
+
+    <h3 style="margin-top: 18px;">Send me, in one reply email:</h3>
+    <div class="grid">
+      <div class="card">
+        <div class="card-num">01</div>
+        <h3>The letter / notice</h3>
+        <div class="card-body">PDF, photo, or paste of the email you received. Helps me cite their exact language back at them.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">02</div>
+        <h3>Your name + address</h3>
+        <div class="card-body">For the letter signature line and the "from" block. Use your current mailing address (the one on your ID).</div>
+      </div>
+      <div class="card">
+        <div class="card-num">03</div>
+        <h3>2-3 sentences in your words</h3>
+        <div class="card-body">What actually happened. Plain language. I translate to legal framing — but I need the facts in your voice first.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">04</div>
+        <h3>State + debt timing</h3>
+        <div class="card-body">Two-letter state (LA / NY / CA / etc.) plus approximate date of default, charge-off, lockout, or last payment. Drives the statute-of-limitations citation.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">05</div>
+        <h3>What to dispute</h3>
+        <div class="card-body">The whole debt, a specific line item, statute-of-limitations, false reporting, identity theft, etc. If you're unsure, say so — I'll pick the angle.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">06</div>
+        <h3>Optional: lease / contract</h3>
+        <div class="card-body">If your dispute hinges on contract terms (lease, loan agreement, terms-of-service), send the relevant pages. Skip if not relevant.</div>
+      </div>
+    </div>
+
+    <h3>You get back, within 24 hours:</h3>
+    <ul style="font-size: 15.5px; line-height: 1.75;">
+      <li><strong>One PDF</strong> — print-ready on US letter, dated, formatted for certified-mail submission</li>
+      <li><strong>One DOCX</strong> — editable version if you want to swap a sentence or add a paragraph</li>
+      <li><strong>USPS certified-mail instructions</strong> — exact form to fill out at the post office, what tracking number to save, how to log the green return-receipt card</li>
+      <li><strong>One free revision</strong> — if the first draft misses an angle you wanted, send it back, I rewrite within 24 hours</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Sample work product</h2>
+    <p>Anonymized 5-page sample showing the structure I deliver per case. Real legal mechanics, real dollar amounts, no real personal data.</p>
+    <p><a href="/sample-case.pdf">→ Download sample case PDF</a></p>
+    <p style="font-size: 14px; color: var(--text-dim);">This is the full case-pack format used for the $79 One Case tier. Your $49 letter is one component of that pack — same writing quality, narrower scope.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Pricing</h2>
+    <div class="price-card">
+      <div class="price-tier">One Custom Letter · 24-Hour Turnaround</div>
+      <div class="price-amount"><span class="currency">$</span>49<span class="period"> · one-time</span></div>
+      <ul class="price-list">
+        <li>Pick your target: collector, creditor, or bureau</li>
+        <li>Tailored to your facts, your state, your specific dispute</li>
+        <li>Print-ready PDF + editable DOCX</li>
+        <li>USPS certified-mail mailing instructions</li>
+        <li>One free revision if first draft misses</li>
+        <li>Refundable if I miss the 24-hour window</li>
+        <li>Delivery starts when your intake email arrives</li>
+      </ul>
+      <a class="btn btn-primary" href="https://buy.stripe.com/28E3cw1LKa8c2Xeao3fjG07">Buy — $49</a>
+    </div>
+
+    <p style="font-size: 14.5px; color: var(--text-dim); margin-top: 28px;">Need the full 8-document pack instead? <a href="/">Sentry Forge One Case — $79</a> covers collector dispute, original creditor demand, two CFPB complaints, three-bureau dispute language, court-records search guide, action checklist, and evidence inventory.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="disclaimer">
+      <strong>Boundaries.</strong> I'm not a law firm. No attorney-client relationship. I do not appear in court, advise on litigation strategy, or substitute for counsel. <strong>If you have a court date, an active lawsuit, or a court summons, hire a licensed attorney in your state immediately.</strong> Your letter supports their case, doesn't replace them. For consumer-protection attorneys in Louisiana / Mississippi / Oklahoma, I can refer.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>FAQ</h2>
+
+    <details>
+      <summary>Will this letter make the collector stop calling?</summary>
+      <p>If you target the collector with an FDCPA validation demand, federal law requires them to stop collection until they validate. They may resume after they send paperwork. Many never bother — collectors typically have weak documentation, especially for old or sold debts.</p>
+    </details>
+
+    <details>
+      <summary>Will this delete the tradeline from my credit report?</summary>
+      <p>The bureau-target letter starts an FCRA § 611 investigation. The bureau has 30 days to investigate and respond. Outcomes range from "deleted" to "verified" to "modified." If the bureau verifies and you don't agree, you have additional remedies (Method-of-Verification request, CFPB complaint, FCRA suit). I cover those next steps in the mailing instructions.</p>
+    </details>
+
+    <details>
+      <summary>Why $49 instead of free?</summary>
+      <p>Templates are free. <a href="https://www.consumerfinance.gov/debt-collection/sample-letters/">CFPB publishes them</a>. The work I do is reading your specific facts, picking the right legal angle (FDCPA vs FCRA vs state law), and writing the letter so that the citation framework matches your situation. A generic template often makes the dispute weaker because the collector / bureau can ignore it as boilerplate.</p>
+    </details>
+
+    <details>
+      <summary>What if the letter doesn't work?</summary>
+      <p>Most disputes don't resolve in one letter. The letter starts a record. If the collector ignores it, the bureau "verifies" without explanation, or the creditor responds with garbage, those become evidence for the next step (CFPB complaint, second letter, eventual attorney consultation). I document the next-step playbook in the mailing instructions.</p>
+    </details>
+
+    <details>
+      <summary>Can you do multiple letters in one order?</summary>
+      <p>$49 covers one letter. If you need three (e.g. dispute the collector AND all three bureaus), order three. Or buy the <a href="/">$79 One Case full pack</a> which includes letters to all three bureaus, the collector, the original creditor, plus CFPB complaint drafts and evidence inventory.</p>
+    </details>
+
+    <details>
+      <summary>How fast do you actually deliver?</summary>
+      <p>The 24-hour clock starts when your intake email lands in my inbox (not when you pay). Most letters go out in 6-12 hours. The 24-hour SLA is the ceiling.</p>
+    </details>
+
+    <details>
+      <summary>What if I'm being sued right now?</summary>
+      <p>Stop reading this and hire a licensed attorney in your state. <strong>Today, not tomorrow.</strong> Most consumer-protection attorneys take FDCPA / FCRA cases on contingency — no upfront cost. The letter I'd write isn't enough for active litigation. If you want help finding a real lawyer, I can refer in LA / MS / OK.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Written and sent by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="/">Sentry Forge home</a> · <a href="/sample-case.pdf">sample case PDF</a> · <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a> · (504) 201-4195<br/>
+    Not a law firm. No attorney-client relationship. Read every letter before you sign or send it.
+  </div>
+</footer>
+
+</body>
+</html>
