@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Stripe Webhook + Email Cost Calculator (Vercel + Resend)</title>
+<meta name="description" content="Estimate your monthly cost for running a Stripe webhook with email automation. Inputs: events/month, email provider, hosting. Outputs: function-invocation cost, email cost, total. No backend, no signup." />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="canonical" href="https://sentry-forge-landing.vercel.app/webhook/calculator/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Stripe Webhook + Email Cost Calculator" />
+<meta property="og:description" content="Estimate monthly cost for running a Stripe webhook + email automation. Pure client-side." />
+<meta property="og:url" content="https://sentry-forge-landing.vercel.app/webhook/calculator/" />
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-card: #161a24;
+    --bg-elev: #11141c;
+    --line: #1f2532;
+    --text: #d6dae3;
+    --text-dim: #8a92a4;
+    --text-bright: #f0f2f7;
+    --accent: #5cd8a8;
+    --accent-dim: #2f7559;
+    --warn: #ffb454;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--line); padding: 16px 0; }
+  .nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-bright); font-size: 14px; }
+  .brand .dot { color: var(--accent); }
+  .nav-cta { background: var(--accent); color: var(--bg); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+
+  main { padding: 50px 0 70px; }
+  h1 { font-size: clamp(28px, 4vw, 38px); color: var(--text-bright); letter-spacing: -0.02em; margin: 0 0 12px; line-height: 1.18; }
+  .lede { color: var(--text-dim); font-size: 17px; margin-bottom: 28px; max-width: 640px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+
+  .form-card, .results-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px 26px;
+  }
+  .form-card h2, .results-card h2 {
+    font-size: 18px;
+    color: var(--text-bright);
+    margin: 0 0 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-bright);
+    margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  input, select {
+    width: 100%;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 11px 14px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--accent); }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14.5px;
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-key { color: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  .result-val { color: var(--text); font-family: 'JetBrains Mono', monospace; }
+  .result-row.total { padding-top: 14px; margin-top: 6px; border-top: 1px solid var(--accent-dim); border-bottom: none; }
+  .result-row.total .result-key { color: var(--accent); font-weight: 600; }
+  .result-row.total .result-val { color: var(--text-bright); font-size: 22px; font-weight: 700; }
+
+  .breakdown {
+    margin-top: 18px;
+    padding: 14px 18px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+  .breakdown strong { color: var(--text); }
+
+  .tip {
+    margin-top: 18px;
+    background: var(--bg-elev);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-size: 13.5px;
+  }
+  .tip strong { color: var(--accent); }
+
+  .cta-card {
+    background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 32px 0 0;
+    text-align: center;
+  }
+  .cta-card h3 { margin: 0 0 6px; color: var(--text-bright); font-size: 18px; }
+  .cta-card p { color: var(--text-dim); font-size: 14.5px; margin: 0 0 16px; }
+  .btn { display: inline-block; background: var(--accent); color: var(--bg); padding: 11px 22px; border-radius: 8px; font-weight: 600; font-size: 15px; text-decoration: none; }
+  .btn:hover { background: #4dc095; text-decoration: none; }
+
+  footer { padding: 28px 0 56px; color: var(--text-dim); font-size: 13px; border-top: 1px solid var(--line); margin-top: 40px; }
+
+  .assumptions { padding: 28px 0 24px; }
+  .assumptions h2 { font-size: 22px; color: var(--text-bright); margin: 0 0 14px; }
+  .assumptions ul { padding-left: 22px; color: var(--text-dim); font-size: 14px; line-height: 1.65; }
+  .assumptions li { margin: 5px 0; }
+  .assumptions code { font-family: 'JetBrains Mono', monospace; background: var(--bg-card); color: var(--accent); padding: 1px 6px; border-radius: 3px; font-size: 12.5px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand">webhook<span class="dot">.</span>forge / calculator</span>
+    <a class="nav-cta" href="/webhook/">$199 setup ↗</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h1>Stripe Webhook + Email Cost Calculator</h1>
+    <p class="lede">Estimate your monthly cost for running a Stripe webhook with email automation. Pure client-side; nothing logged. Numbers update as you type.</p>
+
+    <div class="grid">
+      <div class="form-card">
+        <h2>Inputs</h2>
+
+        <label for="checkouts">Successful checkouts per month</label>
+        <input id="checkouts" type="number" value="100" min="0" />
+
+        <label for="provider">Email provider</label>
+        <select id="provider">
+          <option value="resend" selected>Resend</option>
+          <option value="postmark">Postmark</option>
+          <option value="sendgrid">SendGrid</option>
+          <option value="ses">AWS SES</option>
+        </select>
+
+        <label for="emails-per">Emails sent per checkout (customer + founder = 2)</label>
+        <input id="emails-per" type="number" value="2" min="1" max="10" />
+
+        <label for="host">Hosting</label>
+        <select id="host">
+          <option value="vercel-hobby" selected>Vercel Hobby (free tier)</option>
+          <option value="vercel-pro">Vercel Pro ($20/mo base)</option>
+          <option value="cloudflare-workers">Cloudflare Workers ($5/mo bundled)</option>
+          <option value="render">Render Web Service ($7/mo)</option>
+        </select>
+      </div>
+
+      <div class="results-card">
+        <h2>Estimated monthly cost</h2>
+
+        <div class="result-row"><span class="result-key">function invocations</span><span class="result-val" id="r-invocations">—</span></div>
+        <div class="result-row"><span class="result-key">hosting base</span><span class="result-val" id="r-hosting">—</span></div>
+        <div class="result-row"><span class="result-key">email volume</span><span class="result-val" id="r-emails">—</span></div>
+        <div class="result-row"><span class="result-key">email cost</span><span class="result-val" id="r-email-cost">—</span></div>
+        <div class="result-row total"><span class="result-key">total / month</span><span class="result-val" id="r-total">—</span></div>
+
+        <div class="breakdown" id="r-breakdown">Choose your inputs.</div>
+
+        <div class="tip" id="r-tip" style="display: none;"></div>
+      </div>
+    </div>
+
+    <div class="cta-card">
+      <h3>Want this wired in your repo without comparing tiers?</h3>
+      <p>$199 flat (first 3 clients, then $399). Default stack is Resend + Vercel — drop-in for the most cost-effective combo. Other providers / hosts wired on request.</p>
+      <a class="btn" href="/webhook/">See the offer →</a>
+    </div>
+
+    <div class="assumptions">
+      <h2>Assumptions</h2>
+      <ul>
+        <li><strong>Stripe sends 6 events per checkout</strong> on average (checkout.session.completed + payment_intent.created + payment_intent.succeeded + charge.succeeded + payment.succeeded + ignored). All hit your webhook endpoint = function invocations.</li>
+        <li><strong>Resend</strong>: $0 for first 3,000/mo, then $20/mo flat for 50k. <code>$0.001/email</code> equivalent at scale.</li>
+        <li><strong>Postmark</strong>: $15/mo for 10,000 emails ($0.0015/email).</li>
+        <li><strong>SendGrid</strong>: $19.95/mo for 50,000 emails ($0.0004/email at scale).</li>
+        <li><strong>AWS SES</strong>: $0.10 per 1,000 emails ($0.0001/email) — cheapest, but harder setup and deliverability work falls on you.</li>
+        <li><strong>Vercel Hobby</strong>: 100k function invocations/mo free. Above that, Pro plan ($20/mo) covers 1M invocations.</li>
+        <li><strong>Cloudflare Workers</strong>: $5/mo bundled with 10M requests included.</li>
+        <li><strong>Render Web Service</strong>: $7/mo for the smallest instance, unlimited invocations within the always-on container.</li>
+      </ul>
+      <p style="color: var(--text-dim); font-size: 13px; margin-top: 14px;">Numbers are first-order estimates. Actual cost depends on bandwidth, retries, free-tier credits, and other vendor specifics. For accuracy at scale, check each provider's pricing page directly.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    Built by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="/webhook/">offer</a> · <a href="/webhook/blog/">blog</a> · <a href="/webhook/diagnostic/">diagnostic</a><br/>
+    <a href="/about/">About</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a>
+  </div>
+</footer>
+
+<script>
+function fmt(n) {
+  if (n === 0) return '$0.00';
+  if (n < 1) return '$' + n.toFixed(3);
+  return '$' + n.toFixed(2);
+}
+
+function emailCost(provider, count) {
+  if (count === 0) return { cost: 0, note: 'no emails' };
+
+  switch (provider) {
+    case 'resend':
+      if (count <= 3000) return { cost: 0, note: 'free tier (3k/mo)' };
+      return { cost: 20, note: '$20/mo paid tier (50k/mo)' };
+    case 'postmark':
+      if (count <= 10000) return { cost: 15, note: '$15/mo for 10k' };
+      return { cost: 15 + Math.ceil((count - 10000) / 10000) * 10, note: 'tiered above 10k' };
+    case 'sendgrid':
+      if (count <= 100) return { cost: 0, note: 'free tier (100/day)' };
+      return { cost: 19.95, note: 'Essentials plan' };
+    case 'ses':
+      return { cost: count * 0.0001, note: '$0.10 per 1,000' };
+  }
+  return { cost: 0, note: '' };
+}
+
+function hostingCost(host, invocations) {
+  switch (host) {
+    case 'vercel-hobby':
+      if (invocations <= 100000) return { base: 0, overage: 0, note: '100k free' };
+      return { base: 20, overage: 0, note: 'forced upgrade to Pro at 100k' };
+    case 'vercel-pro':
+      return { base: 20, overage: 0, note: 'Pro covers 1M' };
+    case 'cloudflare-workers':
+      return { base: 5, overage: 0, note: '$5/mo, 10M req' };
+    case 'render':
+      return { base: 7, overage: 0, note: '$7/mo always-on' };
+  }
+  return { base: 0, overage: 0, note: '' };
+}
+
+function update() {
+  const checkouts = parseInt(document.getElementById('checkouts').value) || 0;
+  const provider = document.getElementById('provider').value;
+  const emailsPer = parseInt(document.getElementById('emails-per').value) || 2;
+  const host = document.getElementById('host').value;
+
+  const invocations = checkouts * 6;  // 6 events per checkout
+  const emails = checkouts * emailsPer;
+
+  const hostC = hostingCost(host, invocations);
+  const emailC = emailCost(provider, emails);
+
+  const total = hostC.base + hostC.overage + emailC.cost;
+
+  document.getElementById('r-invocations').textContent = invocations.toLocaleString();
+  document.getElementById('r-hosting').textContent = fmt(hostC.base + hostC.overage);
+  document.getElementById('r-emails').textContent = emails.toLocaleString();
+  document.getElementById('r-email-cost').textContent = fmt(emailC.cost);
+  document.getElementById('r-total').textContent = fmt(total) + '/mo';
+
+  const breakdown = document.getElementById('r-breakdown');
+  breakdown.innerHTML = `
+    <strong>Hosting:</strong> ${hostC.note} ·
+    <strong>Email:</strong> ${emailC.note}<br/>
+    <strong>Per checkout:</strong> ${fmt(total / Math.max(checkouts, 1))} all-in<br/>
+    <strong>Stripe processing fee</strong> (not in total above): ~2.9% + $0.30 per checkout
+  `;
+
+  const tip = document.getElementById('r-tip');
+  if (checkouts === 0) {
+    tip.style.display = 'none';
+  } else if (checkouts < 50 && host === 'render') {
+    tip.style.display = 'block';
+    tip.innerHTML = `<strong>Tip:</strong> at this volume, Vercel Hobby (free) or Cloudflare Workers ($5) are usually cheaper than Render's always-on $7. Switch the hosting dropdown to compare.`;
+  } else if (checkouts > 100000) {
+    tip.style.display = 'block';
+    tip.innerHTML = `<strong>Tip:</strong> at this volume you're past the indie-hacker setup. Engage a real DevOps engineer; the cost differences between providers compound.`;
+  } else if (provider === 'resend' && emails <= 3000) {
+    tip.style.display = 'block';
+    tip.innerHTML = `<strong>Tip:</strong> Resend's 3k/mo free tier covers you. No email cost at this volume.`;
+  } else {
+    tip.style.display = 'none';
+  }
+}
+
+['checkouts', 'provider', 'emails-per', 'host'].forEach(id => {
+  document.getElementById(id).addEventListener('input', update);
+  document.getElementById(id).addEventListener('change', update);
+});
+update();
+</script>
+
+</body>
+</html>
