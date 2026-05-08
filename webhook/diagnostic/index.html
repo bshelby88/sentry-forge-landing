@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Stripe Webhook Signature Diagnostic — Free Tool</title>
+<meta name="description" content="Paste your Stripe signature header, raw body, and webhook secret. Get an instant report on why verification is failing — body-parser issues, timing, secret mismatch, and more. Pure client-side, nothing logged." />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="canonical" href="https://sentry-forge-landing.vercel.app/webhook/diagnostic/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Stripe Webhook Signature Diagnostic — Free Tool" />
+<meta property="og:description" content="Pure client-side analysis of your failed Stripe webhook signature. Paste, click, get the root cause. Nothing logged." />
+<meta property="og:url" content="https://sentry-forge-landing.vercel.app/webhook/diagnostic/" />
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-card: #161a24;
+    --bg-elev: #11141c;
+    --line: #1f2532;
+    --text: #d6dae3;
+    --text-dim: #8a92a4;
+    --text-bright: #f0f2f7;
+    --accent: #5cd8a8;
+    --accent-dim: #2f7559;
+    --warn: #ffb454;
+    --danger: #ff6b6b;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--line); padding: 16px 0; }
+  .nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--text-bright);
+    font-size: 14px;
+  }
+  .brand .dot { color: var(--accent); }
+  .nav-cta {
+    background: var(--accent);
+    color: var(--bg);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  article { padding: 50px 0 70px; }
+  h1 {
+    font-size: clamp(28px, 4vw, 38px);
+    color: var(--text-bright);
+    letter-spacing: -0.02em;
+    margin: 0 0 14px;
+    line-height: 1.18;
+  }
+  .lede { color: var(--text-dim); font-size: 17px; margin-bottom: 28px; max-width: 640px; }
+  .privacy {
+    background: var(--bg-elev);
+    border-left: 3px solid var(--accent);
+    padding: 12px 18px;
+    margin: 0 0 28px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  .form { display: flex; flex-direction: column; gap: 18px; margin-bottom: 24px; }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-bright);
+    font-weight: 500;
+    margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.02em;
+  }
+  label .help {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-dim);
+    font-weight: 400;
+    margin-left: 8px;
+    font-size: 12px;
+  }
+  textarea, input {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  textarea:focus, input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  textarea { min-height: 80px; }
+  textarea.body-input { min-height: 140px; }
+  .btn-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: var(--bg); }
+  .btn-primary:hover { background: #4dc095; }
+  .btn-secondary {
+    color: var(--text);
+    border: 1px solid var(--line);
+    background: transparent;
+  }
+  .btn-secondary:hover { border-color: var(--text-dim); color: var(--text-bright); }
+
+  .results {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    display: none;
+  }
+  .results.visible { display: block; }
+  .verdict {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 18px;
+  }
+  .verdict-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .verdict.ok .verdict-icon { background: rgba(92, 216, 168, 0.15); color: var(--accent); border: 2px solid var(--accent); }
+  .verdict.fail .verdict-icon { background: rgba(255, 107, 107, 0.12); color: var(--danger); border: 2px solid var(--danger); }
+  .verdict.warn .verdict-icon { background: rgba(255, 180, 84, 0.12); color: var(--warn); border: 2px solid var(--warn); }
+  .verdict-headline { font-size: 18px; font-weight: 600; color: var(--text-bright); }
+  .verdict-sub { font-size: 14px; color: var(--text-dim); margin-top: 2px; }
+
+  .check {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .check:last-child { border-bottom: none; }
+  .check-status {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 1px;
+  }
+  .check.ok .check-status { background: rgba(92, 216, 168, 0.15); color: var(--accent); }
+  .check.fail .check-status { background: rgba(255, 107, 107, 0.15); color: var(--danger); }
+  .check.warn .check-status { background: rgba(255, 180, 84, 0.15); color: var(--warn); }
+  .check-info h4 { margin: 0 0 4px; color: var(--text-bright); font-size: 14px; font-weight: 500; }
+  .check-info p { margin: 0; color: var(--text-dim); font-size: 13.5px; line-height: 1.5; }
+  .check-info code {
+    background: var(--bg-elev);
+    color: var(--accent);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .recommendation {
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+  }
+  .recommendation h3 { margin: 0 0 8px; font-size: 15px; color: var(--text-bright); }
+  .recommendation p { margin: 0; font-size: 14px; color: var(--text); line-height: 1.55; }
+
+  .cta-card {
+    background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 26px 30px;
+    margin: 32px 0;
+    text-align: center;
+  }
+  .cta-card h3 { margin: 0 0 6px; color: var(--text-bright); font-size: 18px; }
+  .cta-card p { color: var(--text-dim); font-size: 14px; margin: 0 0 18px; }
+
+  footer { padding: 28px 0 56px; color: var(--text-dim); font-size: 13px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand">webhook<span class="dot">.</span>forge / diagnostic</span>
+    <a class="nav-cta" href="/webhook/">$199 setup ↗</a>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+    <h1>Stripe Webhook Signature Diagnostic</h1>
+    <p class="lede">Paste your <code>stripe-signature</code> header, the raw request body, and your <code>whsec_***</code>. Get a verdict + root cause. Pure client-side — nothing leaves your browser.</p>
+
+    <div class="privacy">
+      <strong>Privacy:</strong> All compute happens locally in your browser via the Web Crypto API. The webhook secret never touches a network. There is no backend, no logging, no analytics on the form fields. Inspect Network tab to verify.
+    </div>
+
+    <div class="form">
+      <div>
+        <label>stripe-signature header
+          <span class="help">e.g. <code>t=1778120000,v1=abc123...</code></span>
+        </label>
+        <textarea id="sigHeader" placeholder="t=1778120000,v1=2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"></textarea>
+      </div>
+
+      <div>
+        <label>Raw request body
+          <span class="help">The exact bytes, NOT JSON.parse(req.body)</span>
+        </label>
+        <textarea id="rawBody" class="body-input" placeholder='{"id":"evt_1A2B3C","object":"event",...}'></textarea>
+      </div>
+
+      <div>
+        <label>Webhook signing secret
+          <span class="help">Starts with <code>whsec_</code> — Stripe Dashboard → Webhooks → Signing secret</span>
+        </label>
+        <input id="secret" type="text" placeholder="whsec_***" />
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="runDiagnostic()">Diagnose ↦</button>
+        <button class="btn btn-secondary" onclick="loadExample()">Load example data</button>
+        <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+      </div>
+    </div>
+
+    <div id="results" class="results"></div>
+
+    <div class="cta-card">
+      <h3>Need it fixed in your repo, not just diagnosed?</h3>
+      <p>$199 flat (first 3 clients, then $399). One file in your repo, sig verification, customer + founder emails, deployed and verified.</p>
+      <a class="btn btn-primary" href="/webhook/">See the offer →</a>
+    </div>
+
+    <h2 style="font-size: 24px; color: var(--text-bright); margin-top: 36px;">What this checks</h2>
+    <ul style="font-size: 15px; line-height: 1.75; color: var(--text-dim);">
+      <li>Signature header parses correctly into <code>t=</code> + <code>v1=</code> components</li>
+      <li>Timestamp is within Stripe's recommended 5-minute tolerance window</li>
+      <li>HMAC-SHA256 of <code>{timestamp}.{rawBody}</code> using your webhook secret matches the signature</li>
+      <li>Common false-positive: raw body has been JSON-parsed and re-stringified (whitespace mismatch)</li>
+      <li>Common false-positive: timestamp is older than 5 minutes (retry of stale event)</li>
+      <li>Common false-positive: webhook secret is for the wrong endpoint or has been rotated</li>
+    </ul>
+
+    <p style="margin-top: 28px;"><a href="/webhook/blog/stripe-400/">→ Read the deeper writeup of why Stripe webhooks return 400</a></p>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    Built by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="/webhook/">webhook offer</a> · <a href="/webhook/blog/stripe-400/">deep writeup</a> · <a href="https://github.com/bshelby88/sentry-forge-landing/blob/master/api/stripe-webhook.js">source</a>
+  </div>
+</footer>
+
+<script>
+async function hmacSha256Hex(secret, message) {
+  const enc = new TextEncoder();
+  const keyData = enc.encode(secret);
+  const key = await crypto.subtle.importKey(
+    'raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(message));
+  return Array.from(new Uint8Array(sig))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+function parseSigHeader(header) {
+  const parts = {};
+  for (const p of header.split(',')) {
+    const [k, v] = p.split('=');
+    if (k && v) parts[k.trim()] = v.trim();
+  }
+  return parts;
+}
+
+async function runDiagnostic() {
+  const sigHeader = document.getElementById('sigHeader').value.trim();
+  const rawBody = document.getElementById('rawBody').value;
+  const secret = document.getElementById('secret').value.trim();
+  const out = document.getElementById('results');
+
+  const checks = [];
+  let verdict = { kind: 'ok', headline: 'Signature verified.', sub: 'Webhook would return 200.' };
+  let recommendation = '';
+
+  // 1. Inputs present
+  if (!sigHeader || !rawBody || !secret) {
+    out.className = 'results visible';
+    out.innerHTML = renderVerdict({ kind: 'fail', headline: 'Missing input.', sub: 'Fill all three fields above.' }, [], '');
+    return;
+  }
+
+  // 2. Parse sig header
+  const parsed = parseSigHeader(sigHeader);
+  if (!parsed.t) {
+    checks.push({ kind: 'fail', title: 'Header missing t= timestamp', desc: 'The Stripe signature header should look like <code>t=&lt;unix&gt;,v1=&lt;hex&gt;</code>. Make sure you pasted the full header value, not just the v1 portion.' });
+    verdict = { kind: 'fail', headline: 'Header format invalid.', sub: 'Cannot continue — fix t= component first.' };
+  } else {
+    checks.push({ kind: 'ok', title: 'Header parsed', desc: `t=${parsed.t}, v1=${(parsed.v1 || '').slice(0, 12)}...` });
+  }
+  if (!parsed.v1) {
+    checks.push({ kind: 'fail', title: 'Header missing v1= signature', desc: 'No v1 component found in the header. Stripe always sends v1. Check the header was copied in full.' });
+    verdict = { kind: 'fail', headline: 'Header format invalid.', sub: 'Missing v1 signature.' };
+  }
+
+  // 3. Timestamp window
+  if (parsed.t) {
+    const ts = parseInt(parsed.t, 10);
+    const now = Math.floor(Date.now() / 1000);
+    const delta = now - ts;
+    if (Math.abs(delta) > 300) {
+      checks.push({
+        kind: 'warn',
+        title: `Timestamp outside 5-minute window (${delta > 0 ? '+' : ''}${delta}s)`,
+        desc: `Stripe recommends rejecting events older than 5 minutes as a replay-attack guard. If this is a Stripe retry of a stale event, your webhook is correctly rejecting it — wait 72 hours for the retry queue to drain. If this is a fresh event, your server clock may be off.`
+      });
+      if (verdict.kind === 'ok') verdict = { kind: 'warn', headline: 'Verification PASSES, but event is stale.', sub: 'Likely a retry of an old delivery.' };
+    } else {
+      checks.push({ kind: 'ok', title: 'Timestamp within tolerance', desc: `Delta from now: ${delta}s (must be ≤ 300s)` });
+    }
+  }
+
+  // 4. HMAC compute
+  if (parsed.t && parsed.v1) {
+    const signed = `${parsed.t}.${rawBody}`;
+    const expected = await hmacSha256Hex(secret, signed);
+    const expectedShort = expected.slice(0, 12) + '...';
+    const givenShort = parsed.v1.slice(0, 12) + '...';
+
+    if (expected === parsed.v1) {
+      checks.push({ kind: 'ok', title: 'HMAC matches', desc: `Computed: ${expectedShort} · Given: ${givenShort}` });
+    } else {
+      checks.push({
+        kind: 'fail',
+        title: 'HMAC mismatch',
+        desc: `Computed: <code>${expectedShort}</code>  ·  Given: <code>${givenShort}</code>`
+      });
+      verdict = { kind: 'fail', headline: 'HMAC mismatch.', sub: 'Webhook would return 400. See recommendation below.' };
+
+      // Diagnose likely cause
+      // Heuristic A: body has whitespace / pretty-print artifacts
+      const trimmed = rawBody.trim();
+      if (trimmed !== rawBody) {
+        recommendation = `<strong>Likely cause: extra whitespace in body.</strong> Your raw body has leading or trailing whitespace not present in the original request. Stripe HMACs the exact bytes — even one trailing newline differs. If you're using <code>JSON.parse</code> + <code>JSON.stringify</code> to capture the body, you've lost the original byte sequence. Read raw bytes instead (<code>req.text()</code> in App Router, or set <code>bodyParser: false</code> in Pages router).`;
+      } else if (rawBody.includes('\n  ') || (rawBody.includes('": ') && rawBody.includes('": "'))) {
+        recommendation = `<strong>Likely cause: body has been pretty-printed.</strong> Looks like JSON.stringify(obj, null, 2) reformatted the body. Stripe sent compact JSON; your handler is comparing against re-formatted JSON. Read the raw bytes from <code>req.text()</code> or disable body parser.`;
+      } else if (secret.length < 30 || !secret.startsWith('whsec_')) {
+        recommendation = `<strong>Likely cause: webhook secret looks malformed.</strong> A real Stripe webhook secret starts with <code>whsec_</code> and is ~38 characters. Yours: ${secret.length} chars. Re-copy from Stripe Dashboard → Webhooks → click endpoint → Signing secret → reveal.`;
+      } else {
+        recommendation = `<strong>Likely cause: wrong secret for this event.</strong> The HMAC math itself is correct (header parses, timestamp is sane), so the body and secret simply don't match what Stripe used. Common reasons: (1) you have multiple webhook endpoints with different secrets and you're using the wrong one; (2) you rotated the secret and your env var is stale; (3) you copied a different endpoint's secret. Verify in Stripe Dashboard → Webhooks → click the endpoint that received THIS event → reveal signing secret. Make sure your env var matches exactly and you've redeployed since the last rotation.`;
+      }
+    }
+  }
+
+  out.className = 'results visible';
+  out.innerHTML = renderVerdict(verdict, checks, recommendation);
+}
+
+function renderVerdict(verdict, checks, recommendation) {
+  const icon = verdict.kind === 'ok' ? '✓' : verdict.kind === 'warn' ? '!' : '✗';
+  let html = `
+    <div class="verdict ${verdict.kind}">
+      <div class="verdict-icon">${icon}</div>
+      <div>
+        <div class="verdict-headline">${verdict.headline}</div>
+        <div class="verdict-sub">${verdict.sub}</div>
+      </div>
+    </div>
+  `;
+  for (const c of checks) {
+    const i = c.kind === 'ok' ? '✓' : c.kind === 'warn' ? '!' : '✗';
+    html += `
+      <div class="check ${c.kind}">
+        <div class="check-status">${i}</div>
+        <div class="check-info">
+          <h4>${c.title}</h4>
+          <p>${c.desc}</p>
+        </div>
+      </div>
+    `;
+  }
+  if (recommendation) {
+    html += `<div class="recommendation"><h3>Recommended fix</h3><p>${recommendation}</p></div>`;
+  }
+  return html;
+}
+
+function loadExample() {
+  // Synthetic example — body and secret produce a valid HMAC for demonstration.
+  const ts = Math.floor(Date.now() / 1000);
+  const body = `{"id":"evt_test","object":"event","type":"checkout.session.completed","data":{"object":{"id":"cs_test_123","amount_total":2900}}}`;
+  const secret = `whsec_demoExampleSecret1234567890ABCD`;
+  hmacSha256Hex(secret, `${ts}.${body}`).then(v1 => {
+    document.getElementById('sigHeader').value = `t=${ts},v1=${v1}`;
+    document.getElementById('rawBody').value = body;
+    document.getElementById('secret').value = secret;
+    runDiagnostic();
+  });
+}
+
+function clearAll() {
+  document.getElementById('sigHeader').value = '';
+  document.getElementById('rawBody').value = '';
+  document.getElementById('secret').value = '';
+  document.getElementById('results').className = 'results';
+  document.getElementById('results').innerHTML = '';
+}
+</script>
+
+</body>
+</html>
