@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>About — Sentry Forge / Webhook.Forge / Letter.Forge</title>
+<meta name="description" content="One person, one phone, one address. Bryant Shelby, Sentry Forge — what we ship, what we don't, who you're paying when you click Buy." />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="canonical" href="https://sentry-forge-landing.vercel.app/about/" />
+
+<meta property="og:type" content="profile" />
+<meta property="og:title" content="About — Sentry Forge" />
+<meta property="og:description" content="One person, one phone, one address. What we ship, what we don't." />
+<meta property="og:url" content="https://sentry-forge-landing.vercel.app/about/" />
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-card: #161a24;
+    --bg-elev: #11141c;
+    --line: #1f2532;
+    --text: #d6dae3;
+    --text-dim: #8a92a4;
+    --text-bright: #f0f2f7;
+    --accent: #5cd8a8;
+    --warn: #ffb454;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--line); padding: 16px 0; }
+  .nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--text-bright);
+    font-size: 14px;
+  }
+  .brand .dot { color: var(--accent); }
+  .nav-links { display: flex; gap: 18px; font-size: 14px; }
+  .nav-links a { color: var(--text-dim); }
+  .nav-links a:hover { color: var(--accent); text-decoration: none; }
+
+  article { padding: 60px 0 80px; }
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(34px, 5vw, 48px);
+    color: var(--text-bright);
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    line-height: 1.15;
+  }
+  .lede { color: var(--text-dim); font-size: 18px; margin: 0 0 36px; }
+  h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24px;
+    color: var(--text-bright);
+    margin: 40px 0 14px;
+    letter-spacing: -0.01em;
+  }
+  p { margin: 0 0 16px; }
+  ul { padding-left: 24px; }
+  li { margin: 6px 0; }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg-card);
+    color: var(--accent);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 13.5px;
+  }
+
+  .contact-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin: 24px 0;
+  }
+  .contact-card .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .contact-card .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 14.5px;
+  }
+  .contact-card .row .key { color: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
+  .contact-card .row .val { color: var(--text); }
+
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin: 18px 0 28px;
+  }
+  .stack-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+  .stack-card h3 {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-size: 13px;
+    margin: 0 0 4px;
+    font-weight: 500;
+  }
+  .stack-card p { color: var(--text-dim); font-size: 13.5px; margin: 0; line-height: 1.5; }
+
+  .disclosure {
+    background: var(--bg-elev);
+    border-left: 3px solid var(--warn);
+    padding: 16px 20px;
+    border-radius: 4px;
+    margin: 24px 0;
+    font-size: 14.5px;
+  }
+  .disclosure strong { color: var(--warn); }
+
+  footer { padding: 28px 0 56px; color: var(--text-dim); font-size: 13px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand">sentry<span class="dot">.</span>forge</span>
+    <nav class="nav-links">
+      <a href="/">debt defense</a>
+      <a href="/letter/">letter</a>
+      <a href="/webhook/">webhook</a>
+      <a href="/about/">about</a>
+    </nav>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+    <h1>About.</h1>
+    <p class="lede">One person, one phone, one address. Here's what you're paying for when you hit Buy, and what you aren't.</p>
+
+    <h2>Who's behind this</h2>
+    <p>Bryant Shelby. Based in New Orleans, Louisiana. Not a law firm, not an agency, not a SaaS team. The site, the code, the letters, the customer support — all me.</p>
+
+    <div class="contact-card">
+      <div class="label">Contact (real, answered)</div>
+      <div class="row"><span class="key">email</span><span class="val">jadedfocus@gmail.com</span></div>
+      <div class="row"><span class="key">phone</span><span class="val">(504) 201-4195</span></div>
+      <div class="row"><span class="key">address</span><span class="val">701 Loyola Ave #58043, New Orleans, LA 70113</span></div>
+      <div class="row"><span class="key">x</span><span class="val"><a href="https://x.com/jadedfocus">@jadedfocus</a></span></div>
+      <div class="row"><span class="key">github</span><span class="val"><a href="https://github.com/bshelby88">github.com/bshelby88</a></span></div>
+    </div>
+
+    <h2>What I ship, by surface</h2>
+
+    <div class="stack-grid">
+      <div class="stack-card">
+        <h3>/ — Sentry Forge</h3>
+        <p>$79 / case — debt-defense pack. Eight deliverables in 24h. Customer #1: my own apartment-debt case.</p>
+      </div>
+      <div class="stack-card">
+        <h3>/letter/</h3>
+        <p>$49 / letter — one custom dispute letter, 24h. Collector, creditor, or bureau target.</p>
+      </div>
+      <div class="stack-card">
+        <h3>/webhook/</h3>
+        <p>$199 — Stripe + Resend pipeline for indie hackers. 24h, first 3 clients only.</p>
+      </div>
+      <div class="stack-card">
+        <h3>/webhook/diagnostic/</h3>
+        <p>Free — paste your sig + body, get verdict on why verification fails. Pure client-side.</p>
+      </div>
+    </div>
+
+    <h2>How I got here</h2>
+    <p>In late 2025 I started looking hard at the gap between "consumer fights debt collector alone" and "consumer hires attorney for $300/hr." A real attorney can often win these cases on contingency, but only after the consumer has done the upfront paperwork right — validation, bureau disputes, CFPB filings. Most consumers don't know the framework, do it wrong, and lose by default.</p>
+    <p>So I built the framework as a service. Eight pieces of paper, 24 hours, $79. I'm doing my own dispute (apartment-debt collection from a wrongful 2020 eviction) at the same time, dogfooding every letter.</p>
+    <p>The webhook side is what most indie hackers know me for on X — built my own Stripe + Resend pipeline last week, verified live with a $29 charge, six events 200 OK in under a second. Wrote up the four traps that bit me, then realized I could ship that same pipeline to anyone else's repo for $199.</p>
+
+    <h2>What I don't do</h2>
+    <ul>
+      <li>I am <strong>not</strong> a law firm. No attorney-client relationship. Read every letter before you sign or send it.</li>
+      <li>I do not appear in court, advise on litigation strategy, or substitute for counsel.</li>
+      <li>I do not represent creditors, collectors, or debt buyers — only consumers.</li>
+      <li>I do not collect or sell your personal data. Customer information goes to Stripe (payment), Resend (email delivery), and my inbox. That's it.</li>
+      <li>I do not run ongoing retainers, SaaS subscriptions, or auto-renew billing. Every transaction here is one-time.</li>
+    </ul>
+
+    <h2>Refund posture</h2>
+    <p><strong>Webhook service ($199):</strong> refundable if I miss the 24-hour window from your intake reply, or if your Stripe events aren't hitting 200 by the end of the 7-day support window because of bugs in my code.</p>
+    <p><strong>Dispute letter ($49):</strong> refundable if I miss the 24-hour turnaround from your intake reply.</p>
+    <p><strong>Sentry Forge case pack ($79):</strong> refundable up to delivery. After delivery, the work is done and not refundable.</p>
+    <p>If you ask for a refund, the answer is yes. I'd rather have the unhappy customer leave on good terms than fight to keep $199.</p>
+
+    <h2>Why the prices are this low</h2>
+    <p>Two reasons:</p>
+    <ol>
+      <li>I'm building case studies. Three solid testimonials at the early-bird price means more business at the regular price ($79 → $99, $199 → $399, etc.).</li>
+      <li>I want to remove the price objection from the buy decision. Consumer-debt customers in distress often can't pay $300+. Indie hackers can't always justify $500+ from another founder. $49 / $79 / $199 are below the friction line.</li>
+    </ol>
+
+    <h2>If you're considering buying</h2>
+    <p>Read the offer page. If you're still unsure, email me at <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a> with your specific situation. I'll tell you in 24 hours whether this fits or whether you need a different solution. No sales pitch.</p>
+
+    <div class="disclosure">
+      <strong>Compliance disclosure:</strong> Sentry Forge is operated by Bryant Shelby as a sole proprietor. Statement descriptor on your card statement reads <code>SENTRY FORGE</code>. Stripe is the payment processor. Resend is the email delivery provider. Vercel hosts the site. No other third party receives customer information.
+    </div>
+
+    <h2>One more thing</h2>
+    <p>If you're reading this because you're being sued, or you have a court date, or a court summons in your hands right now: <strong>stop reading this and call a licensed attorney in your state.</strong> Most consumer-protection attorneys take FDCPA / FCRA cases on contingency — no upfront cost. Don't try to fight active litigation with one of my letters. The letters help; they don't replace counsel.</p>
+    <p>If you want a referral, ask. I have working relationships with consumer-protection attorneys in Louisiana, Mississippi, and Oklahoma. I'll send you to one whose practice fits your facts. No referral fee changes hands either way.</p>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a> · (504) 201-4195 · <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="https://github.com/bshelby88">github.com/bshelby88</a>
+  </div>
+</footer>
+
+</body>
+</html>
