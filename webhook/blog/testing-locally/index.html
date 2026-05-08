@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Testing Stripe Webhooks Locally: Stripe CLI vs ngrok vs Cloudflare Tunnel</title>
+<meta name="description" content="Three ways to test Stripe webhooks against your local dev server: Stripe CLI's listen-and-forward, ngrok HTTP tunnel, Cloudflare Tunnel. Pros, cons, and the gotcha each one hides." />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="canonical" href="https://sentry-forge-landing.vercel.app/webhook/blog/testing-locally/" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Testing Stripe Webhooks Locally: Stripe CLI vs ngrok vs Cloudflare Tunnel" />
+<meta property="og:description" content="Three approaches compared, gotchas exposed." />
+<meta property="og:url" content="https://sentry-forge-landing.vercel.app/webhook/blog/testing-locally/" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Testing Stripe Webhooks Locally: Stripe CLI vs ngrok vs Cloudflare Tunnel",
+  "datePublished": "2026-05-08",
+  "dateModified": "2026-05-08",
+  "author": { "@type": "Person", "name": "Bryant Shelby", "url": "https://x.com/jadedfocus" },
+  "description": "Comparing three approaches for testing Stripe webhooks against a local dev server.",
+  "mainEntityOfPage": "https://sentry-forge-landing.vercel.app/webhook/blog/testing-locally/"
+}
+</script>
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root { --bg: #0b0d12; --bg-card: #161a24; --bg-elev: #11141c; --line: #1f2532; --text: #d6dae3; --text-dim: #8a92a4; --text-bright: #f0f2f7; --accent: #5cd8a8; --warn: #ffb454; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 740px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--line); padding: 16px 0; background: rgba(11,13,18,0.85); backdrop-filter: blur(8px); }
+  .nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-bright); font-size: 14px; }
+  .brand .dot { color: var(--accent); }
+  .nav-cta { background: var(--accent); color: var(--bg); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+  article { padding: 60px 0 80px; }
+  article time { color: var(--text-dim); font-size: 14px; font-family: 'JetBrains Mono', monospace; }
+  h1 { font-size: clamp(28px, 4vw, 38px); color: var(--text-bright); letter-spacing: -0.02em; margin: 12px 0 22px; line-height: 1.18; }
+  .lede { font-size: 19px; color: var(--text); margin-bottom: 32px; }
+  h2 { font-size: 26px; color: var(--text-bright); margin: 44px 0 14px; letter-spacing: -0.01em; }
+  h3 { font-size: 18px; color: var(--text-bright); margin: 24px 0 8px; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+  p { margin: 0 0 18px; }
+  ul, ol { padding-left: 24px; }
+  li { margin: 8px 0; }
+  code { font-family: 'JetBrains Mono', monospace; background: var(--bg-card); color: var(--accent); padding: 2px 7px; border-radius: 4px; font-size: 13.5px; }
+  pre { background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.65; color: var(--text); margin: 16px 0 24px; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  table { width: 100%; border-collapse: collapse; margin: 18px 0 24px; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  th { color: var(--text-bright); font-weight: 600; }
+  td code { font-size: 12.5px; }
+  .callout { background: var(--bg-elev); border-left: 3px solid var(--accent); border-radius: 4px; padding: 16px 20px; margin: 20px 0; font-size: 15px; }
+  .callout strong { color: var(--accent); }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.warn strong { color: var(--warn); }
+  .cta-card { background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-elev) 100%); border: 1px solid var(--accent); border-radius: 12px; padding: 28px; margin: 36px 0; text-align: center; }
+  .cta-card h3 { font-family: inherit; font-size: 20px; color: var(--text-bright); margin: 0 0 8px; }
+  .cta-card p { color: var(--text-dim); font-size: 15px; margin: 0 0 20px; }
+  .btn { display: inline-block; background: var(--accent); color: var(--bg); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 16px; text-decoration: none; }
+  .btn:hover { background: #4dc095; text-decoration: none; }
+  footer { padding: 32px 0 60px; color: var(--text-dim); font-size: 13px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand">webhook<span class="dot">.</span>forge</span>
+    <a class="nav-cta" href="/webhook/">$199 setup ↗</a>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+    <time datetime="2026-05-08">2026-05-08 · ~6 min read</time>
+    <h1>Testing Stripe Webhooks Locally: Stripe CLI vs ngrok vs Cloudflare Tunnel</h1>
+
+    <p class="lede">You can't test Stripe webhooks against <code>localhost</code> directly — Stripe needs a public URL to deliver events to. Three options bridge that gap. Each works; each has a different gotcha. Below: the setup, the trade-offs, and which approach fits which workflow.</p>
+
+    <h2>The TL;DR</h2>
+
+    <table>
+      <tr>
+        <th>Tool</th>
+        <th>Best for</th>
+        <th>Cost</th>
+        <th>Gotcha</th>
+      </tr>
+      <tr>
+        <td>Stripe CLI</td>
+        <td>Day-to-day dev iteration</td>
+        <td>Free</td>
+        <td>Forwards events from a separate test webhook secret — won't catch prod-secret bugs</td>
+      </tr>
+      <tr>
+        <td>ngrok</td>
+        <td>Sharing a real URL with teammates / external services</td>
+        <td>$8-20/mo for stable URLs</td>
+        <td>URL changes on every restart unless you're on the paid tier; rate limits on free tier</td>
+      </tr>
+      <tr>
+        <td>Cloudflare Tunnel (`cloudflared`)</td>
+        <td>Permanent local-public bridge tied to your domain</td>
+        <td>Free with a Cloudflare account</td>
+        <td>More setup; tunnel runs as a daemon you have to keep alive</td>
+      </tr>
+    </table>
+
+    <h2>Option 1 — Stripe CLI (default for local dev)</h2>
+
+    <p>Install:</p>
+
+    <pre><code># macOS
+brew install stripe/stripe-cli/stripe
+
+# Linux
+curl -L https://github.com/stripe/stripe-cli/releases/latest/download/stripe_X.X.X_linux_x86_64.tar.gz | tar xz
+
+# Windows: download from github.com/stripe/stripe-cli/releases</code></pre>
+
+    <p>Authenticate:</p>
+
+    <pre><code>stripe login
+# Opens a browser; click Allow Access</code></pre>
+
+    <p>Forward events to your local dev server:</p>
+
+    <pre><code>stripe listen --forward-to localhost:3000/api/stripe-webhook</code></pre>
+
+    <p>Output:</p>
+
+    <pre><code>&gt; Ready! Your webhook signing secret is whsec_xyz123...
+&gt;    (^C to quit)</code></pre>
+
+    <p>The whsec_*** that the CLI prints is a SEPARATE secret used only for this listen session. Put it in your local <code>.env</code> file as <code>STRIPE_WEBHOOK_SECRET</code> — your code verifies signatures against this secret, not your production secret.</p>
+
+    <p>Trigger test events:</p>
+
+    <pre><code># In another terminal, while stripe listen is running:
+stripe trigger checkout.session.completed
+stripe trigger payment_intent.succeeded
+stripe trigger charge.refunded</code></pre>
+
+    <div class="callout warn">
+      <strong>Critical gotcha:</strong> the secret printed by <code>stripe listen</code> is NOT the same as your production endpoint's signing secret. If your local code works but production fails sig verification, the CLI didn't catch it because the CLI's test secret is verified-against, not your real prod secret. Always do a final live $1 test against your deployed endpoint before declaring victory.
+    </div>
+
+    <h2>Option 2 — ngrok (when you need a stable public URL)</h2>
+
+    <p>Install:</p>
+
+    <pre><code>brew install ngrok/ngrok/ngrok
+# Or download from ngrok.com/download</code></pre>
+
+    <p>Authenticate (free account):</p>
+
+    <pre><code>ngrok config add-authtoken YOUR_TOKEN_FROM_NGROK_DASHBOARD</code></pre>
+
+    <p>Start tunnel:</p>
+
+    <pre><code>ngrok http 3000</code></pre>
+
+    <p>Output:</p>
+
+    <pre><code>Forwarding   https://1a2b3c4d.ngrok-free.app -&gt; http://localhost:3000</code></pre>
+
+    <p>Configure that <code>https://1a2b3c4d.ngrok-free.app</code> URL as a Stripe webhook endpoint:</p>
+
+    <ol>
+      <li>Stripe Dashboard → Developers → Webhooks → Add endpoint</li>
+      <li>URL: <code>https://1a2b3c4d.ngrok-free.app/api/stripe-webhook</code></li>
+      <li>Events: select <code>checkout.session.completed</code> + others you care about</li>
+      <li>Add endpoint, copy the signing secret</li>
+      <li>Set <code>STRIPE_WEBHOOK_SECRET</code> in your local <code>.env</code> to that secret</li>
+      <li>Restart your local dev server to pick up the new env var</li>
+    </ol>
+
+    <div class="callout">
+      <strong>Why ngrok over Stripe CLI:</strong> the URL is real and addressable from anywhere. Useful when (a) you want a teammate to hit your endpoint from their browser, (b) you're testing third-party integrations that aren't Stripe, or (c) you want to verify your code against a real Stripe webhook secret (not the CLI's test secret).
+    </div>
+
+    <p>Free tier ngrok URLs change every restart. Paid tier ($8-20/mo) gives you a stable subdomain like <code>https://your-handle.ngrok.io</code>.</p>
+
+    <h2>Option 3 — Cloudflare Tunnel (for permanent custom-domain bridge)</h2>
+
+    <p>If you already have a domain on Cloudflare DNS, you can run a permanent tunnel that bridges <code>https://dev.yourdomain.com</code> to your local dev server. Free.</p>
+
+    <p>Install:</p>
+
+    <pre><code>brew install cloudflare/cloudflare/cloudflared
+# Or apt-get / snap on Linux</code></pre>
+
+    <p>Authenticate:</p>
+
+    <pre><code>cloudflared tunnel login
+# Opens browser; pick the domain you want to bridge</code></pre>
+
+    <p>Create + configure tunnel:</p>
+
+    <pre><code>cloudflared tunnel create dev-stripe
+# Outputs a tunnel UUID
+
+# Create config at ~/.cloudflared/config.yml:
+cat &gt; ~/.cloudflared/config.yml &lt;&lt; 'EOF'
+tunnel: &lt;your-tunnel-uuid&gt;
+credentials-file: /Users/you/.cloudflared/&lt;your-tunnel-uuid&gt;.json
+
+ingress:
+  - hostname: dev.yourdomain.com
+    service: http://localhost:3000
+  - service: http_status:404
+EOF
+
+# Add DNS route:
+cloudflared tunnel route dns dev-stripe dev.yourdomain.com
+
+# Start the tunnel:
+cloudflared tunnel run dev-stripe</code></pre>
+
+    <p>Now <code>https://dev.yourdomain.com/api/stripe-webhook</code> hits your local dev server. Configure that as the Stripe webhook endpoint in the dashboard.</p>
+
+    <p>Run as a service so you don't have to re-start the daemon every reboot:</p>
+
+    <pre><code>sudo cloudflared service install</code></pre>
+
+    <h2>Which to use when</h2>
+
+    <ul>
+      <li><strong>Day-to-day dev (you, alone, against test events):</strong> Stripe CLI. Lowest setup, instant.</li>
+      <li><strong>Sharing with a teammate or testing real Stripe events:</strong> ngrok. Real URL, real Stripe webhook secret.</li>
+      <li><strong>Permanent staging endpoint at a custom subdomain:</strong> Cloudflare Tunnel. More setup, but free + persistent.</li>
+      <li><strong>CI / automated testing:</strong> mock the events directly in your tests using the JSON fixtures from Stripe's docs. Don't actually hit Stripe in CI.</li>
+    </ul>
+
+    <h2>The "test events look right but production fails" trap</h2>
+
+    <p>Common scenario: you set up Stripe CLI locally, every test event passes, you deploy, every event 400s.</p>
+
+    <p>Causes (in order of likelihood):</p>
+
+    <ol>
+      <li><strong>You used the CLI's test secret in production.</strong> Production Stripe events are signed with the production endpoint secret, not the CLI's session secret. Set <code>STRIPE_WEBHOOK_SECRET</code> in your production environment to the secret from your production webhook endpoint in the dashboard.</li>
+      <li><strong>Your production runtime parses the body before sig verification.</strong> Common with Vercel + Next.js — see <a href="/webhook/blog/stripe-400/">the deep writeup on body-parser issues</a>.</li>
+      <li><strong>The events you're getting are stale retries from before your last fix.</strong> See <a href="/webhook/blog/retry-behavior/">the retry-behavior post</a>; the noise drains in 72 hours.</li>
+    </ol>
+
+    <p>Diagnostic tool that helps catch these in seconds: <a href="/webhook/diagnostic/">/webhook/diagnostic/</a> — paste your live sig + body + secret, get a verdict.</p>
+
+    <h2>Summary</h2>
+
+    <ul>
+      <li>[ ] Local dev: Stripe CLI <code>stripe listen --forward-to ...</code></li>
+      <li>[ ] Stable public URL: ngrok (free with rotating URLs, paid for stable)</li>
+      <li>[ ] Permanent custom-domain bridge: Cloudflare Tunnel</li>
+      <li>[ ] Always do a final $1 live test against the deployed prod endpoint before declaring victory</li>
+      <li>[ ] If prod 400s after local works, suspect (1) wrong secret, (2) body parser, (3) stale retries</li>
+    </ul>
+
+    <div class="cta-card">
+      <h3>Done with the local-test loop and want it shipped to production?</h3>
+      <p>$199 flat (first 3 clients, then $399). Local-tested + production-verified before delivery, $1 live test refunded after.</p>
+      <a class="btn" href="/webhook/">See the offer →</a>
+    </div>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="/webhook/blog/stripe-400/">Why your Stripe webhook returns 400 in production</a></li>
+      <li><a href="/webhook/blog/multiple-events/">Why Stripe fires 6+ events per checkout</a></li>
+      <li><a href="/webhook/blog/retry-behavior/">Stripe webhook retry behavior</a></li>
+      <li><a href="/webhook/blog/idempotency/">Webhook idempotency for handling duplicates</a></li>
+      <li><a href="/webhook/diagnostic/">Free signature diagnostic</a></li>
+      <li><a href="/webhook/calculator/">Cost calculator</a></li>
+    </ul>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    Written by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="/webhook/blog/">all posts</a> · <a href="/webhook/">offer</a><br/>
+    <a href="/about/">About</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a>
+  </div>
+</footer>
+
+</body>
+</html>

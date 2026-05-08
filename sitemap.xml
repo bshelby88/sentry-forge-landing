@@ -58,6 +58,12 @@
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
+    <loc>https://sentry-forge-landing.vercel.app/webhook/blog/testing-locally/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2026-05-08</lastmod>
+  </url>
+  <url>
     <loc>https://sentry-forge-landing.vercel.app/letter/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
