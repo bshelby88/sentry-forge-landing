@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Thanks — Webhook Service · 24h Clock Started</title>
+<meta name="description" content="Stripe Webhook + Resend Setup payment received. Reply to the intake email within 24 hours to start the build." />
+<meta name="robots" content="noindex" />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-card: #161a24;
+    --line: #1f2532;
+    --text: #d6dae3;
+    --text-dim: #8a92a4;
+    --text-bright: #f0f2f7;
+    --accent: #5cd8a8;
+    --accent-dim: #2f7559;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 60px 24px 80px; }
+  .check {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(92, 216, 168, 0.12);
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 28px;
+  }
+  h1 {
+    font-size: 36px;
+    color: var(--text-bright);
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
+    line-height: 1.2;
+  }
+  .sub { color: var(--text-dim); font-size: 17px; margin: 0 0 36px; max-width: 600px; }
+  h2 {
+    font-size: 22px;
+    color: var(--text-bright);
+    margin: 36px 0 12px;
+  }
+  h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+    margin: 20px 0 6px;
+  }
+  ol, ul { padding-left: 24px; }
+  li { margin: 10px 0; color: var(--text); }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg-card);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 24px 0;
+  }
+  .card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  a { color: var(--accent); }
+  a:hover { color: #4dc095; }
+  .footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="check">✓</div>
+  <h1>Payment received. 24-hour clock started.</h1>
+  <p class="sub">Bryant got the Stripe ping. You'll receive the intake email at the address you used at checkout, within the next hour. Until then, here's what to expect.</p>
+
+  <div class="card">
+    <div class="card-label">What's in your inbox shortly</div>
+    <p style="margin: 0; color: var(--text);">Subject line: <code>Sentry Forge — your case is open (Webhook Service)</code></p>
+    <p style="margin: 8px 0 0; color: var(--text-dim); font-size: 14px;">Reply to that email with the 6 intake items below. The 24-hour SLA on delivery starts when intake hits Bryant's inbox.</p>
+  </div>
+
+  <h2>The 6-item intake brief</h2>
+  <ol>
+    <li><strong>Framework + host.</strong> Next.js + Vercel is the default; Hono on Cloudflare, Express on Render, SvelteKit, Remix all supported.</li>
+    <li><strong>GitHub repo URL + invite to <code>bshelby88</code></strong> (or send a patch back if private).</li>
+    <li><strong>Stripe webhook signing secret</strong> (<code>whsec_***</code>) — Stripe Dashboard → Developers → Webhooks → reveal.</li>
+    <li><strong>Resend API key</strong> (<code>re_***</code>) — or the email provider you prefer (Postmark / SendGrid / Mailgun all work with a function swap).</li>
+    <li><strong>Tier copy.</strong> What should the customer email say for each Stripe product? One paragraph per tier is enough.</li>
+    <li><strong>Founder notification email.</strong> Where should the <code>[FORGE PAID]</code> notices land?</li>
+  </ol>
+
+  <h2>What happens next</h2>
+  <ul>
+    <li>I add <code>api/stripe-webhook.js</code> (or <code>.ts</code>) to your repo with full HMAC sig verification, replay-attack guard, tier mapping, and email automation.</li>
+    <li>I wire env vars in your Vercel project, register the webhook endpoint with Stripe (or hand off if you self-deploy).</li>
+    <li>I run a <strong>$1 live test charge</strong> in front of you, watch the webhook return 200, watch both emails fire, then refund the $1.</li>
+    <li>You get a PR / commit link, an env-var checklist, and the start of the 7-day support window.</li>
+  </ul>
+
+  <h2>Boundaries</h2>
+  <ul>
+    <li>Refundable if I miss the 24-hour window from receipt of your intake reply.</li>
+    <li>Refundable if your Stripe events aren't hitting 200 by end of the 7-day support window because of bugs in my code.</li>
+    <li>Out of scope: building your products in Stripe, designing your email templates from scratch, ongoing retainer work. Each is a separate engagement.</li>
+  </ul>
+
+  <h2>If you don't see the intake email</h2>
+  <p>Check spam (the from address is <code>onboarding@resend.dev</code> until I get my custom domain verified — coming soon). Still nothing after 1 hour? Email <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a> directly with your Stripe receipt number.</p>
+
+  <div class="footer">
+    Built and supported by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="/webhook/">webhook offer page</a> · <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a> · (504) 201-4195
+  </div>
+</div>
+</body>
+</html>
