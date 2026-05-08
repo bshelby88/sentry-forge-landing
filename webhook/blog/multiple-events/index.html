@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Why Stripe Fires 6+ Webhook Events Per Checkout (and How to Handle Each)</title>
+<meta name="description" content="Your Stripe webhook receives six events for a single checkout. Why? Which one should fire your email send? Working code for handling each event type without double-charging or duplicate emails. Includes idempotency-key pattern." />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="canonical" href="https://sentry-forge-landing.vercel.app/webhook/blog/multiple-events/" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Why Stripe Fires 6+ Webhook Events Per Checkout" />
+<meta property="og:description" content="Six events per checkout. Which one fires your email? Handling each without duplicates." />
+<meta property="og:url" content="https://sentry-forge-landing.vercel.app/webhook/blog/multiple-events/" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Why Stripe Fires 6+ Webhook Events Per Checkout" />
+<meta name="twitter:description" content="Six events per checkout. Which one fires your email? Working code." />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Why Stripe Fires 6+ Webhook Events Per Checkout (and How to Handle Each)",
+  "datePublished": "2026-05-08",
+  "dateModified": "2026-05-08",
+  "author": {
+    "@type": "Person",
+    "name": "Bryant Shelby",
+    "url": "https://x.com/jadedfocus"
+  },
+  "description": "Six webhook events fire for a single Stripe checkout. Why, which one to handle, and how to avoid duplicate emails or double-charges.",
+  "mainEntityOfPage": "https://sentry-forge-landing.vercel.app/webhook/blog/multiple-events/"
+}
+</script>
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-card: #161a24;
+    --bg-elev: #11141c;
+    --line: #1f2532;
+    --text: #d6dae3;
+    --text-dim: #8a92a4;
+    --text-bright: #f0f2f7;
+    --accent: #5cd8a8;
+    --warn: #ffb454;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 740px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--line); padding: 16px 0; background: rgba(11,13,18,0.85); backdrop-filter: blur(8px); }
+  .nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-bright); font-size: 14px; }
+  .brand .dot { color: var(--accent); }
+  .nav-cta { background: var(--accent); color: var(--bg); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+  article { padding: 60px 0 80px; }
+  article time { color: var(--text-dim); font-size: 14px; font-family: 'JetBrains Mono', monospace; }
+  h1 {
+    font-size: clamp(28px, 4vw, 38px);
+    color: var(--text-bright);
+    letter-spacing: -0.02em;
+    margin: 12px 0 22px;
+    line-height: 1.18;
+  }
+  .lede { font-size: 19px; color: var(--text); margin-bottom: 32px; }
+  h2 { font-size: 26px; color: var(--text-bright); margin: 44px 0 14px; letter-spacing: -0.01em; }
+  h3 { font-size: 18px; color: var(--text-bright); margin: 24px 0 8px; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+  p { margin: 0 0 18px; }
+  ul, ol { padding-left: 24px; }
+  li { margin: 8px 0; }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg-card);
+    color: var(--accent);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 13.5px;
+  }
+  pre {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 22px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text);
+    margin: 16px 0 24px;
+  }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  table { width: 100%; border-collapse: collapse; margin: 18px 0 24px; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  th { color: var(--text-bright); font-weight: 600; }
+  td code { font-size: 12.5px; }
+  .callout {
+    background: var(--bg-elev);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .callout strong { color: var(--accent); }
+  .cta-card {
+    background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 28px;
+    margin: 36px 0;
+    text-align: center;
+  }
+  .cta-card h3 { font-family: inherit; font-size: 20px; color: var(--text-bright); margin: 0 0 8px; }
+  .cta-card p { color: var(--text-dim); font-size: 15px; margin: 0 0 20px; }
+  .btn { display: inline-block; background: var(--accent); color: var(--bg); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 16px; text-decoration: none; }
+  .btn:hover { background: #4dc095; text-decoration: none; }
+  footer { padding: 32px 0 60px; color: var(--text-dim); font-size: 13px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand">webhook<span class="dot">.</span>forge</span>
+    <a class="nav-cta" href="/webhook/">$199 setup ↗</a>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+    <time datetime="2026-05-08">2026-05-08 · ~7 min read</time>
+    <h1>Why Stripe Fires 6+ Webhook Events Per Checkout (and How to Handle Each)</h1>
+
+    <p class="lede">A single Stripe Checkout session generates between 4 and 8 webhook events, all delivered within ~1 second of payment success. If you're naive about it, you'll fire 6 customer emails for a single purchase, charge a customer twice for "$1 retry tests," or skip the event you actually wanted. Below: every event you'll see, which one to act on, and how to handle the rest without duplicates.</p>
+
+    <h2>What you'll see in your logs</h2>
+
+    <p>For a typical successful checkout, the events arrive in this order, often within a single second:</p>
+
+    <pre><code>19:29:14.98  POST /api/stripe-webhook  200  charge.succeeded
+19:29:12.10  POST /api/stripe-webhook  200  payment_intent.succeeded
+19:29:12.03  POST /api/stripe-webhook  200  payment_intent.created
+19:29:11.95  POST /api/stripe-webhook  200  payment.succeeded (legacy)
+19:29:11.89  POST /api/stripe-webhook  200  checkout.session.async_payment_succeeded
+19:29:11.85  POST /api/stripe-webhook  200  checkout.session.completed</code></pre>
+
+    <p>Plus, depending on your subscription / customer setup, you may also see:</p>
+
+    <ul>
+      <li><code>customer.created</code> (if Stripe created a new customer object during checkout)</li>
+      <li><code>customer.updated</code> (if the customer's email or address changed)</li>
+      <li><code>invoice.paid</code> (if the checkout was for a subscription)</li>
+      <li><code>invoice.payment_succeeded</code> (subscription, again)</li>
+      <li><code>charge.captured</code> (if you use auth-then-capture flow)</li>
+    </ul>
+
+    <p>That's why the burst can hit 8+ for subscriptions or auth-then-capture, and 4-6 for one-time charges with the simplest setup.</p>
+
+    <h2>Which event should fire your email?</h2>
+
+    <p>For one-time payments (most indie hacker setups), you want one of two events depending on what you're paying for:</p>
+
+    <table>
+      <tr>
+        <th>Use case</th>
+        <th>Event to act on</th>
+        <th>Why</th>
+      </tr>
+      <tr>
+        <td>Customer paid via Stripe Checkout</td>
+        <td><code>checkout.session.completed</code></td>
+        <td>Single source of truth for "checkout successfully completed." Fires after Stripe collects payment and before any webhook ordering chaos.</td>
+      </tr>
+      <tr>
+        <td>You charge programmatically (no Checkout)</td>
+        <td><code>payment_intent.succeeded</code></td>
+        <td>Use when you call <code>stripe.paymentIntents.create</code> directly without going through Checkout.</td>
+      </tr>
+      <tr>
+        <td>Subscription start</td>
+        <td><code>customer.subscription.created</code></td>
+        <td>Fires once when a new subscription begins.</td>
+      </tr>
+      <tr>
+        <td>Subscription billing renewal</td>
+        <td><code>invoice.paid</code></td>
+        <td>Fires every billing cycle. Use this for receipt emails, not <code>charge.succeeded</code> (the charge fires per-invoice anyway).</td>
+      </tr>
+    </table>
+
+    <p>Pick exactly one. All other events for the same checkout are noise — return 200 and move on.</p>
+
+    <h2>The wrong way: handling every event type</h2>
+
+    <pre><code>// BAD — fires customer email 6 times for one checkout
+export default async function handler(req, res) {
+  // ... sig verification ...
+  const event = JSON.parse(rawBody.toString());
+
+  // Handle every event type; oops
+  await sendCustomerEmail(event.data.object.customer_email);
+  return res.status(200).json({ received: true });
+}</code></pre>
+
+    <p>This dispatches an email on every event in the burst — checkout completion, payment intent created, payment intent succeeded, charge succeeded, etc. Customer gets 6 emails. They don't unsubscribe; they refund.</p>
+
+    <h2>The right way: filter by event type</h2>
+
+    <pre><code>export default async function handler(req, res) {
+  // ... sig verification ...
+  const event = JSON.parse(rawBody.toString());
+
+  // We only care about successful checkouts
+  if (event.type !== 'checkout.session.completed') {
+    return res.status(200).json({ received: true, ignored: event.type });
+  }
+
+  const session = event.data.object;
+  await sendCustomerEmail(session.customer_details.email);
+  await sendFounderEmail({ amount: session.amount_total, /* ... */ });
+
+  return res.status(200).json({ received: true });
+}</code></pre>
+
+    <p>The <code>ignored: event.type</code> response is useful in your Vercel logs — you can see which events arrived without doing the work.</p>
+
+    <h2>Idempotency: what if Stripe retries?</h2>
+
+    <p>Even with the right event type filter, you can still send duplicate emails if Stripe retries the same event. Stripe retries failed deliveries on a 5-min, 1-hr, 2-hr, 4-hr, 8-hr backoff for up to 3 days. If your endpoint returns 500 once and 200 the second time, your retry-of-retry logic might trigger duplicate sends.</p>
+
+    <p>The fix: idempotency keyed on the Stripe event ID.</p>
+
+    <pre><code>// Pseudo-code; adapt to your DB / KV
+const seen = await kv.get(`stripe:event:${event.id}`);
+if (seen) {
+  return res.status(200).json({ received: true, dedup: true });
+}
+await kv.set(`stripe:event:${event.id}`, true, { ex: 86400 * 7 });
+
+// Now do the work. If anything fails, you can retry safely
+// because the dedup key is set.</code></pre>
+
+    <p>For low-volume indie products, even a simple in-memory or file-based dedup works. For higher volume, use Vercel KV, Upstash, Redis, or a database table with a uniqueness constraint on event ID.</p>
+
+    <div class="callout">
+      <strong>Edge case:</strong> if your dedup key is set BEFORE the work runs and the work fails, you can't retry. Either (a) set the key after work succeeds, or (b) make the work itself idempotent (Resend supports an idempotency key on email sends). The "set first, work second" pattern is simpler and good enough if you have monitoring on send failures.
+    </div>
+
+    <h2>What about ordering?</h2>
+
+    <p>Stripe does NOT guarantee event delivery order. <code>charge.succeeded</code> can arrive before <code>checkout.session.completed</code> for the same checkout. If your handler depends on a specific order — for example, "create customer record on customer.created, then fire email on checkout.session.completed using that record" — you have a race condition.</p>
+
+    <p>Two solutions:</p>
+
+    <p><strong>Solution 1: Use Stripe API expand to get everything from a single event.</strong></p>
+
+    <pre><code>// On checkout.session.completed, expand line_items + customer
+const session = await stripe.checkout.sessions.retrieve(
+  event.data.object.id,
+  { expand: ['line_items', 'customer'] }
+);
+// Now you have everything in one place</code></pre>
+
+    <p><strong>Solution 2: Make handlers idempotent and tolerant of out-of-order events.</strong> Each event handler should be able to run independently. If "create customer record" runs second, that's fine — the email handler just looks up the customer record by Stripe customer ID, finds it, and proceeds.</p>
+
+    <h2>What about the "$1 retry test" double-charge?</h2>
+
+    <p>If you're testing a webhook with a $1 live charge and refunding it, you'll see:</p>
+
+    <ul>
+      <li><code>checkout.session.completed</code> (amount_total: 100)</li>
+      <li><code>charge.succeeded</code> (amount: 100)</li>
+      <li><code>charge.refunded</code> (amount: 100)</li>
+      <li><code>charge.dispute.created</code> (only if you actually disputed it; rare)</li>
+    </ul>
+
+    <p>The refund event has the SAME charge ID as the original. If your handler treats <code>charge.refunded</code> as a new sale, you've just emailed the customer "your purchase is complete" twice. Filter explicitly:</p>
+
+    <pre><code>if (event.type === 'charge.refunded') {
+  // Send refund-confirmation email or update internal state.
+  // Do NOT treat this as a new sale.
+}</code></pre>
+
+    <h2>Summary checklist</h2>
+
+    <ul>
+      <li>[ ] Filter for exactly the event type you care about; return 200 + <code>ignored</code> on the rest</li>
+      <li>[ ] Implement idempotency keyed on Stripe event ID (event.id)</li>
+      <li>[ ] Don't depend on event delivery order — use API expand or write handlers tolerant of out-of-order events</li>
+      <li>[ ] Handle <code>charge.refunded</code> separately from initial sale events</li>
+      <li>[ ] Always return 200 even on downstream failure (per <a href="/webhook/blog/stripe-400/">the 400-fix article</a>)</li>
+      <li>[ ] Log <code>event.type</code> in your access logs so you can audit which events arrived</li>
+    </ul>
+
+    <div class="cta-card">
+      <h3>Want this implemented in your repo without writing it yourself?</h3>
+      <p>$199 flat (first 3 clients, then $399). Includes proper event-type filtering, idempotency, customer + founder email automation. Verified live before delivery.</p>
+      <a class="btn" href="/webhook/">See the offer →</a>
+    </div>
+
+    <p>Free webhook signature diagnostic if you're still in the 400-error stage: <a href="/webhook/diagnostic/">/webhook/diagnostic/</a></p>
+
+    <p>Working source for the webhook this article extracts patterns from: <a href="https://github.com/bshelby88/sentry-forge-landing/blob/master/api/stripe-webhook.js">github.com/bshelby88/sentry-forge-landing/api/stripe-webhook.js</a></p>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    Written by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="/webhook/">webhook offer</a> · <a href="/webhook/blog/stripe-400/">part 1: 400 errors</a> · <a href="/webhook/diagnostic/">free diagnostic</a><br/>
+    <a href="/about/">About</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a>
+  </div>
+</footer>
+
+</body>
+</html>
