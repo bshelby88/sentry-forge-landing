@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Terms of Service — Sentry Forge</title>
+<meta name="description" content="Terms governing use of Sentry Forge, the dispute letter service, and the webhook setup service. Plain language." />
+<link rel="canonical" href="https://sentry-forge-landing.vercel.app/terms/" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #0b0d12; --bg-card: #161a24; --bg-elev: #11141c; --line: #1f2532; --text: #d6dae3; --text-dim: #8a92a4; --text-bright: #f0f2f7; --accent: #5cd8a8; --warn: #ffb454; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--line); padding: 16px 0; }
+  .nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-bright); font-size: 14px; }
+  .brand .dot { color: var(--accent); }
+  .nav-links { display: flex; gap: 18px; font-size: 14px; }
+  .nav-links a { color: var(--text-dim); }
+  .nav-links a:hover { color: var(--accent); text-decoration: none; }
+  article { padding: 50px 0 80px; }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-size: 38px; color: var(--text-bright); letter-spacing: -0.02em; margin: 0 0 8px; }
+  .updated { color: var(--text-dim); font-size: 14px; font-family: 'JetBrains Mono', monospace; margin-bottom: 32px; }
+  h2 { font-family: 'Space Grotesk', sans-serif; font-size: 22px; color: var(--text-bright); margin: 36px 0 12px; }
+  p { margin: 0 0 16px; }
+  ul, ol { padding-left: 24px; }
+  li { margin: 6px 0; }
+  code { font-family: 'JetBrains Mono', monospace; background: var(--bg-card); color: var(--accent); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  .callout { background: var(--bg-elev); border-left: 3px solid var(--warn); padding: 14px 18px; border-radius: 4px; margin: 20px 0; font-size: 14.5px; }
+  .callout strong { color: var(--warn); }
+  footer { padding: 28px 0 56px; color: var(--text-dim); font-size: 13px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand">sentry<span class="dot">.</span>forge</span>
+    <nav class="nav-links">
+      <a href="/">home</a>
+      <a href="/about/">about</a>
+      <a href="/terms/">terms</a>
+      <a href="/privacy/">privacy</a>
+    </nav>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+    <h1>Terms of Service</h1>
+    <p class="updated">Last updated: 2026-05-08</p>
+
+    <p>These terms govern your use of the Sentry Forge website, the dispute letter service, the Sentry Forge Case Pack service, the Stripe Webhook + Resend Setup service, and the free webhook diagnostic tool. By using any of these services, you agree to these terms.</p>
+
+    <h2>1. Who we are</h2>
+    <p>Sentry Forge is operated by Bryant Shelby as a sole proprietor based in New Orleans, Louisiana. Contact: <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a> · (504) 201-4195 · 701 Loyola Ave #58043, New Orleans, LA 70113.</p>
+
+    <h2>2. Not a law firm</h2>
+    <div class="callout">
+      <strong>Critical disclosure:</strong> Sentry Forge is not a law firm. We do not provide legal advice. No attorney-client relationship is created by your purchase, your use of any deliverable we produce, or any communication with us.
+    </div>
+    <p>Materials we produce — dispute letters, validation requests, complaints, intake guides — are document-preparation services. You are responsible for reviewing every letter or filing before you sign or send it. If you are being sued, served with court papers, or have a court date, you must consult a licensed attorney in your jurisdiction. Our materials may support but do not replace counsel.</p>
+
+    <h2>3. Services</h2>
+    <p><strong>Sentry Forge Case Pack ($79 / case, $29 Founding 100 promotional tier).</strong> An eight-document debt-defense pack delivered within 24 hours of receipt of your intake reply. Deliverables include a collector dispute and validation letter, an original creditor demand, two CFPB complaint drafts, three-bureau dispute language, a court-records search guide, an action checklist, and an evidence inventory. All documents are provided as PDF and editable DOCX.</p>
+    <p><strong>Custom Dispute Letter ($49).</strong> One certified-mail-ready dispute letter targeting your choice of debt collector, original creditor, or credit bureau. Delivered as PDF and editable DOCX within 24 hours of receipt of your intake reply. Includes USPS certified-mail mailing instructions and one free revision if the first draft misses a fact pattern you specified.</p>
+    <p><strong>Stripe Webhook + Resend Setup ($199 first three clients, $399 thereafter).</strong> A turnkey Stripe webhook with HMAC signature verification, replay-attack guard, tier mapping, customer + founder email automation via Resend, deployed to your specified host (Vercel by default), with a $1 live test charge for verification. 7-day support window for any signature-verification or email-delivery bug in our code.</p>
+    <p><strong>Free webhook diagnostic tool</strong> (at <code>/webhook/diagnostic/</code>). A client-side utility that analyzes a Stripe signature header against a body and a webhook secret and reports the result. The tool runs entirely in your browser; no data is transmitted to us.</p>
+
+    <h2>4. Payment</h2>
+    <p>All transactions are processed by Stripe. Statement descriptor on your card statement reads <code>SENTRY FORGE</code>. We do not store card information ourselves. By purchasing, you authorize Stripe to charge the payment method you provide for the stated amount.</p>
+    <p>All prices are in US dollars unless otherwise noted. We do not bill recurring or subscription fees on these services. Each transaction is one-time.</p>
+
+    <h2>5. Refunds</h2>
+    <p><strong>Webhook Service ($199):</strong> refundable in full if we miss the 24-hour window from receipt of your intake reply, or if your Stripe events are not returning HTTP 200 by the end of the 7-day support window because of bugs in our code.</p>
+    <p><strong>Custom Dispute Letter ($49):</strong> refundable in full if we miss the 24-hour turnaround from receipt of your intake reply.</p>
+    <p><strong>Sentry Forge Case Pack ($79 / $29 Founding):</strong> refundable in full up to delivery. After delivery, the work product is yours and the service is non-refundable.</p>
+    <p>To request a refund, email <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a> with the subject line "[REFUND REQUEST]" and your Stripe receipt number. Refunds typically post within 5-10 business days via Stripe.</p>
+
+    <h2>6. Your obligations</h2>
+    <ul>
+      <li>You will provide accurate intake information. Materially false intake produces materially worse output.</li>
+      <li>You will read every letter or document we produce before you sign or send it.</li>
+      <li>You will not use our services for unlawful purposes — including filing intentionally false disputes or contesting debts you know you owe and intend to evade.</li>
+      <li>You will not impersonate another person when providing intake information.</li>
+      <li>You will not redistribute or resell our work product as your own service. (Personal use, including showing your letter to your own attorney, is encouraged.)</li>
+    </ul>
+
+    <h2>7. Webhook Service-specific terms</h2>
+    <p>For the Stripe Webhook + Resend Setup service:</p>
+    <ul>
+      <li>You will provide repository access (or accept a patch) within reasonable time of your intake reply, or the 24-hour clock pauses pending your action.</li>
+      <li>You retain ownership of your repository and the code we add to it. We claim no copyright in service-specific output.</li>
+      <li>The webhook code we ship is open-source compatible (MIT-style); you may fork, extend, or relicense it within your own project.</li>
+      <li>We will not retain your Stripe webhook signing secret, Resend API key, or repository access beyond seven days after project completion. We will delete or revoke as you direct.</li>
+    </ul>
+
+    <h2>8. No warranties</h2>
+    <p>Services and deliverables are provided "as is" and "as available" without warranties of any kind, express or implied, including warranties of merchantability, fitness for a particular purpose, non-infringement, or that any deliverable will achieve any particular legal, financial, or business outcome.</p>
+    <p>We make no guarantees about the outcome of any debt dispute, credit-report change, court matter, or business transaction that may use materials we produce.</p>
+
+    <h2>9. Limitation of liability</h2>
+    <p>To the maximum extent permitted by applicable law, our total aggregate liability arising out of or relating to these terms or any service we provide is limited to the amount you paid us for the specific service giving rise to the claim, in the twelve months preceding the claim.</p>
+    <p>We are not liable for indirect, consequential, incidental, special, exemplary, or punitive damages, including lost profits, lost data, or business interruption.</p>
+
+    <h2>10. Indemnity</h2>
+    <p>You agree to indemnify and hold harmless Sentry Forge and Bryant Shelby from any third-party claim arising out of (a) your use of our services in violation of these terms or applicable law, (b) materially false information you provide as intake, or (c) your unauthorized use or redistribution of our work product.</p>
+
+    <h2>11. Governing law and disputes</h2>
+    <p>These terms are governed by the laws of the State of Louisiana, without regard to its conflicts-of-law provisions. Any dispute arising out of these terms or our services will be brought in the state or federal courts located in Orleans Parish, Louisiana, and you consent to personal jurisdiction in those courts. Nothing in this section prevents either party from seeking injunctive relief in any court of competent jurisdiction for misuse of intellectual property or breach of confidentiality.</p>
+
+    <h2>12. Changes to these terms</h2>
+    <p>If we change these terms, the "Last updated" date at the top will change and a brief change summary will appear at the top for at least 30 days. Continued use of services after changes constitutes acceptance.</p>
+
+    <h2>13. Contact</h2>
+    <p>Questions, refund requests, privacy requests, complaints: <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a> or (504) 201-4195. Mailing address: 701 Loyola Ave #58043, New Orleans, LA 70113.</p>
+
+    <p style="margin-top: 32px;"><a href="/privacy/">Privacy Policy</a> · <a href="/about/">About</a></p>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    Sentry Forge · operated by Bryant Shelby · sole proprietor · New Orleans, LA · <a href="/about/">about</a> · <a href="/privacy/">privacy</a>
+  </div>
+</footer>
+
+</body>
+</html>
