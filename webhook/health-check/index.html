@@ -17,6 +17,54 @@
 <meta name="twitter:title" content="Stripe Webhook Health Check — $29/mo" />
 <meta name="twitter:description" content="Cron-based Stripe webhook monitoring with email alerts. $29/mo, built for indie hackers." />
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Sentry Forge — Webhook Health Check",
+  "description": "24/7 Stripe webhook uptime monitoring. Cron-based pings every 5 minutes. Email alert within 60s of delivery failure. Cancel anytime.",
+  "brand": { "@type": "Brand", "name": "Sentry Forge" },
+  "offers": {
+    "@type": "Offer",
+    "price": "29.00",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "url": "https://sentryforge.app/webhook/health-check/",
+    "priceSpecification": {
+      "@type": "UnitPriceSpecification",
+      "price": "29.00",
+      "priceCurrency": "USD",
+      "billingDuration": "P1M",
+      "billingIncrement": 1
+    }
+  },
+  "aggregateRating": null
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How fast will I be alerted when my webhook breaks?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Within 60 seconds. We ping every 5 minutes; on the first non-2xx or timeout response we send an email immediately." }
+    },
+    {
+      "@type": "Question",
+      "name": "How is this different from Hookdeck or Svix?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Hookdeck Pro starts at $39/mo, Svix Pro at $490/mo. Sentry Forge is $29/mo with the single feature most indie hackers actually need: an email when the endpoint dies." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I cancel anytime?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Cancel from the customer portal, no questions asked. You keep monitoring through the end of the billing cycle." }
+    }
+  ]
+}
+</script>
+
 <link rel="icon" href="/favicon.ico" sizes="any" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -482,6 +530,13 @@
 </head>
 <body>
 
+<!--
+  TODO (Bryant): Replace every occurrence of
+    https://buy.stripe.com/REPLACE_AFTER_STRIPE_SETUP
+  with the live Stripe Payment Link / Checkout URL after creating the
+  $29/mo recurring product in the Stripe dashboard. Three occurrences:
+  nav CTA, hero CTA, and pricing-card CTA.
+-->
 <header>
   <div class="wrap nav">
     <a href="/webhook/" style="text-decoration:none;" aria-label="webhook.forge home">
