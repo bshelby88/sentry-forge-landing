@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Enterprise Stripe Webhook Engagement — $2,500 setup + $499/mo retainer</title>
+<meta name="description" content="Premium Stripe webhook engineering for Series A SaaS founders running multi-product Stripe accounts. Multi-tier mapping, idempotency on event.id, monitoring, and a quarterly architecture review. $2,500 setup, $499/mo retainer." />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="canonical" href="https://sentry-forge-landing.vercel.app/webhook/enterprise/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Enterprise Stripe Webhook Engagement — webhook.forge" />
+<meta property="og:description" content="Built for Series A SaaS founders who can't afford a webhook bug. Multi-tier mapping, idempotency, monitoring, quarterly review. $2,500 + $499/mo." />
+<meta property="og:url" content="https://sentry-forge-landing.vercel.app/webhook/enterprise/" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Enterprise Stripe Webhook Engagement — webhook.forge" />
+<meta name="twitter:description" content="Multi-tier Stripe webhook architecture, idempotency, monitoring, and a quarterly review. For Series A SaaS founders. $2,500 + $499/mo." />
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-elev: #11141c;
+    --bg-card: #161a24;
+    --bg-card-2: #1a1f2c;
+    --line: #1f2532;
+    --line-bright: #2a3142;
+    --text: #d6dae3;
+    --text-dim: #8a92a4;
+    --text-bright: #f0f2f7;
+    --accent: #5cd8a8;
+    --accent-soft: rgba(92, 216, 168, 0.12);
+    --accent-dim: #2f7559;
+    --warn: #ffb454;
+    --danger: #ff6b6b;
+
+    --display: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent); text-decoration: underline; }
+
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--line);
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    background: rgba(11, 13, 18, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .brand {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--text-bright);
+    font-size: 14px;
+    letter-spacing: -0.02em;
+  }
+  .brand .dot { color: var(--accent); }
+  .brand-tier {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-left: 6px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .nav-links {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+  }
+  .nav-link {
+    color: var(--text-dim);
+    font-size: 13px;
+    font-family: var(--mono);
+  }
+  .nav-link:hover { color: var(--text-bright); text-decoration: none; }
+  .nav-cta {
+    background: var(--accent);
+    color: var(--bg);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  .nav-cta:hover { background: #4dc095; text-decoration: none; }
+
+  /* HERO */
+  .hero {
+    padding: 96px 0 72px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(1100px 380px at 85% -10%, rgba(92, 216, 168, 0.08), transparent 60%),
+      radial-gradient(700px 280px at 5% 110%, rgba(92, 216, 168, 0.05), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .hero .wrap { position: relative; z-index: 1; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 24px;
+    border: 1px solid var(--accent-dim);
+  }
+  .badge .pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(92, 216, 168, 0.6);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(92, 216, 168, 0.6); }
+    70%  { box-shadow: 0 0 0 8px rgba(92, 216, 168, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(92, 216, 168, 0); }
+  }
+
+  h1 {
+    font-size: clamp(34px, 5.4vw, 60px);
+    line-height: 1.05;
+    margin: 0 0 22px;
+    color: var(--text-bright);
+    letter-spacing: -0.025em;
+    font-weight: 700;
+    max-width: 18ch;
+  }
+  h1 .accent { color: var(--accent); }
+  .lede {
+    font-size: 19px;
+    color: var(--text-dim);
+    max-width: 640px;
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+  .cta-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .btn {
+    display: inline-block;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    transition: transform 0.1s, background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .btn:hover { transform: translateY(-1px); text-decoration: none; }
+  .btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .btn-primary:hover { background: #4dc095; }
+  .btn-secondary {
+    color: var(--text);
+    border: 1px solid var(--line);
+    background: transparent;
+  }
+  .btn-secondary:hover { border-color: var(--text-dim); color: var(--text-bright); }
+  .price-note {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-left: 8px;
+  }
+
+  /* HERO META BAR */
+  .hero-meta {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .hero-meta-cell {
+    background: var(--bg);
+    padding: 18px 20px;
+  }
+  .hero-meta-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .hero-meta-value {
+    font-family: var(--mono);
+    font-size: 15px;
+    color: var(--text-bright);
+    font-weight: 500;
+  }
+  .hero-meta-value .accent { color: var(--accent); }
+
+  /* SECTIONS */
+  section { padding: 72px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+  }
+  h2 {
+    font-size: clamp(26px, 3.4vw, 34px);
+    margin: 0 0 16px;
+    color: var(--text-bright);
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+  }
+  h3 {
+    font-size: 17px;
+    margin: 0 0 8px;
+    color: var(--text-bright);
+    font-family: var(--mono);
+    font-weight: 500;
+    letter-spacing: -0.005em;
+  }
+  p { margin: 0 0 16px; max-width: 720px; }
+
+  /* WHO THIS IS FOR */
+  .who-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 28px;
+  }
+  @media (max-width: 720px) { .who-grid { grid-template-columns: 1fr; } }
+  .who-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px 26px;
+  }
+  .who-card.fit { border-color: var(--accent-dim); }
+  .who-card.fit .who-tag { color: var(--accent); }
+  .who-card.skip .who-tag { color: var(--text-dim); }
+  .who-tag {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .who-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .who-list li {
+    padding: 7px 0;
+    color: var(--text);
+    font-size: 14.5px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .who-list li:last-child { border-bottom: none; }
+  .who-list.fit li::before {
+    content: "✓";
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: var(--mono);
+  }
+  .who-list.skip li {
+    color: var(--text-dim);
+  }
+  .who-list.skip li::before {
+    content: "—";
+    color: var(--text-dim);
+    flex-shrink: 0;
+    font-family: var(--mono);
+  }
+
+  /* INCLUDED GRID — 8 cards, asymmetric bento */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 28px;
+  }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 22px 24px;
+    transition: border-color 0.18s, transform 0.18s, background 0.18s;
+    position: relative;
+  }
+  .card:hover {
+    border-color: var(--line-bright);
+    background: var(--bg-card-2);
+    transform: translateY(-2px);
+  }
+  .card-num {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: 0.08em;
+  }
+  .card-body {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.55;
+    margin-top: 8px;
+  }
+  /* Bento spans for 8-card layout (md+ only) */
+  @media (min-width: 901px) {
+    .card.span-2 { grid-column: span 2; }
+  }
+
+  /* TIMELINE */
+  .timeline {
+    margin-top: 32px;
+    position: relative;
+    padding-left: 24px;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: linear-gradient(180deg, var(--accent-dim), var(--line) 50%, transparent);
+  }
+  .step {
+    position: relative;
+    padding: 0 0 28px 24px;
+  }
+  .step:last-child { padding-bottom: 0; }
+  .step::before {
+    content: "";
+    position: absolute;
+    left: -2px;
+    top: 6px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 0 4px rgba(92, 216, 168, 0.08);
+  }
+  .step-when {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .step-title {
+    font-size: 17px;
+    color: var(--text-bright);
+    font-weight: 600;
+    margin: 0 0 6px;
+    letter-spacing: -0.005em;
+  }
+  .step-body {
+    color: var(--text-dim);
+    font-size: 14.5px;
+    line-height: 1.6;
+    max-width: 640px;
+  }
+
+  /* PRICING */
+  .price-card {
+    background:
+      radial-gradient(600px 200px at 100% 0%, rgba(92, 216, 168, 0.08), transparent 70%),
+      linear-gradient(180deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--accent-dim);
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 560px;
+    margin: 28px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .price-tier {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 14px;
+  }
+  .price-amount {
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1;
+    margin-bottom: 4px;
+    letter-spacing: -0.025em;
+  }
+  .price-amount .currency { font-size: 28px; vertical-align: super; }
+  .price-amount .period { font-size: 16px; color: var(--text-dim); font-weight: 400; }
+  .price-secondary {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text);
+    margin-top: 4px;
+  }
+  .price-secondary .accent { color: var(--accent); }
+  .price-divider {
+    height: 1px;
+    background: var(--line);
+    margin: 24px 0;
+  }
+  .price-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 28px;
+  }
+  .price-list li {
+    padding: 9px 0;
+    color: var(--text);
+    font-size: 14.5px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .price-list li::before {
+    content: "→";
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: var(--mono);
+  }
+  .price-fineprint {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 16px;
+    line-height: 1.55;
+  }
+
+  /* FAQ */
+  details {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 8px;
+    transition: border-color 0.15s;
+  }
+  details:hover { border-color: var(--line-bright); }
+  details[open] { border-color: var(--accent-dim); }
+  summary {
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-bright);
+    font-size: 15px;
+    list-style: none;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: "+";
+    color: var(--accent);
+    font-family: var(--mono);
+    font-weight: 700;
+    width: 12px;
+    flex-shrink: 0;
+  }
+  details[open] summary::before { content: "−"; }
+  details > p:first-of-type { margin-top: 14px; }
+  details p { color: var(--text); }
+
+  /* FOOTER */
+  footer {
+    padding: 48px 0 64px;
+    color: var(--text-dim);
+    font-size: 13px;
+    border-top: 1px solid var(--line);
+  }
+  footer a { color: var(--text-dim); text-decoration: underline; }
+  footer a:hover { color: var(--accent); }
+  .footer-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 8px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="/webhook/" class="brand" style="text-decoration: none;">
+      webhook<span class="dot">.</span>forge<span class="brand-tier">/ enterprise</span>
+    </a>
+    <div class="nav-links">
+      <a class="nav-link" href="/webhook/">Standard tier</a>
+      <a class="nav-cta" href="mailto:jadedfocus@gmail.com?subject=Enterprise%20webhook%20engagement">Book intake</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="badge"><span class="pulse" aria-hidden="true"></span>ENTERPRISE TIER · BY APPLICATION</span>
+    <h1>Stripe webhook architecture for <span class="accent">multi-product</span> Series A SaaS.</h1>
+    <p class="lede">For founders running multiple products and price tiers through a single Stripe account, where one bad webhook means duplicate charges, missed onboarding, and a Monday morning you can't afford. Built once, monitored continuously, reviewed quarterly.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="mailto:jadedfocus@gmail.com?subject=Enterprise%20webhook%20engagement">Book a 30-min intake</a>
+      <a class="btn btn-secondary" href="#how-it-runs">How it runs ↓</a>
+      <span class="price-note">$2,500 setup · $499/mo retainer.</span>
+    </div>
+
+    <div class="hero-meta" role="list">
+      <div class="hero-meta-cell" role="listitem">
+        <div class="hero-meta-label">Setup</div>
+        <div class="hero-meta-value"><span class="accent">$2,500</span> one-time</div>
+      </div>
+      <div class="hero-meta-cell" role="listitem">
+        <div class="hero-meta-label">Retainer</div>
+        <div class="hero-meta-value"><span class="accent">$499</span>/mo</div>
+      </div>
+      <div class="hero-meta-cell" role="listitem">
+        <div class="hero-meta-label">Tier-change window</div>
+        <div class="hero-meta-value">30 days</div>
+      </div>
+      <div class="hero-meta-cell" role="listitem">
+        <div class="hero-meta-label">Architecture review</div>
+        <div class="hero-meta-value">Quarterly</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Who this is for</div>
+    <h2>Two columns. Pick the one that sounds like you.</h2>
+    <p>This tier is built for a specific shape of company. If you're not in the left column yet, the <a href="/webhook/">$199 standard tier</a> ships the same core, faster.</p>
+
+    <div class="who-grid">
+      <div class="who-card fit">
+        <div class="who-tag"><span aria-hidden="true">●</span> A FIT IF YOU</div>
+        <ul class="who-list fit">
+          <li>Just closed a Series A or are running ~$2M&ndash;$20M ARR.</li>
+          <li>Have one Stripe account spanning 3+ products or pricing tiers.</li>
+          <li>Mix subscriptions and one-time charges in the same account.</li>
+          <li>Send onboarding email branched by product, plan, or seat count.</li>
+          <li>Have at least one founder/operator inbox you don't want spammed.</li>
+          <li>Can't afford a webhook bug to silently drop a customer.</li>
+        </ul>
+      </div>
+      <div class="who-card skip">
+        <div class="who-tag"><span aria-hidden="true">○</span> SKIP THIS TIER IF</div>
+        <ul class="who-list skip">
+          <li>You ship a single $X/month plan with one product.</li>
+          <li>You haven't taken a real charge yet.</li>
+          <li>You have a full-time backend engineer who wants to own this.</li>
+          <li>You need a HIPAA / SOC2 audit-grade vendor (I'm not that).</li>
+          <li>You want unlimited custom feature work — this is a fixed retainer.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="whats-included">
+  <div class="wrap">
+    <div class="eyebrow">What's included</div>
+    <h2>Eight pieces. Each one is a real failure mode I've seen kill weekends.</h2>
+
+    <div class="grid">
+      <div class="card span-2">
+        <div class="card-num">01 / ARCHITECTURE</div>
+        <h3>Multi-tier mapping with idempotency</h3>
+        <div class="card-body">Stripe product IDs and price IDs map to typed handler functions. Idempotency key on <code style="color: var(--accent); font-family: var(--mono); font-size: 13px;">event.id</code> with persistent dedupe storage so a Stripe retry never double-fires onboarding, never double-grants seats, never double-charges credits.</div>
+      </div>
+      <div class="card span-2">
+        <div class="card-num">02 / EMAIL BRANCHING</div>
+        <h3>Customer email, branched by product &amp; plan</h3>
+        <div class="card-body">A buyer of your $49 starter and a buyer of your $499 enterprise plan get different copy, different links, and different onboarding sequences. The map is one source-of-truth file your team can read and edit without redeploying logic.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">03 / FOUNDER ROUTING</div>
+        <h3>Notifications by tier</h3>
+        <div class="card-body">High-tier purchases page the founder inbox. Low-tier purchases land in a digest inbox. Refunds and disputes go to ops. Different inboxes, different SLAs, different reply-to.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">04 / SUBSCRIPTIONS</div>
+        <h3>Subs handled separately from one-time</h3>
+        <div class="card-body">Subscription lifecycle (created, updated, paused, canceled, past_due) routes through its own state machine. One-time charges stay simple. No more <code style="color: var(--accent); font-family: var(--mono); font-size: 13px;">if (mode === "subscription")</code> sprawl.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">05 / MONITORING</div>
+        <h3>Failure alerting that pages you</h3>
+        <div class="card-body">Sig-verification failures, sustained non-200s, dedupe-store errors, and email-provider rejects all wired to a real alert channel — not buried in a log file you'll find on Tuesday.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">06 / SAFETY NET</div>
+        <h3>30-day tier-change support</h3>
+        <div class="card-body">Adding a new product? Splitting an existing tier? Renaming a plan? For 30 days after launch, tier and routing changes are included. Schema change, copy change, inbox change — covered.</div>
+      </div>
+      <div class="card span-2">
+        <div class="card-num">07 / OPERATIONS</div>
+        <h3>Quarterly architecture review</h3>
+        <div class="card-body">Every 90 days I read the last quarter's webhook traffic with you: failure modes, retry storms, slow handlers, dead code, new products you've added since. You leave with a written punch-list of what to clean up and what to leave alone.</div>
+      </div>
+      <div class="card span-2">
+        <div class="card-num">08 / RETAINER</div>
+        <h3>Ongoing on-call backstop</h3>
+        <div class="card-body">The $499/mo retainer keeps me on-call for webhook failures, Stripe API deprecations, schema drift on your end, and routine tuning. It is not unlimited dev work — it is the difference between a 2 AM page going to me first and a 2 AM page going to you alone.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how-it-runs">
+  <div class="wrap">
+    <div class="eyebrow">How a typical engagement runs</div>
+    <h2>Four phases. Roughly two weeks to live, then quarterly cadence.</h2>
+    <p>You're not buying a slide deck. Each phase has a concrete artifact you can point at.</p>
+
+    <ol class="timeline" role="list">
+      <li class="step">
+        <div class="step-when">Day 0 · Intake</div>
+        <h3 class="step-title">30-minute call + read-only Stripe access</h3>
+        <p class="step-body">We walk your Stripe dashboard, list every product, every price, every plan. I leave with a written tier map: which products fire which emails, which inboxes get notified, which events you currently care about and which you should. You leave with a fixed scope and start date.</p>
+      </li>
+      <li class="step">
+        <div class="step-when">Days 1–7 · Build</div>
+        <h3 class="step-title">Handler, dedupe store, and routing in your repo</h3>
+        <p class="step-body">I implement the multi-tier handler in your stack, wire the idempotency store (Postgres / Redis / KV — whichever you already run), set up Resend or your existing email provider with branched templates, and stand up the founder-routing inboxes. PRs land in branches, not main.</p>
+      </li>
+      <li class="step">
+        <div class="step-when">Days 8–10 · Verify</div>
+        <h3 class="step-title">Live test charges across every tier</h3>
+        <p class="step-body">Real $1 charges through every product and price, refunded after. You watch each event return 200 in your logs, watch each branched email land in the right inbox, watch each retry get deduped on <code style="color: var(--accent); font-family: var(--mono); font-size: 13px;">event.id</code>. We sign off in writing.</p>
+      </li>
+      <li class="step">
+        <div class="step-when">Days 11+ · Operate</div>
+        <h3 class="step-title">Monitoring, retainer, quarterly review</h3>
+        <p class="step-body">Alert channels are live. The 30-day tier-change window starts. The retainer covers on-call. Every 90 days we run an architecture review against the previous quarter's real webhook traffic and produce a written punch-list.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="eyebrow">Pricing</div>
+    <h2>Setup once. Retain monthly. Cancel any time after month 3.</h2>
+
+    <div class="price-card">
+      <div class="price-tier">Enterprise · By application</div>
+
+      <div class="price-amount"><span class="currency">$</span>2,500<span class="period"> · setup</span></div>
+      <div class="price-secondary">+ <span class="accent">$499/mo</span> retainer · 3-month minimum</div>
+
+      <div class="price-divider"></div>
+
+      <ul class="price-list">
+        <li>Multi-tier mapping with idempotency on <code style="color: var(--accent); font-family: var(--mono); font-size: 13px;">event.id</code></li>
+        <li>Customer email branched by product / plan</li>
+        <li>Founder notifications routed to tier-specific inboxes</li>
+        <li>Subscription event handling separated from one-time charges</li>
+        <li>Monitoring &amp; alerting on webhook failures</li>
+        <li>30-day support window for tier changes &amp; routing tweaks</li>
+        <li>Quarterly architecture review with written punch-list</li>
+        <li>Direct Slack / email channel during business hours</li>
+      </ul>
+
+      <a class="btn btn-primary" href="mailto:jadedfocus@gmail.com?subject=Enterprise%20webhook%20engagement&body=Company%3A%0AStripe%20account%20age%3A%0A%23%20of%20active%20products%3A%0AMix%20of%20subs%20vs%20one-time%3A%0ACurrent%20pain%20point%3A">Book a 30-min intake</a>
+
+      <div class="price-fineprint">3-month retainer minimum after setup. Month-to-month after that. Engagements paused or terminated keep the codebase &mdash; you own everything I wrote.</div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="eyebrow">FAQ</div>
+    <h2>The questions Series A founders actually ask first.</h2>
+
+    <details>
+      <summary>How is this different from the $199 standard tier?</summary>
+      <p>The standard tier is a single-file webhook with sig verification, one tier mapping, customer + founder email, and a 7-day support window. It's right for a solo founder shipping their first paid plan.</p>
+      <p>Enterprise is the architecture work that single file points to: a real idempotency store, branched email, multi-inbox routing, subscription lifecycle handling, alerting, and an ongoing relationship. Different problem, different price.</p>
+    </details>
+
+    <details>
+      <summary>What does the $499/mo retainer actually buy me?</summary>
+      <p>On-call coverage for webhook failures, Stripe API deprecation patches, schema drift on your side (you add a new product, rename a price, split a plan), routine tuning, and quarterly architecture reviews. It does not buy unlimited net-new feature work; large new builds quote separately.</p>
+    </details>
+
+    <details>
+      <summary>What stack do you support?</summary>
+      <p>Default: Next.js / Hono / Express on Vercel, Cloudflare Workers, or Render, with Postgres, Redis, or Upstash KV as the idempotency store. Resend for email by default; Postmark and SendGrid swap cleanly. If you're on something exotic (Phoenix, Rails, Django, Go), send the framework and I'll tell you in 30 minutes whether it's a fit.</p>
+    </details>
+
+    <details>
+      <summary>Why idempotency on event.id specifically?</summary>
+      <p>Stripe will retry an event up to 3 days. Same <code>event.id</code>, same payload, multiple deliveries. Naive handlers double-grant entitlements, double-send onboarding email, double-credit the wrong account. Storing seen <code>event.id</code> values with a TTL is the cheapest correct dedupe; it goes in front of every handler in this build.</p>
+    </details>
+
+    <details>
+      <summary>What's the 30-day tier-change window?</summary>
+      <p>Within the first 30 days after launch, changes to the tier map (new product, renamed plan, split tier, new email copy variant, new founder inbox) are included. Past 30 days, those changes are covered under the monthly retainer at normal cadence.</p>
+    </details>
+
+    <details>
+      <summary>What does the quarterly architecture review look like?</summary>
+      <p>A 90-minute working session every quarter where we read the last quarter's webhook traffic together: failure rates by event type, slow handlers, dead code paths, new products you've shipped since, and whether the dedupe store is sized correctly. You leave with a written punch-list of what to clean up next quarter and what to leave alone.</p>
+    </details>
+
+    <details>
+      <summary>Do you sign NDAs / DPAs / vendor security forms?</summary>
+      <p>Standard NDAs and mutual NDAs, yes. Vendor security questionnaires, yes, within reason. SOC2 / HIPAA / PCI-grade audits, no &mdash; this is a single-operator engagement and I'd rather tell you that up front than fake my way through a SIG Lite.</p>
+    </details>
+
+    <details>
+      <summary>Can I cancel?</summary>
+      <p>The retainer has a 3-month minimum after setup. After that it's month-to-month with 30 days' notice. The codebase is yours; you keep everything I wrote, including the dedupe store schema, the tier map, and the alerting config.</p>
+    </details>
+
+    <details>
+      <summary>How do we start?</summary>
+      <p>Email <a href="mailto:jadedfocus@gmail.com?subject=Enterprise%20webhook%20engagement">jadedfocus@gmail.com</a> with your company, a sentence about your Stripe footprint (rough product count, subs vs one-time mix), and your current pain point. I reply within one business day with intake-call options.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Built and operated by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a> · (504) 201-4195<br/>
+    Enterprise tier: $2,500 setup + $499/mo retainer · 3-month minimum · 30-day tier-change window · Quarterly architecture review.
+    <div class="footer-row">
+      <a href="/webhook/">← webhook.forge standard tier</a>
+      <span aria-hidden="true">·</span>
+      <a href="/about/">About</a>
+      <span aria-hidden="true">·</span>
+      <a href="/terms/">Terms</a>
+      <span aria-hidden="true">·</span>
+      <a href="/privacy/">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
