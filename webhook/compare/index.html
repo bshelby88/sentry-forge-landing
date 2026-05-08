@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sentry Forge vs Hookdeck vs Svix — Stripe Webhook Monitoring Compared (2026)</title>
+<meta name="description" content="Honest side-by-side comparison of Stripe webhook monitoring tools. Hookdeck Pro starts at $39/mo. Svix Pro at $490/mo. Sentry Forge Health Check at $29/mo. Pick the right one for your stage." />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="canonical" href="https://sentryforge.app/webhook/compare/" />
+
+<meta property="og:image" content="https://sentryforge.app/og.png" />
+<meta name="twitter:image" content="https://sentryforge.app/og.png" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Sentry Forge vs Hookdeck vs Svix — Webhook Monitoring Compared" />
+<meta property="og:description" content="Honest side-by-side. Hookdeck $39/mo, Svix $490/mo, Sentry Forge $29/mo. Pick the right one for your stage." />
+<meta property="og:url" content="https://sentryforge.app/webhook/compare/" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Webhook Monitoring: Sentry Forge vs Hookdeck vs Svix" />
+<meta name="twitter:description" content="Honest side-by-side comparison at indie-hacker, growing-SaaS, and Series-A scale." />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Sentry Forge vs Hookdeck vs Svix — Stripe Webhook Monitoring Compared (2026)",
+  "datePublished": "2026-05-08",
+  "dateModified": "2026-05-08",
+  "author": { "@type": "Person", "name": "Bryant Shelby", "url": "https://x.com/jadedfocus" },
+  "description": "Honest side-by-side of Stripe webhook monitoring tools across price, features, support, and best-fit stage.",
+  "mainEntityOfPage": "https://sentryforge.app/webhook/compare/",
+  "publisher": { "@type": "Organization", "name": "Sentry Forge", "url": "https://sentryforge.app" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Hookdeck or Svix worth the price for an indie hacker?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Hookdeck Pro at $39/mo is reasonable once you have paying customers and need replay/debugging. Svix Pro at $490/mo is overkill until you have multi-tenant compliance requirements. Below that bar, $29/mo monitoring + your own retry logic covers 95% of real-world needs." }
+    },
+    {
+      "@type": "Question",
+      "name": "What does Sentry Forge Health Check do that Hookdeck doesn't?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Nothing fundamentally — Hookdeck does more. Sentry Forge focuses on the single feature most indie hackers actually need: an email when the webhook endpoint returns non-2xx. Lower price, simpler setup, less to learn. Hookdeck makes sense once you outgrow that simplicity." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use both Hookdeck and Sentry Forge Health Check?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Hookdeck handles delivery + retry orchestration; Sentry Forge Health Check pings your endpoint independently to catch outages Hookdeck might miss (network partitions between Hookdeck and your origin, DNS failures, etc.). Belt-and-suspenders for high-stakes pipelines." }
+    }
+  ]
+}
+</script>
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root { --bg: #0b0d12; --bg-card: #161a24; --bg-elev: #11141c; --line: #1f2532; --text: #d6dae3; --text-dim: #8a92a4; --text-bright: #f0f2f7; --accent: #5cd8a8; --warn: #ffb454; --danger: #ff6b6b; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--line); padding: 16px 0; background: rgba(11,13,18,0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-bright); font-size: 14px; }
+  .brand .dot { color: var(--accent); }
+  .nav-cta { background: var(--accent); color: var(--bg); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+  article { padding: 60px 0 80px; }
+  article time { color: var(--text-dim); font-size: 14px; font-family: 'JetBrains Mono', monospace; }
+  h1 { font-size: clamp(30px, 4vw, 42px); color: var(--text-bright); letter-spacing: -0.02em; margin: 12px 0 22px; line-height: 1.18; }
+  .lede { font-size: 19px; color: var(--text); margin-bottom: 32px; }
+  h2 { font-size: 26px; color: var(--text-bright); margin: 44px 0 14px; letter-spacing: -0.01em; }
+  h3 { font-size: 18px; color: var(--text-bright); margin: 24px 0 8px; }
+  p { margin: 0 0 18px; }
+  ul, ol { padding-left: 24px; }
+  li { margin: 8px 0; }
+  code { font-family: 'JetBrains Mono', monospace; background: var(--bg-card); color: var(--accent); padding: 2px 7px; border-radius: 4px; font-size: 13.5px; }
+  table.compare { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14.5px; background: var(--bg-card); border-radius: 10px; overflow: hidden; }
+  table.compare th, table.compare td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.compare th { background: var(--bg-elev); color: var(--text-bright); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.04em; }
+  table.compare td.feature { font-weight: 500; color: var(--text-bright); }
+  table.compare .yes { color: var(--accent); font-weight: 600; }
+  table.compare .no { color: var(--text-dim); }
+  table.compare .partial { color: var(--warn); }
+  .stage-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: 12px; padding: 22px 26px; margin: 18px 0; }
+  .stage-card h3 { margin: 0 0 8px; font-family: 'JetBrains Mono', monospace; color: var(--accent); font-size: 14px; letter-spacing: 0.06em; }
+  .stage-card .pick { font-size: 17px; color: var(--text-bright); margin: 8px 0 12px; font-weight: 600; }
+  .stage-card .why { color: var(--text-dim); font-size: 14.5px; }
+  .cta-box { background: linear-gradient(140deg, rgba(92,216,168,0.08), rgba(92,216,168,0.02)); border: 1px solid rgba(92,216,168,0.25); border-radius: 12px; padding: 24px 28px; margin: 36px 0; }
+  .cta-box h3 { font-weight: 600; font-size: 17px; margin: 0 0 8px; color: var(--text-bright); }
+  .cta-box p { font-size: 15px; margin: 0 0 14px; color: var(--text-dim); }
+  .cta-box .btn { display: inline-block; background: var(--accent); color: var(--bg); padding: 10px 18px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+  footer { border-top: 1px solid var(--line); padding: 32px 0; color: var(--text-dim); font-size: 14px; }
+  footer a { color: var(--text-dim); text-decoration: underline; }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand">webhook<span class="dot">.</span>forge / compare</span>
+    <a class="nav-cta" href="/webhook/health-check/">Health Check — $29/mo →</a>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+    <time datetime="2026-05-08">May 8, 2026 · 8 min read</time>
+    <h1>Sentry Forge vs Hookdeck vs Svix — Stripe Webhook Monitoring Compared (2026)</h1>
+
+    <p class="lede">Three tools, three price tiers, three mental models. Hookdeck is the all-in-one webhook gateway. Svix is the enterprise multi-tenant platform. Sentry Forge Health Check is the indie-hacker uptime ping. Below: feature-by-feature, price-by-stage, and an honest take on which actually fits your situation.</p>
+
+    <h2>TL;DR — what each one is best at</h2>
+
+    <ul>
+      <li><strong>Sentry Forge Health Check ($29/mo):</strong> "Email me when my Stripe webhook breaks." Single-purpose, single-endpoint, no setup beyond pasting a URL. For solo founders + bootstrapped SaaS.</li>
+      <li><strong>Hookdeck Pro ($39/mo and up):</strong> Inbound webhook gateway with replay, transform, fan-out, and retry orchestration. For growing SaaS that needs to debug + transform webhook payloads.</li>
+      <li><strong>Svix Pro ($490/mo):</strong> Multi-tenant outbound webhook platform with compliance + SLA. For Series A+ companies whose <em>customers</em> consume webhooks (Stripe is upstream, you're downstream of <em>your</em> customers).</li>
+    </ul>
+
+    <h2>Feature comparison</h2>
+
+    <table class="compare">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Sentry Forge</th>
+          <th>Hookdeck</th>
+          <th>Svix</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="feature">Entry price</td>
+          <td class="yes">$29/mo</td>
+          <td>$39/mo (Pro)</td>
+          <td>$490/mo (Pro)</td>
+        </tr>
+        <tr>
+          <td class="feature">Free tier</td>
+          <td class="no">No</td>
+          <td class="yes">Yes (1k events/mo)</td>
+          <td class="yes">Yes (50k events/mo)</td>
+        </tr>
+        <tr>
+          <td class="feature">5-min uptime ping</td>
+          <td class="yes">Built-in</td>
+          <td class="partial">Via add-on</td>
+          <td class="partial">Via dashboard</td>
+        </tr>
+        <tr>
+          <td class="feature">Email alert on 5xx</td>
+          <td class="yes">Yes, &lt;60s</td>
+          <td class="yes">Yes</td>
+          <td class="yes">Yes</td>
+        </tr>
+        <tr>
+          <td class="feature">Replay failed events</td>
+          <td class="no">No (ping only)</td>
+          <td class="yes">Yes</td>
+          <td class="yes">Yes</td>
+        </tr>
+        <tr>
+          <td class="feature">Payload transform</td>
+          <td class="no">No</td>
+          <td class="yes">Yes (JS rules)</td>
+          <td class="yes">Yes (Filters)</td>
+        </tr>
+        <tr>
+          <td class="feature">Fan-out to multiple endpoints</td>
+          <td class="no">No</td>
+          <td class="yes">Yes</td>
+          <td class="yes">Yes</td>
+        </tr>
+        <tr>
+          <td class="feature">Multi-tenant API (sign per customer)</td>
+          <td class="no">No</td>
+          <td class="partial">Workspaces</td>
+          <td class="yes">Native, scoped</td>
+        </tr>
+        <tr>
+          <td class="feature">SOC 2 / HIPAA</td>
+          <td class="no">N/A (single-endpoint scope)</td>
+          <td class="yes">SOC 2 Type II</td>
+          <td class="yes">SOC 2 + HIPAA</td>
+        </tr>
+        <tr>
+          <td class="feature">Setup time</td>
+          <td class="yes">~3 minutes</td>
+          <td>~30 minutes</td>
+          <td>~2 hours</td>
+        </tr>
+        <tr>
+          <td class="feature">Best fit</td>
+          <td>Solo / bootstrapped</td>
+          <td>Growing SaaS</td>
+          <td>Series A+ multi-tenant</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Pick by stage</h2>
+
+    <div class="stage-card">
+      <h3>STAGE 1 — Solo founder / first 100 customers</h3>
+      <p class="pick">Pick: Sentry Forge Health Check ($29/mo)</p>
+      <p class="why">You have one Stripe webhook endpoint, you process under 10k events/mo, and your real risk is "I shipped on Friday and didn't realize the endpoint died until Monday morning when a customer complained." A 5-minute uptime ping with email alerts solves that. You don't need replay (Stripe retries for 3 days), you don't need transform (you control the receiving code), you don't need fan-out (you have one consumer).</p>
+    </div>
+
+    <div class="stage-card">
+      <h3>STAGE 2 — Growing SaaS / 100-5000 customers</h3>
+      <p class="pick">Pick: Hookdeck Pro ($39+/mo)</p>
+      <p class="why">You're now debugging "this customer says they didn't get the email but we got the webhook" tickets weekly. Replay matters. Search across event history matters. Transform-before-fan-out matters when you're routing to 3 internal services. Hookdeck's $39 entry tier hits the value/price knee here. Add Sentry Forge Health Check ($29/mo) on top if you want belt-and-suspenders monitoring — Hookdeck monitors itself, but a third-party ping catches Hookdeck-to-origin network issues.</p>
+    </div>
+
+    <div class="stage-card">
+      <h3>STAGE 3 — Series A+ / multi-tenant webhook producer</h3>
+      <p class="pick">Pick: Svix Pro ($490/mo)</p>
+      <p class="why">You have <em>your</em> customers consuming webhooks <em>from</em> you (you're the Stripe in their world). You need per-customer signing secrets, retry policies, dashboards customers can self-serve, and a SOC 2 / HIPAA audit trail. Svix is the only one of the three built for this. Hookdeck is inbound-first; Sentry Forge is single-endpoint. At this scale, the cost is rounding error compared to engineering time saved.</p>
+    </div>
+
+    <h2>The honest tradeoffs</h2>
+
+    <h3>Why I'd pick Hookdeck over Sentry Forge</h3>
+    <p>If your webhook handler is debugging-intensive — i.e. you keep getting "weird payload" tickets and need event search + replay — Hookdeck pays for itself in saved support hours. The $10/mo gap is nothing. Sentry Forge is purposefully feature-thin; if you want more than ping-and-alert, Hookdeck is the next step.</p>
+
+    <h3>Why I'd pick Sentry Forge over Hookdeck</h3>
+    <p>If your handler is rock-solid, your traffic is sub-10k events/mo, and the only thing you actually need is "wake me up when it dies" — pay $29 instead of $39, skip the 30-minute setup, and put the difference toward a beer fund. Hookdeck's free tier covers a lot, but you have to actually wire it up and learn the dashboard. Sentry Forge is paste-URL-and-go.</p>
+
+    <h3>Why I'd pick Svix over both</h3>
+    <p>If you're producing webhooks for your customers (e.g. you're a developer platform, an embedded API provider, or a billing service like Stripe itself), Svix is the only mature option. Hookdeck does support outbound now, but the maturity gap is real. Below that scale, Svix is overkill.</p>
+
+    <h2>What about open-source alternatives?</h2>
+
+    <p><strong>Webhookthing</strong> and <strong>Svix Open</strong> exist as self-hostable. Both work. Both require running infrastructure, monitoring the monitor, and rotating your own SSL. The TCO crosses Sentry Forge's $29/mo at about 4 hours of your time per year. Worth it only if you're already running container infra for other reasons.</p>
+
+    <h2>Common gotchas all three share</h2>
+
+    <ul>
+      <li><strong>None of these fix bad webhook handler code.</strong> They monitor delivery + retry; they don't catch logic bugs in your handler. Pair with structured logs (Vercel, Axiom, BetterStack).</li>
+      <li><strong>Watch out for monitor-induced false alerts.</strong> If your endpoint requires Stripe's signature header on every request, the monitor's empty test ping will 400 forever. Make sure the monitor either signs its pings or uses a separate health-check route. Sentry Forge defaults to a separate <code>/health</code> route convention.</li>
+      <li><strong>Network egress isn't free.</strong> A ping every 5 minutes from anywhere to your serverless endpoint is ~8.6k requests/month. If your function billing is per-invocation (Vercel, Lambda), budget $1-3/mo.</li>
+    </ul>
+
+    <div class="cta-box">
+      <h3>Ready to start with the cheap tier?</h3>
+      <p>Sentry Forge Health Check is $29/mo. 5-minute pings, email alerts within 60s of failure, cancel anytime. The simplest of the three; the right answer for most indie hackers.</p>
+      <a class="btn" href="/webhook/health-check/">See the offer →</a>
+    </div>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="/webhook/blog/secret-rotation/">Rotating Stripe webhook secrets without downtime</a></li>
+      <li><a href="/webhook/blog/idempotency/">Stripe webhook idempotency patterns</a></li>
+      <li><a href="/webhook/blog/retry-behavior/">Stripe webhook retry behavior</a></li>
+      <li><a href="/webhook/calculator/">Stripe webhook + email cost calculator</a></li>
+      <li><a href="/webhook/diagnostic/">Free webhook signature diagnostic</a></li>
+    </ul>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    Written by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="/webhook/blog/">all posts</a> · <a href="/webhook/">$199 setup</a> · <a href="/webhook/health-check/">$29/mo monitoring</a><br/>
+    <a href="/about/">About</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a>
+  </div>
+</footer>
+
+</body>
+</html>
