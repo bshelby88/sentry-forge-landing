@@ -333,8 +333,8 @@ export default async function handler(req, res) {
   } catch (e) {
     console.error('email dispatch failed', e);
     // Return 200 so Stripe doesn't retry indefinitely; alert via log
-    return res.status(200).json({ received: true, email_error: String(e) });
+    return res.status(200).json({ received: true });
   }
 
-  return res.status(200).json({ received: true, tier, email });
+  return res.status(200).json({ received: true });
 }
