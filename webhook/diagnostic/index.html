@@ -304,6 +304,14 @@
 </footer>
 
 <script>
+function esc(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 async function hmacSha256Hex(secret, message) {
   const enc = new TextEncoder();
   const keyData = enc.encode(secret);
@@ -348,7 +356,7 @@ async function runDiagnostic() {
     checks.push({ kind: 'fail', title: 'Header missing t= timestamp', desc: 'The Stripe signature header should look like <code>t=&lt;unix&gt;,v1=&lt;hex&gt;</code>. Make sure you pasted the full header value, not just the v1 portion.' });
     verdict = { kind: 'fail', headline: 'Header format invalid.', sub: 'Cannot continue — fix t= component first.' };
   } else {
-    checks.push({ kind: 'ok', title: 'Header parsed', desc: `t=${parsed.t}, v1=${(parsed.v1 || '').slice(0, 12)}...` });
+    checks.push({ kind: 'ok', title: 'Header parsed', desc: `t=${esc(parsed.t)}, v1=${esc((parsed.v1 || '').slice(0, 12))}...` });
   }
   if (!parsed.v1) {
     checks.push({ kind: 'fail', title: 'Header missing v1= signature', desc: 'No v1 component found in the header. Stripe always sends v1. Check the header was copied in full.' });
@@ -380,12 +388,12 @@ async function runDiagnostic() {
     const givenShort = parsed.v1.slice(0, 12) + '...';
 
     if (expected === parsed.v1) {
-      checks.push({ kind: 'ok', title: 'HMAC matches', desc: `Computed: ${expectedShort} · Given: ${givenShort}` });
+      checks.push({ kind: 'ok', title: 'HMAC matches', desc: `Computed: ${esc(expectedShort)} · Given: ${esc(givenShort)}` });
     } else {
       checks.push({
         kind: 'fail',
         title: 'HMAC mismatch',
-        desc: `Computed: <code>${expectedShort}</code>  ·  Given: <code>${givenShort}</code>`
+        desc: `Computed: <code>${esc(expectedShort)}</code>  ·  Given: <code>${esc(givenShort)}</code>`
       });
       verdict = { kind: 'fail', headline: 'HMAC mismatch.', sub: 'Webhook would return 400. See recommendation below.' };
 
@@ -411,21 +419,21 @@ async function runDiagnostic() {
 function renderVerdict(verdict, checks, recommendation) {
   const icon = verdict.kind === 'ok' ? '✓' : verdict.kind === 'warn' ? '!' : '✗';
   let html = `
-    <div class="verdict ${verdict.kind}">
+    <div class="verdict ${esc(verdict.kind)}">
       <div class="verdict-icon">${icon}</div>
       <div>
-        <div class="verdict-headline">${verdict.headline}</div>
-        <div class="verdict-sub">${verdict.sub}</div>
+        <div class="verdict-headline">${esc(verdict.headline)}</div>
+        <div class="verdict-sub">${esc(verdict.sub)}</div>
       </div>
     </div>
   `;
   for (const c of checks) {
     const i = c.kind === 'ok' ? '✓' : c.kind === 'warn' ? '!' : '✗';
     html += `
-      <div class="check ${c.kind}">
+      <div class="check ${esc(c.kind)}">
         <div class="check-status">${i}</div>
         <div class="check-info">
-          <h4>${c.title}</h4>
+          <h4>${esc(c.title)}</h4>
           <p>${c.desc}</p>
         </div>
       </div>
