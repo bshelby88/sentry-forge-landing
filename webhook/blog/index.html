@@ -138,6 +138,17 @@
     <h1>Webhook Blog</h1>
     <p class="lede">Practical writeups on Stripe webhook implementation, distilled from a working production pipeline. New posts as new traps surface.</p>
 
+    <a class="post" href="/webhook/blog/secret-rotation/">
+      <div class="post-meta">
+        <span>2026-05-08</span>
+        <span class="post-tag">SECURITY</span>
+        <span>~7 min</span>
+      </div>
+      <h2>How to Rotate Your Stripe Webhook Secret Without Downtime</h2>
+      <p>Naive secret rotation drops 30s-5min of events. The dual-secret cutover pattern moves zero events to /dev/null. Working code, dashboard steps, edge cases (multi-tenant, queued handlers, leaked-to-git recovery), verification checklist.</p>
+      <span class="post-arrow">read →</span>
+    </a>
+
     <a class="post" href="/webhook/blog/email-providers/">
       <div class="post-meta">
         <span>2026-05-08</span>

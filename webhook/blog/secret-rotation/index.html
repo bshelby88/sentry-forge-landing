@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>How to Rotate Your Stripe Webhook Secret Without Downtime</title>
+<meta name="description" content="Rotating a Stripe webhook signing secret naively drops events for 30 seconds to 5 minutes. The dual-secret pattern lets you swap secrets with zero gaps. Exact code, exact dashboard steps, exact verification." />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="canonical" href="https://sentryforge.app/webhook/blog/secret-rotation/" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Rotate Your Stripe Webhook Secret Without Downtime" />
+<meta property="og:description" content="The dual-secret pattern: swap signing secrets atomically with zero dropped events. Working code, dashboard steps, verification." />
+<meta property="og:url" content="https://sentryforge.app/webhook/blog/secret-rotation/" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Rotate Stripe Webhook Secrets Without Downtime" />
+<meta name="twitter:description" content="Dual-secret cutover pattern. Zero dropped events." />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "How to Rotate Your Stripe Webhook Secret Without Downtime",
+  "datePublished": "2026-05-08",
+  "dateModified": "2026-05-08",
+  "author": { "@type": "Person", "name": "Bryant Shelby", "url": "https://x.com/jadedfocus" },
+  "description": "The dual-secret cutover pattern for rotating Stripe webhook signing secrets atomically with zero dropped events.",
+  "mainEntityOfPage": "https://sentryforge.app/webhook/blog/secret-rotation/",
+  "publisher": { "@type": "Organization", "name": "Sentry Forge", "url": "https://sentryforge.app" }
+}
+</script>
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root { --bg: #0b0d12; --bg-card: #161a24; --bg-elev: #11141c; --line: #1f2532; --text: #d6dae3; --text-dim: #8a92a4; --text-bright: #f0f2f7; --accent: #5cd8a8; --warn: #ffb454; --danger: #ff6b6b; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 740px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--line); padding: 16px 0; background: rgba(11,13,18,0.85); backdrop-filter: blur(8px); }
+  .nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-bright); font-size: 14px; }
+  .brand .dot { color: var(--accent); }
+  .nav-cta { background: var(--accent); color: var(--bg); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+  article { padding: 60px 0 80px; }
+  article time { color: var(--text-dim); font-size: 14px; font-family: 'JetBrains Mono', monospace; }
+  h1 { font-size: clamp(28px, 4vw, 38px); color: var(--text-bright); letter-spacing: -0.02em; margin: 12px 0 22px; line-height: 1.18; }
+  .lede { font-size: 19px; color: var(--text); margin-bottom: 32px; }
+  h2 { font-size: 26px; color: var(--text-bright); margin: 44px 0 14px; letter-spacing: -0.01em; }
+  h3 { font-size: 18px; color: var(--text-bright); margin: 24px 0 8px; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+  p { margin: 0 0 18px; }
+  ul, ol { padding-left: 24px; }
+  li { margin: 8px 0; }
+  code { font-family: 'JetBrains Mono', monospace; background: var(--bg-card); color: var(--accent); padding: 2px 7px; border-radius: 4px; font-size: 13.5px; }
+  pre { background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.65; color: var(--text); margin: 16px 0 24px; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  .callout { background: var(--bg-elev); border-left: 3px solid var(--accent); border-radius: 4px; padding: 16px 20px; margin: 20px 0; font-size: 15px; }
+  .callout strong { color: var(--accent); }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.warn strong { color: var(--warn); }
+  .callout.danger { border-left-color: var(--danger); }
+  .callout.danger strong { color: var(--danger); }
+  .cta-box { background: linear-gradient(140deg, rgba(92,216,168,0.08), rgba(92,216,168,0.02)); border: 1px solid rgba(92,216,168,0.25); border-radius: 12px; padding: 24px 28px; margin: 36px 0; }
+  .cta-box h3 { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 17px; margin: 0 0 8px; color: var(--text-bright); }
+  .cta-box p { font-size: 15px; margin: 0 0 14px; color: var(--text-dim); }
+  .cta-box .btn { display: inline-block; background: var(--accent); color: var(--bg); padding: 10px 18px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+  footer { border-top: 1px solid var(--line); padding: 32px 0; color: var(--text-dim); font-size: 14px; }
+  footer a { color: var(--text-dim); text-decoration: underline; }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand">webhook<span class="dot">.</span>forge / blog</span>
+    <a class="nav-cta" href="/webhook/">Get the $199 setup →</a>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+    <time datetime="2026-05-08">May 8, 2026 · 7 min read</time>
+    <h1>How to Rotate Your Stripe Webhook Secret Without Downtime</h1>
+
+    <p class="lede">Most rotation guides say "change the secret in Stripe, change the env var, redeploy." That works — and drops 30 seconds to 5 minutes of webhook events into the void while the new secret propagates ahead of (or behind) your deploy. The dual-secret cutover pattern below moves zero events to /dev/null and takes 5 minutes end-to-end.</p>
+
+    <h2>Why naive rotation drops events</h2>
+
+    <p>The race window: between the moment Stripe starts signing with the new secret and the moment your endpoint starts accepting it, every event signed with the new secret 400s on signature verification. Stripe will retry those events, but if your retention windows are tight or you have a high-volume endpoint, you're looking at 30-300 dropped events that need manual replay later — assuming you notice.</p>
+
+    <p>Worse: if your CI/CD takes 90 seconds to ship and Stripe propagates the new secret in 5 seconds, your endpoint is rejecting valid signatures for ~85 seconds. Every retry burns a slot in Stripe's exponential-backoff queue.</p>
+
+    <div class="callout warn">
+      <strong>Common myth:</strong> "Stripe will retry forever, so dropped events come back." Stripe retries on the documented schedule (immediately, then 5min, 1hr, etc.) and gives up after 3 days. <strong>If your team takes a week to notice and replay, those events are gone.</strong>
+    </div>
+
+    <h2>When you need to rotate</h2>
+
+    <ul>
+      <li>Secret leaked in a screenshot, log, or repo (run <code>git log -p | grep whsec_</code> if unsure)</li>
+      <li>Employee with secret access offboarded</li>
+      <li>Compliance audit requires periodic rotation (PCI, SOC 2)</li>
+      <li>Vendor compromise (third-party CI tool, monitoring service, etc.) had access to your env vars</li>
+    </ul>
+
+    <p>If none of these apply: don't rotate. Every rotation introduces risk of dropped events — only pay the cost when you have a reason.</p>
+
+    <h2>The dual-secret cutover pattern</h2>
+
+    <p>Stripe's dashboard supports two signing secrets per endpoint simultaneously. You add the new one alongside the old, deploy code that accepts either, then delete the old one once you've confirmed the new is working. Zero events at risk.</p>
+
+    <h3>Step 1 — Add a second signing secret in the Stripe dashboard</h3>
+
+    <ol>
+      <li>https://dashboard.stripe.com/webhooks → click your endpoint</li>
+      <li>"Signing secret" section → "Roll secret" → choose "Keep both for X days" (Stripe accepts 24h, 7d, or custom)</li>
+      <li>Copy the new <code>whsec_...</code> value</li>
+    </ol>
+
+    <p>Stripe is now signing every event with the new secret. The old secret continues to be valid for verification only (Stripe won't sign with it anymore). Your endpoint, still verifying with the old secret, will start 400ing immediately. <strong>Don't pause here</strong> — keep moving.</p>
+
+    <h3>Step 2 — Deploy code that accepts either secret</h3>
+
+    <pre><code>// /api/stripe-webhook.js — accept old OR new secret during cutover
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+const SECRETS = [
+  process.env.STRIPE_WEBHOOK_SECRET,       // current (about to retire)
+  process.env.STRIPE_WEBHOOK_SECRET_NEW,   // new (just added)
+].filter(Boolean);
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).end();
+
+  const sig = req.headers['stripe-signature'];
+  const rawBody = await getRawBody(req);  // your raw-body helper
+
+  let event = null;
+  let lastError = null;
+
+  for (const secret of SECRETS) {
+    try {
+      event = stripe.webhooks.constructEvent(rawBody, sig, secret);
+      break;  // verified — stop trying
+    } catch (e) {
+      lastError = e;
+    }
+  }
+
+  if (!event) {
+    console.warn('webhook signature verification failed', lastError?.message);
+    return res.status(400).send('Webhook Error: signature verify failed');
+  }
+
+  await processEvent(event);
+  return res.status(200).json({ received: true });
+}</code></pre>
+
+    <p>Set both env vars in Vercel/Render/Fly/etc. Deploy. The handler tries the old secret first; if it fails, falls back to the new. Once Stripe is fully on the new secret, every verification passes on the second attempt — slightly slower but functionally correct.</p>
+
+    <div class="callout">
+      <strong>Order matters.</strong> Put the secret you expect to be active <em>first</em> in the array. The handler short-circuits on the first match. During cutover the new secret is the active one, so put <code>STRIPE_WEBHOOK_SECRET_NEW</code> first if you've already deployed past the moment of rotation.
+    </div>
+
+    <h3>Step 3 — Verify both secrets work</h3>
+
+    <p>Trigger a test event and confirm it processes. From the Stripe dashboard:</p>
+
+    <ol>
+      <li>Webhooks page → your endpoint → "Send test webhook"</li>
+      <li>Pick any event type (e.g. <code>checkout.session.completed</code>)</li>
+      <li>Send. Check your logs for <code>received: true</code>.</li>
+    </ol>
+
+    <p>Or via Stripe CLI:</p>
+
+    <pre><code>stripe trigger checkout.session.completed --live
+# Watch your endpoint logs. Should return 200.</code></pre>
+
+    <p>Now manually flip the env var order in your runtime — put the OLD secret second. Trigger again. Should still pass. If yes: both secrets verify correctly. Proceed.</p>
+
+    <h3>Step 4 — Wait for the cutover window to close</h3>
+
+    <p>Stripe will continue accepting both secrets for the duration you chose in Step 1 (default 7 days). During that window, all events sign with the new secret and verify against either. There's no traffic on the old secret anymore — it's just there as a safety net.</p>
+
+    <p>Use this window to:</p>
+    <ul>
+      <li>Audit logs for any 400s during the deploy window — confirm zero drops</li>
+      <li>Update your secrets manager / vault entry to the new value</li>
+      <li>Notify the team that rotation is in flight (so nobody hard-codes the old one in a debug session)</li>
+    </ul>
+
+    <h3>Step 5 — Retire the old secret</h3>
+
+    <p>After the cutover window expires, Stripe automatically deletes the old secret. You should:</p>
+
+    <ol>
+      <li>Remove <code>STRIPE_WEBHOOK_SECRET</code> from your env</li>
+      <li>Rename <code>STRIPE_WEBHOOK_SECRET_NEW</code> to <code>STRIPE_WEBHOOK_SECRET</code></li>
+      <li>Update the SECRETS array to a single entry</li>
+      <li>Deploy</li>
+    </ol>
+
+    <p>This isn't urgent. The two-secret handler is harmless after the old secret is retired — both array entries verify against the same backend, so you just have a one-iteration loop. Clean up at your next routine deploy.</p>
+
+    <h2>Edge cases</h2>
+
+    <h3>What if my endpoint is multi-tenant?</h3>
+
+    <p>If you have one endpoint serving multiple Stripe accounts (e.g. a Connect platform), rotate one account's secret at a time. Tag each secret with the account ID and look it up by header:</p>
+
+    <pre><code>const accountId = req.headers['stripe-account'];  // present on Connect events
+const secrets = SECRETS_BY_ACCOUNT[accountId] || SECRETS_BY_ACCOUNT.default;</code></pre>
+
+    <p>If you don't pass through Connect, this header may not be set — fall back to the default array.</p>
+
+    <h3>What if I have a queue between Stripe and my handler?</h3>
+
+    <p>Verification still happens at the entry point, before the queue. Rotate the secret on whichever process is first to receive the raw body — typically your Vercel/edge function. Workers consuming from the queue don't need the secret because the event is already verified.</p>
+
+    <h3>What if my secret got committed to git?</h3>
+
+    <p>Rotate immediately (don't wait for the cutover window). Then:</p>
+
+    <ol>
+      <li>Run <code>git log --all -p -- '*' | grep -i whsec_</code> to find every commit that touched it</li>
+      <li>Use BFG Repo Cleaner or <code>git filter-repo</code> to scrub the secret from history</li>
+      <li>Force push (if the repo is yours) or rotate again after squashing if it isn't</li>
+      <li>Audit Stripe dashboard → API logs for any signed requests from unexpected IPs during the leak window</li>
+    </ol>
+
+    <div class="callout danger">
+      <strong>Force pushing rewrites history.</strong> If others have cloned the repo, they need to re-clone — or the leaked commit will resurface in their next push. Coordinate the scrub with your team.
+    </div>
+
+    <div class="cta-box">
+      <h3>Don't want to babysit secret rotation?</h3>
+      <p>Sentry Forge ships your Stripe webhook with the dual-secret pattern baked in from day one — plus signature verification, idempotency, retry-aware logging, and Vercel deploy in 24 hours. $199 flat, first 3 clients.</p>
+      <a class="btn" href="/webhook/">See the offer →</a>
+    </div>
+
+    <h2>Verification checklist</h2>
+
+    <ul>
+      <li>☐ New secret added in Stripe dashboard (cutover window set, e.g. 7 days)</li>
+      <li>☐ Both secrets present as env vars in production</li>
+      <li>☐ Code accepts either secret (multi-secret loop deployed)</li>
+      <li>☐ Test event processed — verify in logs</li>
+      <li>☐ Reverse env var order, test again — verify in logs</li>
+      <li>☐ Production traffic monitored for 400s during cutover (expect zero)</li>
+      <li>☐ Old secret retired post-cutover, env cleaned up, code redeployed</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="/webhook/blog/stripe-400/">Why your Stripe webhook returns 400 in production</a></li>
+      <li><a href="/webhook/blog/idempotency/">Stripe webhook idempotency patterns</a></li>
+      <li><a href="/webhook/blog/retry-behavior/">Stripe webhook retry behavior</a></li>
+      <li><a href="/webhook/blog/testing-locally/">Testing Stripe webhooks locally</a></li>
+      <li><a href="/webhook/diagnostic/">Free webhook signature diagnostic</a></li>
+      <li><a href="/webhook/health-check/">Webhook uptime monitoring — $29/mo</a></li>
+    </ul>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    Written by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="/webhook/blog/">all posts</a> · <a href="/webhook/">offer</a><br/>
+    <a href="/about/">About</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a>
+  </div>
+</footer>
+
+</body>
+</html>
