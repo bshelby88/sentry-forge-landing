@@ -4,19 +4,19 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Sentry Forge — agentic AI for consumer-debt defense</title>
-<meta name="description" content="I can't afford an Attorney, but I can afford Agentic AI. Sentry Forge forges your debt-dispute case in under an hour. Wrongful collections, illegal evictions, duplicate fees, time-barred zombie debt. $99/case." />
+<meta name="description" content="I can't afford an Attorney, but I can afford Agentic AI. Sentry Forge forges your debt-dispute case in under an hour. Wrongful collections, illegal evictions, duplicate fees, time-barred zombie debt. $79/case." />
 <meta name="theme-color" content="#1a1d24" />
 <link rel="canonical" href="https://sentry-forge-landing.vercel.app/" />
 
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Sentry Forge — I can't afford an Attorney, but I can afford Agentic AI" />
-<meta property="og:description" content="Agentic AI builds your debt-dispute case in under an hour. $99/case. First 100 founders $49." />
+<meta property="og:description" content="Agentic AI builds your debt-dispute case in under an hour. $79/case. First 100 founders $29." />
 <meta property="og:url" content="https://sentry-forge-landing.vercel.app/" />
 <meta property="og:image" content="https://sentry-forge-landing.vercel.app/og.png" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Sentry Forge — agentic AI for consumer-debt defense" />
-<meta name="twitter:description" content="I can't afford an Attorney, but I can afford Agentic AI. $99/case." />
+<meta name="twitter:description" content="I can't afford an Attorney, but I can afford Agentic AI. $79/case." />
 <meta name="twitter:image" content="https://sentry-forge-landing.vercel.app/og.png" />
 
 <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -534,6 +534,38 @@
     flex-wrap: wrap;
   }
 
+  /* ──────────────── PACK PROOF IMAGE ──────────────── */
+  .pack-proof {
+    margin: 2.5rem 0 3rem;
+    padding: 0;
+    text-align: center;
+    position: relative;
+  }
+  .pack-proof img {
+    width: 100%;
+    max-width: 1200px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border: var(--hairline);
+    border-radius: 8px;
+    box-shadow:
+      0 30px 60px -20px oklch(0% 0 0 / 0.55),
+      0 1px 0 0 oklch(100% 0 0 / 0.04) inset;
+  }
+  .pack-proof figcaption {
+    margin-top: 0.9rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--steel-500);
+    text-transform: uppercase;
+  }
+  @media (max-width: 720px) {
+    .pack-proof { margin: 1.5rem -1rem 2rem; }
+    .pack-proof img { border-radius: 4px; }
+  }
+
   /* ──────────────── PACK GRID ──────────────── */
   .pack-grid {
     display: grid;
@@ -803,8 +835,8 @@
       <div class="hero-pricepitch">
         <s>$300/hr counsel</s>
         <span class="arrow">→</span>
-        <strong>$0/mo · $99/case</strong>
-        <span style="opacity:0.7;">· first 100 founders $49</span>
+        <strong>$0/mo · $79/case</strong>
+        <span style="opacity:0.7;">· first 100 founders $29</span>
       </div>
     </div>
 
@@ -988,6 +1020,11 @@
     <h2>Eight deliverables. <em>Your case file.</em></h2>
     <p class="section-lede">Everything print-ready. Plain markdown so you can edit before you sign.</p>
 
+    <figure class="pack-proof">
+      <img src="/proof.jpg" alt="Three documents from a real Sentry Forge case fanned out: validation demand, bureau dispute, CFPB complaint. Personal details redacted. Top document stamped FORGED." width="1600" height="1000" loading="lazy" decoding="async" />
+      <figcaption>An actual sample case. Names redacted, citations real.</figcaption>
+    </figure>
+
     <div class="pack-grid">
       <div class="pack-card">
         <div class="pack-num">01</div>
@@ -1051,7 +1088,7 @@
     <div class="price-grid">
       <div class="price-card">
         <div class="price-tier">One Case</div>
-        <div class="price-amount">$99</div>
+        <div class="price-amount">$79</div>
         <div class="price-amount-unit">flat &middot; one debt &middot; full pack</div>
         <ul class="price-list">
           <li>All 8 case-file deliverables</li>
@@ -1061,22 +1098,22 @@
           <li>90-day outcome tracking + escalation letters</li>
           <li>Refund if &lt;3 leverage points found</li>
         </ul>
-        <a href="https://buy.stripe.com/6oU5kEcqoeosapG2VBfjG01" class="btn btn-ghost" target="_blank" rel="noopener">Forge My Case <span class="btn-arrow">→</span></a>
+        <a href="https://buy.stripe.com/6oUaEYbmk4NS69qcwbfjG03" class="btn btn-ghost" target="_blank" rel="noopener">Forge My Case <span class="btn-arrow">→</span></a>
       </div>
 
       <div class="price-card featured">
         <div class="price-tier">Founding 100</div>
-        <div class="price-amount">$49</div>
+        <div class="price-amount">$29</div>
         <div class="price-amount-unit">first 100 customers &middot; lifetime rate</div>
         <ul class="price-list">
           <li>Everything in One Case</li>
-          <li>$49 grandfathered on every future case &mdash; forever</li>
+          <li>$29 grandfathered on every future case &mdash; forever</li>
           <li>Direct line to founder for case strategy</li>
           <li>Help shape v1 features &middot; case-type roadmap input</li>
           <li>Listed on the wall (optional, by first name only)</li>
           <li>Refund + waitlist priority if &lt;3 leverage points</li>
         </ul>
-        <a href="https://buy.stripe.com/7sY9AU3TS4NS8hy2VBfjG02" class="btn btn-primary" target="_blank" rel="noopener">Claim Founding Spot <span class="btn-arrow">→</span></a>
+        <a href="https://buy.stripe.com/8x2dRa4XWgwA1TafInfjG04" class="btn btn-primary" target="_blank" rel="noopener">Claim Founding Spot <span class="btn-arrow">→</span></a>
       </div>
     </div>
 
@@ -1185,6 +1222,7 @@
     </div>
     <div class="foot-meta">agentic ai for consumer-debt defense · built by <a href="https://twitter.com/jadedfocus" rel="noopener">@jadedfocus</a></div>
     <div class="foot-meta">not a law firm · no attorney-client relationship</div>
+    <div class="foot-meta"><a href="/about/">about</a> · <a href="/letter/">letter</a> · <a href="/webhook/">webhook</a> · <a href="/terms/">terms</a> · <a href="/privacy/">privacy</a></div>
   </div>
 </footer>
 

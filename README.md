@@ -4,7 +4,7 @@
 
 Agentic AI for consumer-debt defense. Builds a complete dispute pack
 (collector letter, original-creditor demand, CFPB drafts, bureau
-disputes, court-records guide, action checklist) for $99 per case.
+disputes, court-records guide, action checklist) for $79 per case.
 
 ## Stack
 
@@ -13,7 +13,7 @@ disputes, court-records guide, action checklist) for $99 per case.
 - Vercel Functions: `api/subscribe.js` (Resend → jadedfocus@gmail.com)
 - Vercel hosting, HSTS + CSP via `vercel.json`
 - Resend for waitlist notifications
-- Stripe for `$49 founding` and `$99 case` payment links
+- Stripe for `$29 founding` and `$79 case` payment links
 
 ## Local dev
 
@@ -42,8 +42,10 @@ vercel --prod
 
 | Product | Price | Stripe ID | Payment link |
 |---|---|---|---|
-| Sentry Forge — One Case | $99 | `prod_USSfIfOqde9WJZ` / `price_1TTXkcLYILfmbp2uIXkUSxCC` | https://buy.stripe.com/6oU5kEcqoeosapG2VBfjG01 |
-| Sentry Forge — Founding 100 | $49 | `prod_USSfi26Dx2sRtn` / `price_1TTXkgLYILfmbp2uIX9KxTqy` | https://buy.stripe.com/7sY9AU3TS4NS8hy2VBfjG02 |
+| Sentry Forge — One Case | $79 | `prod_USSfIfOqde9WJZ` / `price_1TTv6cLYILfmbp2uZ7dotdXt` | https://buy.stripe.com/6oUaEYbmk4NS69qcwbfjG03 |
+| Sentry Forge — Founding 100 | $29 | `prod_USSfi26Dx2sRtn` / `price_1TTv6hLYILfmbp2uacScbce1` | https://buy.stripe.com/8x2dRa4XWgwA1TafInfjG04 |
+
+Old prices (kept active for legacy links): One Case `price_1TTXkcLYILfmbp2uIXkUSxCC` ($99), Founding 100 `price_1TTXkgLYILfmbp2uIX9KxTqy` ($49).
 
 ## Files
 

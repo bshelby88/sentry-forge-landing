@@ -89,7 +89,7 @@ d.ellipse([status_x, 22, status_x + 12, 34], fill=VERDICT)
 d.text((status_x + 22, 19), "FORGED IN 14M 22S", font=f_badge, fill=MUTED)
 
 # ── EYEBROW ──────────────────────────────────────────────────────────
-d.text((80, 120), "// agentic AI · consumer-debt defense · $99/case",
+d.text((80, 120), "// agentic AI · consumer-debt defense · $79/case",
        font=f_eyebrow, fill=EMBER)
 
 # ── HEADLINE (split 3 lines) ─────────────────────────────────────────
@@ -162,9 +162,9 @@ for fn in files:
 # ── BOTTOM URL ROW ───────────────────────────────────────────────────
 d.text((80, H - 110), "$300/hr counsel", font=f_price, fill=MUTED)
 d.text((80 + 200, H - 110), "→", font=f_price, fill=EMBER)
-d.text((80 + 230, H - 110), "$0/mo · $99/case",
+d.text((80 + 230, H - 110), "$0/mo · $79/case",
        font=f_price, fill=GILT)
-d.text((80 + 230 + 218, H - 110), "· first 100 founders $49",
+d.text((80 + 230 + 218, H - 110), "· first 100 founders $29",
        font=f_url, fill=DIM)
 
 d.text((80, H - 50), "sentry-forge-landing.vercel.app",
