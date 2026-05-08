@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Stripe Webhook Retry Behavior: How Long, How Often, and What Triggers It</title>
+<meta name="description" content="Stripe retries failed webhook deliveries for up to 3 days on an exponential backoff. Exact schedule, what triggers retries, when Stripe disables your endpoint, and how to recover dropped events." />
+<meta name="theme-color" content="#0b0d12" />
+<link rel="canonical" href="https://sentry-forge-landing.vercel.app/webhook/blog/retry-behavior/" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Stripe Webhook Retry Behavior: How Long, How Often, and What Triggers It" />
+<meta property="og:description" content="The exact retry schedule, what triggers retries, and how to recover dropped events." />
+<meta property="og:url" content="https://sentry-forge-landing.vercel.app/webhook/blog/retry-behavior/" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Stripe Webhook Retry Behavior: How Long, How Often, and What Triggers It",
+  "datePublished": "2026-05-08",
+  "dateModified": "2026-05-08",
+  "author": { "@type": "Person", "name": "Bryant Shelby", "url": "https://x.com/jadedfocus" },
+  "description": "Stripe retries failed webhook deliveries for up to 3 days on exponential backoff. Exact schedule and recovery options.",
+  "mainEntityOfPage": "https://sentry-forge-landing.vercel.app/webhook/blog/retry-behavior/"
+}
+</script>
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root { --bg: #0b0d12; --bg-card: #161a24; --bg-elev: #11141c; --line: #1f2532; --text: #d6dae3; --text-dim: #8a92a4; --text-bright: #f0f2f7; --accent: #5cd8a8; --warn: #ffb454; --danger: #ff6b6b; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 740px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--line); padding: 16px 0; background: rgba(11,13,18,0.85); backdrop-filter: blur(8px); }
+  .nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-bright); font-size: 14px; }
+  .brand .dot { color: var(--accent); }
+  .nav-cta { background: var(--accent); color: var(--bg); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+  article { padding: 60px 0 80px; }
+  article time { color: var(--text-dim); font-size: 14px; font-family: 'JetBrains Mono', monospace; }
+  h1 { font-size: clamp(28px, 4vw, 38px); color: var(--text-bright); letter-spacing: -0.02em; margin: 12px 0 22px; line-height: 1.18; }
+  .lede { font-size: 19px; color: var(--text); margin-bottom: 32px; }
+  h2 { font-size: 26px; color: var(--text-bright); margin: 44px 0 14px; letter-spacing: -0.01em; }
+  h3 { font-size: 18px; color: var(--text-bright); margin: 24px 0 8px; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+  p { margin: 0 0 18px; }
+  ul, ol { padding-left: 24px; }
+  li { margin: 8px 0; }
+  code { font-family: 'JetBrains Mono', monospace; background: var(--bg-card); color: var(--accent); padding: 2px 7px; border-radius: 4px; font-size: 13.5px; }
+  pre { background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.65; color: var(--text); margin: 16px 0 24px; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  table { width: 100%; border-collapse: collapse; margin: 18px 0 24px; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  th { color: var(--text-bright); font-weight: 600; }
+  td code { font-size: 12.5px; }
+  .callout { background: var(--bg-elev); border-left: 3px solid var(--accent); border-radius: 4px; padding: 16px 20px; margin: 20px 0; font-size: 15px; }
+  .callout strong { color: var(--accent); }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.warn strong { color: var(--warn); }
+  .cta-card { background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-elev) 100%); border: 1px solid var(--accent); border-radius: 12px; padding: 28px; margin: 36px 0; text-align: center; }
+  .cta-card h3 { font-family: inherit; font-size: 20px; color: var(--text-bright); margin: 0 0 8px; }
+  .cta-card p { color: var(--text-dim); font-size: 15px; margin: 0 0 20px; }
+  .btn { display: inline-block; background: var(--accent); color: var(--bg); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 16px; text-decoration: none; }
+  .btn:hover { background: #4dc095; text-decoration: none; }
+  footer { padding: 32px 0 60px; color: var(--text-dim); font-size: 13px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand">webhook<span class="dot">.</span>forge</span>
+    <a class="nav-cta" href="/webhook/">$199 setup ↗</a>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+    <time datetime="2026-05-08">2026-05-08 · ~6 min read</time>
+    <h1>Stripe Webhook Retry Behavior: How Long, How Often, and What Triggers It</h1>
+
+    <p class="lede">If your webhook returns a non-2xx response, Stripe retries. For 3 days. On an exponential backoff. Then it eventually disables your endpoint. Below: the exact schedule, what counts as a failure, when Stripe gives up, and how to recover events you dropped during downtime.</p>
+
+    <h2>The exact retry schedule</h2>
+
+    <p>Stripe retries failed webhook deliveries for up to <strong>3 days</strong>, with backoff intervals roughly:</p>
+
+    <table>
+      <tr>
+        <th>Attempt</th>
+        <th>Time after first delivery</th>
+      </tr>
+      <tr><td>1 (initial)</td><td>0 seconds</td></tr>
+      <tr><td>2</td><td>~5 minutes</td></tr>
+      <tr><td>3</td><td>~30 minutes</td></tr>
+      <tr><td>4</td><td>~2 hours</td></tr>
+      <tr><td>5</td><td>~4 hours</td></tr>
+      <tr><td>6</td><td>~8 hours</td></tr>
+      <tr><td>7</td><td>~16 hours</td></tr>
+      <tr><td>8 and beyond</td><td>~daily, up to 72 hours total</td></tr>
+    </table>
+
+    <p>The exact intervals can shift slightly — Stripe documents the schedule as "best effort" — but the pattern is consistent: a few quick retries, then exponential backoff, then daily attempts until the 72-hour window closes.</p>
+
+    <h2>What counts as a failure (and what doesn't)</h2>
+
+    <p>Stripe retries when your endpoint:</p>
+
+    <ul>
+      <li>Returns any HTTP status code outside the <strong>2xx</strong> range (200, 201, 202, etc.)</li>
+      <li>Times out — Stripe waits up to <strong>30 seconds</strong> for your response</li>
+      <li>Returns a non-HTTP response (connection refused, DNS failure, TLS handshake failure)</li>
+    </ul>
+
+    <p>Stripe does NOT retry when your endpoint:</p>
+
+    <ul>
+      <li>Returns 200 with any body (even <code>{"received": true, "error": "downstream failed"}</code> — that 200 is the contract)</li>
+      <li>Returns 410 Gone — Stripe interprets this as "permanently delete this event from queue"</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Practical implication:</strong> always return 200, even when your downstream email send or DB write fails. Log the downstream failure separately and retry it on your own schedule with idempotency keyed on the Stripe event ID. Otherwise Stripe hammers your endpoint for 3 days and floods your error log.
+    </div>
+
+    <h2>The "Stripe disables your endpoint" rule</h2>
+
+    <p>If too many consecutive deliveries fail, Stripe disables the webhook endpoint entirely. The exact threshold isn't publicly documented, but the empirical observation across multiple sources is:</p>
+
+    <ul>
+      <li>If <strong>all</strong> deliveries during a multi-day window fail (e.g. your endpoint has been 500ing for 3+ days straight), Stripe disables the endpoint</li>
+      <li>You receive an email at the email registered on the Stripe account: "Your webhook endpoint has been disabled"</li>
+      <li>The endpoint stays disabled until you manually re-enable it in the Stripe Dashboard</li>
+      <li>While disabled, Stripe stops sending events to that endpoint entirely — you don't get the events back when you re-enable</li>
+    </ul>
+
+    <p>Translation: a webhook outage that lasts more than ~72 hours risks permanent event loss for that window.</p>
+
+    <h2>How to recover dropped events</h2>
+
+    <p>If you fixed your webhook after a multi-day outage and need to reprocess events Stripe delivered (or tried to deliver) during downtime, you have two options:</p>
+
+    <h3>Option 1 — Replay from Stripe Dashboard</h3>
+
+    <p>Stripe Dashboard → Developers → Webhooks → click your endpoint → "Recent deliveries" tab. Each row shows attempt count and last response. For events you want to retry, click into the event and use "Resend" to fire it at your endpoint again.</p>
+
+    <p>This works well for <strong>10 or fewer events</strong>. For more, you need API access.</p>
+
+    <h3>Option 2 — Replay via Stripe API</h3>
+
+    <p>List events from the API and replay them through your handler:</p>
+
+    <pre><code>// Pseudo-code; needs your secret key + a way to call your webhook handler
+const events = await stripe.events.list({
+  type: 'checkout.session.completed',
+  created: { gte: outage_start_unix, lte: outage_end_unix },
+  limit: 100,
+});
+
+for (const event of events.data) {
+  // Re-enqueue through your handler, keyed by event.id for idempotency
+  await yourWebhookHandler({ body: event });
+}</code></pre>
+
+    <p>Note: events.list returns events from your Stripe API logs, not from the webhook delivery queue. If Stripe stopped trying to deliver because your endpoint was disabled, the events are still in your API log — they just weren't delivered. The replay loop above pulls them from the log and processes them locally.</p>
+
+    <h2>What about events Stripe never tried to deliver?</h2>
+
+    <p>If your endpoint was registered and enabled, Stripe always attempts delivery for matching event types. The events.list query above retrieves the same events Stripe attempted to send — so even if your endpoint was 500ing, the events are recoverable.</p>
+
+    <p>Events that fall outside your subscribed event types are NOT retroactively delivered. If you added <code>checkout.session.async_payment_succeeded</code> to your webhook configuration today, you cannot retrieve past events of that type via a delivery replay; you'd need to re-process them manually from <code>events.list</code>.</p>
+
+    <h2>The 400 noise pattern (most common confusion)</h2>
+
+    <p>If you read your Vercel/Render/Cloudflare logs and see a stream of 400 responses on your webhook endpoint, the most common cause is NOT live event-delivery failure. It's Stripe retrying old events that failed deliveries from before your last fix.</p>
+
+    <p>Empirical pattern: after fixing a webhook secret rotation or signature-verification bug, expect 400 noise for ~72 hours as Stripe drains its retry queue of stale events. Each old failed delivery retries on the schedule above. They <strong>will</strong> all 400 (because the timestamp is out of tolerance, or the secret was different at original delivery time). They will fade.</p>
+
+    <p>Do NOT panic-rotate your webhook secret in response to 400 noise. That makes the problem worse. Identify whether the 400s are on <strong>new</strong> events or retries of old events:</p>
+
+    <pre><code>// Log the timestamp delta in your handler
+const ts = parseInt(parsedSigHeader.t, 10);
+const ageSeconds = Math.floor(Date.now() / 1000) - ts;
+console.log(`webhook event age: ${ageSeconds}s`);</code></pre>
+
+    <p>If the age is in the thousands (or tens of thousands) of seconds, those are stale retries and they'll go away. If the age is &lt; 60 seconds and you're still 400ing, that's a real bug — probably a fresh secret mismatch or body-parser issue.</p>
+
+    <h2>How to monitor retry health</h2>
+
+    <p>Stripe Dashboard → Developers → Webhooks → click endpoint → top of page shows aggregate success rate over the last 24h / 7d / 30d. Green is "all events delivered successfully on first or retry attempt." Red is "some events failed final delivery attempts."</p>
+
+    <p>For deeper visibility, set up an alert on:</p>
+
+    <ul>
+      <li>Aggregate failure rate &gt; 5% for any 1-hour window — early warning of secret/body-parser bug</li>
+      <li>Any single event with attempt count ≥ 3 and not yet delivered — escalation candidate</li>
+      <li>Any "endpoint disabled" event from Stripe — page yourself</li>
+    </ul>
+
+    <h2>The "always 200" code pattern</h2>
+
+    <pre><code>export default async function handler(req, res) {
+  // sig verification...
+  if (!verifySignature(rawBody, sigHeader, secret)) {
+    return res.status(400).json({ error: 'Invalid signature' });
+  }
+
+  let event;
+  try {
+    event = JSON.parse(rawBody.toString('utf8'));
+  } catch {
+    return res.status(400).json({ error: 'Invalid JSON' });
+  }
+
+  // Filter for the type we care about
+  if (event.type !== 'checkout.session.completed') {
+    return res.status(200).json({ received: true, ignored: event.type });
+  }
+
+  // Do the work, but never fail to Stripe even if downstream fails
+  try {
+    await sendCustomerEmail(event.data.object);
+  } catch (e) {
+    console.error('email send failed', e);
+    // Note in your error monitor; retry yourself; do NOT 500 to Stripe
+    return res.status(200).json({ received: true, email_error: String(e) });
+  }
+
+  return res.status(200).json({ received: true });
+}</code></pre>
+
+    <p>This is the pattern. 400 only on signature failure or invalid JSON (those are real bugs). 200 on everything else, including downstream failures, with the failure logged separately for your own retry pipeline.</p>
+
+    <div class="cta-card">
+      <h3>Want this pattern shipped to your repo without writing it yourself?</h3>
+      <p>$199 flat (first 3 clients, then $399). Includes idempotency, downstream-fail handling, sig verification, customer + founder emails. Verified live before delivery.</p>
+      <a class="btn" href="/webhook/">See the offer →</a>
+    </div>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="/webhook/blog/stripe-400/">Why your Stripe webhook returns 400 in production</a> — the 4 root causes</li>
+      <li><a href="/webhook/blog/multiple-events/">Why Stripe fires 6+ events per checkout</a> — multi-event handling</li>
+      <li><a href="/webhook/diagnostic/">Free webhook signature diagnostic</a> — paste your sig + body, get verdict</li>
+    </ul>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    Written by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="/webhook/blog/">all posts</a> · <a href="/webhook/">offer</a> · <a href="/webhook/diagnostic/">diagnostic</a><br/>
+    <a href="/about/">About</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a>
+  </div>
+</footer>
+
+</body>
+</html>
