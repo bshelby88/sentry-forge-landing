@@ -6,12 +6,12 @@
 <title>About — Sentry Forge / Webhook.Forge / Letter.Forge</title>
 <meta name="description" content="One person, one phone, one address. Bryant Shelby, Sentry Forge — what we ship, what we don't, who you're paying when you click Buy." />
 <meta name="theme-color" content="#0b0d12" />
-<link rel="canonical" href="https://sentry-forge-landing.vercel.app/about/" />
+<link rel="canonical" href="https://sentryforge.royalruby.io/about/" />
 
 <meta property="og:type" content="profile" />
 <meta property="og:title" content="About — Sentry Forge" />
 <meta property="og:description" content="One person, one phone, one address. What we ship, what we don't." />
-<meta property="og:url" content="https://sentry-forge-landing.vercel.app/about/" />
+<meta property="og:url" content="https://sentryforge.royalruby.io/about/" />
 
 <link rel="icon" href="/favicon.ico" sizes="any" />
 
@@ -187,7 +187,7 @@
       </div>
       <div class="stack-card">
         <h3>/webhook/</h3>
-        <p>$199 — Stripe + Resend pipeline for indie hackers. 24h, first 3 clients only.</p>
+        <p>$199 — Webhook + Resend pipeline for indie hackers. 24h, first 3 clients only.</p>
       </div>
       <div class="stack-card">
         <h3>/webhook/diagnostic/</h3>
@@ -198,19 +198,19 @@
     <h2>How I got here</h2>
     <p>In late 2025 I started looking hard at the gap between "consumer fights debt collector alone" and "consumer hires attorney for $300/hr." A real attorney can often win these cases on contingency, but only after the consumer has done the upfront paperwork right — validation, bureau disputes, CFPB filings. Most consumers don't know the framework, do it wrong, and lose by default.</p>
     <p>So I built the framework as a service. Eight pieces of paper, 24 hours, $79. I'm doing my own dispute (apartment-debt collection from a wrongful 2020 eviction) at the same time, dogfooding every letter.</p>
-    <p>The webhook side is what most indie hackers know me for on X — built my own Stripe + Resend pipeline last week, verified live with a $29 charge, six events 200 OK in under a second. Wrote up the four traps that bit me, then realized I could ship that same pipeline to anyone else's repo for $199.</p>
+    <p>The webhook side is what most indie hackers know me for on X — built my own billing webhook + Resend pipeline last week, verified live with a $29 charge, six events 200 OK in under a second. Wrote up the four traps that bit me, then realized I could ship that same pipeline to anyone else's repo for $199.</p>
 
     <h2>What I don't do</h2>
     <ul>
       <li>I am <strong>not</strong> a law firm. No attorney-client relationship. Read every letter before you sign or send it.</li>
       <li>I do not appear in court, advise on litigation strategy, or substitute for counsel.</li>
       <li>I do not represent creditors, collectors, or debt buyers — only consumers.</li>
-      <li>I do not collect or sell your personal data. Customer information goes to Stripe (payment), Resend (email delivery), and my inbox. That's it.</li>
+      <li>I do not collect or sell your personal data. Customer information goes to our secure Merchant of Record (payment), Resend (email delivery), and my inbox. That's it.</li>
       <li>I do not run ongoing retainers, SaaS subscriptions, or auto-renew billing. Every transaction here is one-time.</li>
     </ul>
 
     <h2>Refund posture</h2>
-    <p><strong>Webhook service ($199):</strong> refundable if I miss the 24-hour window from your intake reply, or if your Stripe events aren't hitting 200 by the end of the 7-day support window because of bugs in my code.</p>
+    <p><strong>Webhook service ($199):</strong> refundable if I miss the 24-hour window from your intake reply, or if your billing webhook events aren't hitting 200 by the end of the 7-day support window because of bugs in my code.</p>
     <p><strong>Dispute letter ($49):</strong> refundable if I miss the 24-hour turnaround from your intake reply.</p>
     <p><strong>Sentry Forge case pack ($79):</strong> refundable up to delivery. After delivery, the work is done and not refundable.</p>
     <p>If you ask for a refund, the answer is yes. I'd rather have the unhappy customer leave on good terms than fight to keep $199.</p>
@@ -226,7 +226,7 @@
     <p>Read the offer page. If you're still unsure, email me at <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a> with your specific situation. I'll tell you in 24 hours whether this fits or whether you need a different solution. No sales pitch.</p>
 
     <div class="disclosure">
-      <strong>Compliance disclosure:</strong> Sentry Forge is operated by Bryant Shelby as a sole proprietor. Statement descriptor on your card statement reads <code>SENTRY FORGE</code>. Stripe is the payment processor. Resend is the email delivery provider. Vercel hosts the site. No other third party receives customer information.
+      <strong>Compliance disclosure:</strong> Sentry Forge is operated by Bryant Shelby as a sole proprietor. Statement descriptor on your card statement reads <code>SENTRY FORGE</code>. Secure Merchant of Record is the payment processor. Resend is the email delivery provider. Vercel hosts the site. No other third party receives customer information.
     </div>
 
     <h2>One more thing</h2>

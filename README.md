@@ -1,19 +1,17 @@
 # Sentry Forge — landing
 
-> "I can't afford an Attorney, but I can afford Agentic AI." — Sentry Forge
+> Stripe webhook monitoring & setup SaaS. $199 setup, $29/mo monitoring, $2500+$499/mo enterprise.
 
-Agentic AI for consumer-debt defense. Builds a complete dispute pack
-(collector letter, original-creditor demand, CFPB drafts, bureau
-disputes, court-records guide, action checklist) for $79 per case.
+Sentry Forge monitors your Stripe webhooks, alerts on failures, and handles
+full integration setup so you never miss a payment event.
 
 ## Stack
 
 - Static `index.html` (single page, no framework)
-- `case-001/index.html` (founder case study)
 - Vercel Functions: `api/subscribe.js` (Resend → jadedfocus@gmail.com)
 - Vercel hosting, HSTS + CSP via `vercel.json`
 - Resend for waitlist notifications
-- Stripe for `$29 founding` and `$79 case` payment links
+- Stripe for setup and monitoring payment links
 
 ## Local dev
 
@@ -38,22 +36,19 @@ The API route only runs on Vercel — locally the form will return 404.
 vercel --prod
 ```
 
-## Stripe (live, account `acct_1TQdvoLYILfmbp2u`)
+## Pricing
 
-| Product | Price | Stripe ID | Payment link |
-|---|---|---|---|
-| Sentry Forge — One Case | $79 | `prod_USSfIfOqde9WJZ` / `price_1TTv6cLYILfmbp2uZ7dotdXt` | https://buy.stripe.com/6oUaEYbmk4NS69qcwbfjG03 |
-| Sentry Forge — Founding 100 | $29 | `prod_USSfi26Dx2sRtn` / `price_1TTv6hLYILfmbp2uacScbce1` | https://buy.stripe.com/8x2dRa4XWgwA1TafInfjG04 |
-
-Old prices (kept active for legacy links): One Case `price_1TTXkcLYILfmbp2uIXkUSxCC` ($99), Founding 100 `price_1TTXkgLYILfmbp2uIX9KxTqy` ($49).
+| Tier | Price | Description |
+|---|---|---|
+| Setup | $199 one-time | Webhook integration setup |
+| Monitoring | $29/mo | Ongoing webhook monitoring & alerts |
+| Enterprise | $2,500 + $499/mo | Full managed integration + SLA |
 
 ## Files
 
 ```
 .
 ├── index.html              main landing
-├── case-001/
-│   └── index.html          founder case study (Bryant Shelby, $6,970.31)
 ├── api/
 │   └── subscribe.js        waitlist → Resend
 ├── vercel.json             headers + CSP
@@ -62,11 +57,6 @@ Old prices (kept active for legacy links): One Case `price_1TTXkcLYILfmbp2uIXkUS
 ├── README.md               this file
 └── DESIGN.md               full design rationale + future page sections
 ```
-
-## Source case
-
-Customer #1 case file (private, founder dogfood):
-`/home/sprit/Desktop/SentryForge_Shelby_TerracesDispute/`
 
 ## Related
 

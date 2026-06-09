@@ -1,126 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/</loc>
+    <loc>https://sentryforge.royalruby.io/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/case-001</loc>
+    <loc>https://sentryforge.royalruby.io/case-001</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/enterprise/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/enterprise/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/blog/stripe-400/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/blog/stripe-400/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/diagnostic/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/diagnostic/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/health-check/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/health-check/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/blog/multiple-events/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/blog/multiple-events/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/blog/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/blog/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/blog/retry-behavior/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/blog/retry-behavior/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/calculator/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/calculator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/blog/idempotency/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/blog/idempotency/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/blog/testing-locally/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/blog/testing-locally/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/blog/email-providers/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/blog/email-providers/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/blog/secret-rotation/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/blog/secret-rotation/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/blog/not-firing/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/blog/not-firing/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/webhook/compare/</loc>
+    <loc>https://sentryforge.royalruby.io/webhook/compare/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
     <lastmod>2026-05-08</lastmod>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/letter/</loc>
+    <loc>https://sentryforge.royalruby.io/letter/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/about/</loc>
+    <loc>https://sentryforge.royalruby.io/about/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/privacy/</loc>
+    <loc>https://sentryforge.royalruby.io/privacy/</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/terms/</loc>
+    <loc>https://sentryforge.royalruby.io/terms/</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://sentry-forge-landing.vercel.app/sample-case.pdf</loc>
+    <loc>https://sentryforge.royalruby.io/sample-case.pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

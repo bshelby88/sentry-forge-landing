@@ -13,7 +13,7 @@
 //   RESEND_API_KEY          (already in place from waitlist)
 //
 // Stripe dashboard config:
-//   Endpoint URL: https://sentry-forge-landing.vercel.app/api/stripe-webhook
+//   Endpoint URL: https://sentryforge.royalruby.io/api/stripe-webhook
 //   Listen for:   checkout.session.completed
 
 import crypto from 'node:crypto';
@@ -81,7 +81,7 @@ async function sendResendEmail({ apiKey, to, subject, text, replyTo }) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'Sentry Forge <onboarding@resend.dev>',
+      from: 'Sentry Forge <bryant@mail.royalruby.io>',
       to: Array.isArray(to) ? to : [to],
       subject,
       text,
@@ -126,7 +126,7 @@ function buildCustomerEmail({ tier, email }) {
       `jadedfocus@gmail.com directly.`,
       ``,
       `— Bryant`,
-      `Webhook Forge — https://sentry-forge-landing.vercel.app/webhook/`,
+      `Webhook Forge — https://sentryforge.royalruby.io/webhook/`,
     ].join('\n');
   }
 
@@ -160,7 +160,7 @@ function buildCustomerEmail({ tier, email }) {
       `jadedfocus@gmail.com directly.`,
       ``,
       `— Bryant`,
-      `Sentry Forge — https://sentry-forge-landing.vercel.app`,
+      `Sentry Forge — https://sentryforge.royalruby.io`,
     ].join('\n');
   }
 
@@ -196,7 +196,7 @@ function buildCustomerEmail({ tier, email }) {
     ``,
     `— Bryant`,
     `Sentry Forge`,
-    `https://sentry-forge-landing.vercel.app`,
+    `https://sentryforge.royalruby.io`,
   ].join('\n');
 }
 
@@ -310,17 +310,16 @@ export default async function handler(req, res) {
 
   const sessionId = session.id || 'unknown';
 
+  const replyInbox = 'bryant@royalruby.io';
+
   try {
     await Promise.all([
-      // Customer-facing email — temporarily routed to founder inbox until
-      // a domain is verified in Resend. Founder forwards to `email` manually.
-      // Subject prefix [FORWARD TO …] makes the routing obvious in inbox.
       sendResendEmail({
         apiKey: resendKey,
-        to: FOUNDER_EMAIL,
-        subject: `[FORWARD TO ${email}] Sentry Forge — your case is open (${tier})`,
+        to: email,
+        subject: `Sentry Forge — your case is open (${tier})`,
         text: buildCustomerEmail({ tier, email }),
-        replyTo: FOUNDER_EMAIL,
+        replyTo: replyInbox,
       }),
       sendResendEmail({
         apiKey: resendKey,

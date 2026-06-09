@@ -13,7 +13,7 @@
 //   RESEND_API_KEY          (already in place from waitlist)
 //
 // Stripe dashboard config:
-//   Endpoint URL: https://sentry-forge-landing.vercel.app/api/stripe-webhook
+//   Endpoint URL: https://sentryforge.royalruby.io/api/stripe-webhook
 //   Listen for:   checkout.session.completed
 
 import crypto from 'node:crypto';
@@ -126,7 +126,7 @@ function buildCustomerEmail({ tier, email }) {
       `jadedfocus@gmail.com directly.`,
       ``,
       `— Bryant`,
-      `Webhook Forge — https://sentry-forge-landing.vercel.app/webhook/`,
+      `Webhook Forge — https://sentryforge.royalruby.io/webhook/`,
     ].join('\n');
   }
 
@@ -160,7 +160,7 @@ function buildCustomerEmail({ tier, email }) {
       `jadedfocus@gmail.com directly.`,
       ``,
       `— Bryant`,
-      `Sentry Forge — https://sentry-forge-landing.vercel.app`,
+      `Sentry Forge — https://sentryforge.royalruby.io`,
     ].join('\n');
   }
 
@@ -196,7 +196,7 @@ function buildCustomerEmail({ tier, email }) {
     ``,
     `— Bryant`,
     `Sentry Forge`,
-    `https://sentry-forge-landing.vercel.app`,
+    `https://sentryforge.royalruby.io`,
   ].join('\n');
 }
 

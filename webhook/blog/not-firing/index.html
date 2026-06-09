@@ -6,14 +6,14 @@
 <title>Stripe Webhook Didn't Fire — Debugging Checklist (2026)</title>
 <meta name="description" content="Customer paid but your webhook never ran. The 7 reasons it failed silently in production, in the order to check. Plus the dashboard fields that tell you definitively whether Stripe attempted delivery." />
 <meta name="theme-color" content="#0b0d12" />
-<link rel="canonical" href="https://sentryforge.app/webhook/blog/not-firing/" />
+<link rel="canonical" href="https://sentryforge.royalruby.io/webhook/blog/not-firing/" />
 
-<meta property="og:image" content="https://sentryforge.app/og.png" />
-<meta name="twitter:image" content="https://sentryforge.app/og.png" />
+<meta property="og:image" content="https://sentryforge.royalruby.io/og.png" />
+<meta name="twitter:image" content="https://sentryforge.royalruby.io/og.png" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="Stripe Webhook Didn't Fire — 7-Step Debugging Checklist" />
 <meta property="og:description" content="Customer paid but no webhook event arrived. The 7 silent failure modes in priority order, plus exact dashboard checks." />
-<meta property="og:url" content="https://sentryforge.app/webhook/blog/not-firing/" />
+<meta property="og:url" content="https://sentryforge.royalruby.io/webhook/blog/not-firing/" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Stripe Webhook Didn't Fire — 7-Step Checklist" />
@@ -28,8 +28,8 @@
   "dateModified": "2026-05-08",
   "author": { "@type": "Person", "name": "Bryant Shelby", "url": "https://x.com/jadedfocus" },
   "description": "Seven-step debugging checklist for the panic case when a Stripe checkout completes but no webhook event reaches your handler.",
-  "mainEntityOfPage": "https://sentryforge.app/webhook/blog/not-firing/",
-  "publisher": { "@type": "Organization", "name": "Sentry Forge", "url": "https://sentryforge.app" }
+  "mainEntityOfPage": "https://sentryforge.royalruby.io/webhook/blog/not-firing/",
+  "publisher": { "@type": "Organization", "name": "Sentry Forge", "url": "https://sentryforge.royalruby.io" }
 }
 </script>
 
@@ -119,7 +119,7 @@
     <div class="step">
       <div class="step-num">REASON 03</div>
       <h3>Endpoint URL is wrong</h3>
-      <p>Typo in the URL when registering. Common mistakes: <code>https://sentryforge.app/webhook</code> vs <code>https://sentryforge.app/api/stripe-webhook</code> vs <code>https://www.sentryforge.app/api/stripe-webhook</code>. Stripe attempts delivery to the URL you gave it; if that path doesn't exist on your origin, your handler never runs.</p>
+      <p>Typo in the URL when registering. Common mistakes: <code>https://sentryforge.royalruby.io/webhook</code> vs <code>https://sentryforge.royalruby.io/api/stripe-webhook</code> vs <code>https://www.sentryforge.royalruby.io/api/stripe-webhook</code>. Stripe attempts delivery to the URL you gave it; if that path doesn't exist on your origin, your handler never runs.</p>
       <p><strong>Check:</strong> Dashboard → Webhooks → click endpoint → "URL" field. Curl that URL: <code>curl -I https://your-url-here/path</code>. If it 404s or redirects to a static page, that's the bug.</p>
       <p><strong>Fix:</strong> click <strong>Update endpoint</strong> → fix the URL. Stripe will retry pending events automatically once the URL works.</p>
     </div>

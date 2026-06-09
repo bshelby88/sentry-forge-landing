@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Sentry Forge — agentic AI for consumer-debt defense</title>
-<meta name="description" content="I can't afford an Attorney, but I can afford Agentic AI. Sentry Forge forges your debt-dispute case in under an hour. Wrongful collections, illegal evictions, duplicate fees, time-barred zombie debt. $79/case." />
+<title>Sentry Forge — Secure Webhook Monitoring & Setup</title>
+<meta name="description" content="Sentry Forge watches your billing webhooks 24/7. Setup $199 one-time, monitoring $29/mo, enterprise $2500+$499/mo. Never miss a payment event again." />
 <meta name="theme-color" content="#1a1d24" />
-<link rel="canonical" href="https://sentry-forge-landing.vercel.app/" />
+<link rel="canonical" href="https://sentryforge.royalruby.io/" />
 
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Sentry Forge — I can't afford an Attorney, but I can afford Agentic AI" />
-<meta property="og:description" content="Agentic AI builds your debt-dispute case in under an hour. $79/case. First 100 founders $29." />
-<meta property="og:url" content="https://sentry-forge-landing.vercel.app/" />
-<meta property="og:image" content="https://sentry-forge-landing.vercel.app/og.png" />
+<meta property="og:title" content="Sentry Forge — Secure Webhook Monitoring & Setup" />
+<meta property="og:description" content="Sentry Forge watches your billing webhooks 24/7. Setup $199 one-time, monitoring $29/mo, enterprise $2500+$499/mo. Never miss a payment event again." />
+<meta property="og:url" content="https://sentryforge.royalruby.io/" />
+<meta property="og:image" content="https://sentryforge.royalruby.io/og.png" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Sentry Forge — agentic AI for consumer-debt defense" />
-<meta name="twitter:description" content="I can't afford an Attorney, but I can afford Agentic AI. $79/case." />
-<meta name="twitter:image" content="https://sentry-forge-landing.vercel.app/og.png" />
+<meta name="twitter:title" content="Sentry Forge — Secure Webhook Monitoring & Setup" />
+<meta name="twitter:description" content="Sentry Forge watches your billing webhooks 24/7. Setup $199 one-time, monitoring $29/mo, enterprise $2500+$499/mo. Never miss a payment event again." />
+<meta name="twitter:image" content="https://sentryforge.royalruby.io/og.png" />
 
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
@@ -790,6 +790,17 @@
     * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     .btn:hover, .how-card:hover, .nav-cta:hover { transform: none !important; }
   }
+  .banner-maint {
+    background: #2a1a00;
+    border-bottom: 1px solid #5a3a00;
+    color: #ffd28a;
+    padding: 12px 20px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .banner-maint a { color: #ffd28a; text-decoration: underline; font-weight: 600; }
+  .banner-maint a:hover { color: #fff; }
 </style>
 </head>
 <body>
@@ -1098,7 +1109,7 @@
           <li>90-day outcome tracking + escalation letters</li>
           <li>Refund if &lt;3 leverage points found</li>
         </ul>
-        <a href="https://buy.stripe.com/6oUaEYbmk4NS69qcwbfjG03" class="btn btn-ghost" target="_blank" rel="noopener">Forge My Case <span class="btn-arrow">→</span></a>
+        <a href="#waitlist" class="btn btn-ghost">Forge My Case <span class="btn-arrow">→</span></a>
       </div>
 
       <div class="price-card featured">
@@ -1113,7 +1124,7 @@
           <li>Listed on the wall (optional, by first name only)</li>
           <li>Refund + waitlist priority if &lt;3 leverage points</li>
         </ul>
-        <a href="https://buy.stripe.com/8x2dRa4XWgwA1TafInfjG04" class="btn btn-primary" target="_blank" rel="noopener">Claim Founding Spot <span class="btn-arrow">→</span></a>
+        <a href="#waitlist" class="btn btn-primary">Claim Founding Spot <span class="btn-arrow">→</span></a>
       </div>
     </div>
 
@@ -1257,7 +1268,7 @@
           status.className = 'waitlist-status ok';
           emailEl.value = '';
         } else {
-          status.textContent = 'something broke. try again or email forge@sentryforge.app';
+          status.textContent = 'something broke. try again or email bryant@royalruby.io';
           status.className = 'waitlist-status err';
         }
       } catch (err) {

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Privacy Policy — Sentry Forge</title>
 <meta name="description" content="What data we collect, what we don't, how we handle it. Plain language." />
-<link rel="canonical" href="https://sentry-forge-landing.vercel.app/privacy/" />
+<link rel="canonical" href="https://sentryforge.royalruby.io/privacy/" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -59,9 +59,9 @@
     <h2>What we collect</h2>
     <ul>
       <li><strong>Email address</strong> — when you join the waitlist, buy a product, or contact support.</li>
-      <li><strong>Payment details</strong> — handled entirely by Stripe. We never see your card number, CVC, or full bank info. We see only the last 4 digits of the card and your billing email + name.</li>
+      <li><strong>Payment details</strong> — handled entirely by our secure Merchant of Record, Lemon Squeezy. We never see your card number, CVC, or full bank info. We see only your billing email, name, and basic order confirmation details.</li>
       <li><strong>Case intake content</strong> — when you buy a debt-defense product (Sentry Forge One Case, Founding 100, Custom Dispute Letter), you reply to our intake email with the documents and facts of your case. We hold this content in our email inbox.</li>
-      <li><strong>Webhook service intake</strong> — when you buy the Stripe Webhook + Resend Setup, you provide a Stripe webhook signing secret, a Resend API key, your repository access, and your tier copy. These secrets are deleted from our records within 7 days of project completion. Repository access is revoked or transferred per your instructions at completion.</li>
+      <li><strong>Webhook service intake</strong> — when you buy our Webhook + Resend Setup service, you provide a webhook signing secret, a Resend API key, your repository access, and your tier copy. These secrets are deleted from our records within 7 days of project completion. Repository access is revoked or transferred per your instructions at completion.</li>
       <li><strong>Server logs</strong> — Vercel hosts the site and retains standard HTTP access logs (IP address, user agent, request path, response code, timestamp) for ~30 days for security and abuse monitoring.</li>
     </ul>
 
@@ -76,7 +76,7 @@
 
     <h2>Third parties we use</h2>
     <ul>
-      <li><strong>Stripe</strong> (payments) — privacy policy at <a href="https://stripe.com/privacy">stripe.com/privacy</a>.</li>
+      <li><strong>Lemon Squeezy</strong> (payments & merchant of record) — privacy policy at <a href="https://www.lemonsqueezy.com/privacy">lemonsqueezy.com/privacy</a>.</li>
       <li><strong>Resend</strong> (email delivery) — privacy policy at <a href="https://resend.com/legal/privacy-policy">resend.com/legal/privacy-policy</a>.</li>
       <li><strong>Vercel</strong> (hosting) — privacy policy at <a href="https://vercel.com/legal/privacy-policy">vercel.com/legal/privacy-policy</a>.</li>
       <li><strong>Google Workspace</strong> (founder email at jadedfocus@gmail.com) — your replies to our intake emails are processed and stored in Google's infrastructure.</li>
@@ -88,7 +88,7 @@
     <ul>
       <li>Email intake content: held in our inbox indefinitely unless you ask us to delete it. Email <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a> with subject "delete my data" and we'll purge from our records within 7 days.</li>
       <li>Webhook service secrets (whsec_, re_, repo access): deleted from our records within 7 days of project completion or by your request, whichever is sooner.</li>
-      <li>Stripe payment records: retained per Stripe's policies. We have no control over Stripe's retention.</li>
+      <li>Payment records: retained per Lemon Squeezy's policies as our Merchant of Record. We have no control over their retention.</li>
       <li>Vercel server logs: ~30 days, per Vercel defaults.</li>
     </ul>
 
@@ -106,7 +106,7 @@
     <p>This service is not directed to children under 13 and we do not knowingly collect data from anyone under 13. If you believe a minor has provided data, contact us and we will delete it.</p>
 
     <h2>Security</h2>
-    <p>We do not store credit card data — Stripe handles all payment information. Email-delivered intake content is held in Google Workspace with two-factor authentication on the founder account. Webhook service secrets are stored briefly (project duration + 7 days) and never logged to disk in our build pipeline. The site runs on Vercel with HTTPS enforced and modern TLS.</p>
+    <p>We do not store credit card data — Lemon Squeezy handles all payment information securely. Email-delivered intake content is held in Google Workspace with two-factor authentication on the founder account. Webhook service secrets are stored briefly (project duration + 7 days) and never logged to disk in our build pipeline. The site runs on Vercel with HTTPS enforced and modern TLS.</p>
 
     <h2>Changes to this policy</h2>
     <p>If we change this policy, the "Last updated" date at the top will change. Substantive changes will be summarized at the top for at least 30 days.</p>

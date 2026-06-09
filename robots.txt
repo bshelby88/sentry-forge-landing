@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sentry-forge-landing.vercel.app/sitemap.xml
+Sitemap: https://sentryforge.royalruby.io/sitemap.xml

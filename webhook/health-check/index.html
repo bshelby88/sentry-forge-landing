@@ -6,14 +6,14 @@
 <title>Stripe Webhook Health Check — $29/mo monitoring for indie hackers</title>
 <meta name="description" content="Cron-based monitor pings your Stripe webhook endpoint every 5 minutes. Email alert the moment it returns non-2xx or stops responding. $29/mo. The gap between Hookdeck ($39) and Svix Pro ($490)." />
 <meta name="theme-color" content="#0b0d12" />
-<link rel="canonical" href="https://sentry-forge-landing.vercel.app/webhook/health-check/" />
+<link rel="canonical" href="https://sentryforge.royalruby.io/webhook/health-check/" />
 
-<meta property="og:image" content="https://sentryforge.app/og.png" />
-<meta name="twitter:image" content="https://sentryforge.app/og.png" />
+<meta property="og:image" content="https://sentryforge.royalruby.io/og.png" />
+<meta name="twitter:image" content="https://sentryforge.royalruby.io/og.png" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Stripe Webhook Health Check — $29/mo" />
 <meta property="og:description" content="5-minute cron pings on your Stripe webhook. Email the moment it breaks. Built for indie hackers who can't justify Hookdeck's $39 entry tier." />
-<meta property="og:url" content="https://sentry-forge-landing.vercel.app/webhook/health-check/" />
+<meta property="og:url" content="https://sentryforge.royalruby.io/webhook/health-check/" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Stripe Webhook Health Check — $29/mo" />
@@ -31,7 +31,7 @@
     "price": "29.00",
     "priceCurrency": "USD",
     "availability": "https://schema.org/InStock",
-    "url": "https://sentryforge.app/webhook/health-check/",
+    "url": "https://sentryforge.royalruby.io/webhook/health-check/",
     "priceSpecification": {
       "@type": "UnitPriceSpecification",
       "price": "29.00",
@@ -528,16 +528,31 @@
   }
   footer a { color: var(--text-dim); text-decoration: underline; }
   footer a:hover { color: var(--accent); }
+  .banner-maint {
+    background: #2a1a00;
+    border-bottom: 1px solid #5a3a00;
+    color: #ffd28a;
+    padding: 12px 20px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .banner-maint a { color: #ffd28a; text-decoration: underline; font-weight: 600; }
+  .banner-maint a:hover { color: #fff; }
 </style>
 </head>
 <body>
+
+<div class="banner-maint">
+  Subscriptions temporarily offline while we migrate processors. Email <a href="mailto:bryant@royalruby.io?subject=Sentry%20Forge%20Health%20Check%20%E2%80%94%20Manual%20Setup">bryant@royalruby.io</a> to start monitoring today.
+</div>
 
 <header>
   <div class="wrap nav">
     <a href="/webhook/" style="text-decoration:none;" aria-label="webhook.forge home">
       <span class="brand">webhook<span class="dot">.</span>forge<span class="slash">/</span><span class="seg">health-check</span></span>
     </a>
-    <a class="nav-cta" href="https://buy.stripe.com/3cI00k3TSa8cbtKgMrfjG08?client_reference_id=health-check-cta">Subscribe — $29/mo</a>
+    <a class="nav-cta" href="mailto:bryant@royalruby.io?subject=Sentry%20Forge%20Health%20Check%20%E2%80%94%20Manual%20Setup">Subscribe — $29/mo</a>
   </div>
 </header>
 
@@ -549,7 +564,7 @@
     <h1>Stripe webhook monitoring for indie hackers <span class="accent">— $29/mo.</span></h1>
     <p class="lede">A cron job pings your live Stripe webhook endpoint every 5 minutes. The instant it returns non-2xx or stops responding, you get an email. No dashboards to log into. No retry storms to ignore. Just the alert that matters.</p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="https://buy.stripe.com/3cI00k3TSa8cbtKgMrfjG08?client_reference_id=health-check-cta">Start monitoring — $29/mo</a>
+      <a class="btn btn-primary" href="mailto:bryant@royalruby.io?subject=Sentry%20Forge%20Health%20Check%20%E2%80%94%20Manual%20Setup">Start monitoring — $29/mo</a>
       <a class="btn btn-secondary" href="#what-it-monitors">What it watches ↓</a>
       <span class="price-note">Cancel any time. No annual lock-in.</span>
     </div>
@@ -637,7 +652,7 @@
         <li>One endpoint included. Add more at $9/each.</li>
         <li>Cancel any time, prorated to the day</li>
       </ul>
-      <a class="btn btn-primary" href="https://buy.stripe.com/3cI00k3TSa8cbtKgMrfjG08?client_reference_id=health-check-cta">Subscribe — $29/mo</a>
+      <a class="btn btn-primary" href="mailto:bryant@royalruby.io?subject=Sentry%20Forge%20Health%20Check%20%E2%80%94%20Manual%20Setup">Subscribe — $29/mo</a>
     </div>
     <p style="font-size: 13px; color: var(--text-dim); max-width: 480px;">Need the webhook itself built first? See the one-time <a href="/webhook/">$199 build service</a>. The two pair naturally — ship the webhook, then put a heartbeat on it.</p>
   </div>
@@ -688,7 +703,7 @@
 
 <footer>
   <div class="wrap">
-    Built and run by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="https://sentry-forge-landing.vercel.app/">Sentry Forge home</a> · <a href="/webhook/">webhook.forge</a> · <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a><br/>
+    Built and run by <a href="https://x.com/jadedfocus">@jadedfocus</a> · <a href="https://sentryforge.royalruby.io/">Sentry Forge home</a> · <a href="/webhook/">webhook.forge</a> · <a href="mailto:jadedfocus@gmail.com">jadedfocus@gmail.com</a><br/>
     $29/mo, monthly recurring · Cancel any time · One Stripe webhook endpoint included.<br/>
     <a href="/about/">About</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a>
   </div>

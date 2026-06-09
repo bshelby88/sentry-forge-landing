@@ -23,7 +23,7 @@ function isRateLimited(ip) {
 }
 
 // H-3: Locked CORS origin — no wildcard.
-const ALLOWED_ORIGIN = 'https://sentry-forge-landing.vercel.app';
+const ALLOWED_ORIGIN = 'https://sentryforge.royalruby.io';
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
@@ -77,7 +77,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Sentry Forge <onboarding@resend.dev>',
+        from: 'Sentry Forge <bryant@mail.royalruby.io>',
         to: ['jadedfocus@gmail.com'],
         reply_to: email,
         subject: `[FORGE] new waitlist signup: ${email}`,
@@ -91,7 +91,7 @@ export default async function handler(req, res) {
           `IP:        ${ip}`,
           `UA:        ${ua}`,
           ``,
-          `Landing:   https://sentry-forge-landing.vercel.app`,
+          `Landing:   https://sentryforge.royalruby.io`,
         ].join('\n'),
       }),
     });
